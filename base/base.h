@@ -1,0 +1,81 @@
+
+#ifndef BASE_H
+#define BASE_H
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+#if defined(_WIN32)
+#   define PLATFORM_WIN32
+#elif defined(__linux__)
+#   define PLATFORM_LINUX
+#endif
+// TODO: MCU platform 
+
+#include <stdint.h>
+#include <stdbool.h>
+#include <stddef.h>
+#include <string.h>
+#include <math.h>
+
+// Signed integers
+typedef int8_t i8;
+typedef int16_t i16;
+typedef int32_t i32;
+
+// Unsigned integers
+typedef uint8_t u8;
+typedef uint16_t u16;
+typedef uint32_t u32;
+
+// Booleans
+typedef i8 b8;
+typedef i32 b32;
+
+// Floating point
+typedef float f32;
+
+#define MIN(a, b) (((a) < (b)) ? (a) : (b))
+#define MAX(a, b) (((a) > (b)) ? (a) : (b))
+#define CLAMP(x, a, b) (MIN((b), MAX((x), (a))))
+#define ABS(n) ((n) < 0 ? -(n) : (n))
+#define SIGN(n) ((n) < 0 ? -1 : 1)
+
+typedef struct { f32 x, y; } vec2f;
+typedef struct { f32 x, y, z; } vec3f;
+
+vec2f vec2f_add(vec2f a, vec2f b);
+vec2f vec2f_sub(vec2f a, vec2f b);
+vec2f vec2f_comp_mul(vec2f a, vec2f b);
+vec2f vec2f_comp_div(vec2f a, vec2f b);
+vec2f vec2f_scale(vec2f v, f32 s);
+vec2f vec2f_perp(vec2f v);
+f32 vec2f_cross(vec2f a, vec2f b);
+f32 vec2f_dot(vec2f a, vec2f b);
+f32 vec2f_sqr_dist(vec2f a, vec2f b);
+f32 vec2f_dist(vec2f a, vec2f b);
+b8 vec2f_eq(vec2f a, vec2f b);
+f32 vec2f_sqr_len(vec2f v);
+f32 vec2f_len(vec2f v);
+vec2f vec2f_norm(vec2f v);
+
+vec3f vec3f_add(vec3f a, vec3f b);
+vec3f vec3f_sub(vec3f a, vec3f b);
+vec3f vec3f_comp_mul(vec3f a, vec3f b);
+vec3f vec3f_comp_div(vec3f a, vec3f b);
+vec3f vec3f_scale(vec3f v, f32 s);
+vec3f vec3f_cross(vec3f a, vec3f b);
+f32 vec3f_dot(vec3f a, vec3f b);
+f32 vec3f_sqr_dist(vec3f a, vec3f b);
+f32 vec3f_dist(vec3f a, vec3f b);
+b8 vec3f_eq(vec3f a, vec3f b);
+f32 vec3f_sqr_len(vec3f v);
+f32 vec3f_len(vec3f v);
+vec3f vec3f_norm(vec3f v);
+
+#ifdef __cplusplus
+}
+#endif
+
+#endif // BASE_H
