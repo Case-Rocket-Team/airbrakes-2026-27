@@ -1,3 +1,11 @@
+/*
+
+File base.h
+-----------
+
+Defines shared types and helper functions used by all the airbrake modules.
+
+*/
 
 #ifndef BASE_H
 #define BASE_H
@@ -6,6 +14,12 @@
 extern "C" {
 #endif
 
+#include <stdint.h>
+#include <stdbool.h>
+#include <stddef.h>
+#include <string.h>
+#include <math.h>
+
 #if defined(_WIN32)
 #   define PLATFORM_WIN32
 #elif defined(__linux__)
@@ -13,11 +27,11 @@ extern "C" {
 #endif
 // TODO: MCU platform 
 
-#include <stdint.h>
-#include <stdbool.h>
-#include <stddef.h>
-#include <string.h>
-#include <math.h>
+#define MIN(a, b) (((a) < (b)) ? (a) : (b))
+#define MAX(a, b) (((a) > (b)) ? (a) : (b))
+#define CLAMP(x, a, b) (MIN((b), MAX((x), (a))))
+#define ABS(n) ((n) < 0 ? -(n) : (n))
+#define SIGN(n) ((n) < 0 ? -1 : 1)
 
 // Signed integers
 typedef int8_t i8;
@@ -36,14 +50,13 @@ typedef i32 b32;
 // Floating point
 typedef float f32;
 
-#define MIN(a, b) (((a) < (b)) ? (a) : (b))
-#define MAX(a, b) (((a) > (b)) ? (a) : (b))
-#define CLAMP(x, a, b) (MIN((b), MAX((x), (a))))
-#define ABS(n) ((n) < 0 ? -(n) : (n))
-#define SIGN(n) ((n) < 0 ? -1 : 1)
-
 typedef struct { f32 x, y; } vec2f;
 typedef struct { f32 x, y, z; } vec3f;
+
+typedef struct {
+    u8* str;
+    u32 size;
+} string8;
 
 vec2f vec2f_add(vec2f a, vec2f b);
 vec2f vec2f_sub(vec2f a, vec2f b);
