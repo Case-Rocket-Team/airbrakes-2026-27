@@ -87,6 +87,26 @@ f32 vec3f_sqr_len(vec3f v);
 f32 vec3f_len(vec3f v);
 vec3f vec3f_norm(vec3f v);
 
+/*
+This is essentially just a gemm
+
+Computes C = alpha * A' * B' + beta * C
+
+where A' = transpose_a ? A**T : A
+and   B' = transpose_b ? B**T : B
+
+A' must be (c_rows, ap_cols)
+B' must be (ap_cols, c_cols)
+C  must be (c_rows, c_cols)
+
+A, B, and C must be stored row major 
+*/
+void matmul(
+    b8 transpose_a, b8 transpose_b,
+    u32 c_rows, u32 c_cols, u32 ap_cols, 
+    f32 alpha, f32* A, f32* B, f32 beta, f32* C
+);
+
 #ifdef __cplusplus
 }
 #endif

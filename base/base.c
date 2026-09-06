@@ -132,3 +132,81 @@ vec3f vec3f_norm(vec3f v) {
     return (vec3f){ 1, 0, 0 };
 }
 
+void _mm_nn(
+    u32 c_rows, u32 c_cols, u32 ap_cols,
+    f32 alpha, f32* A, f32* B, f32* C
+) {
+    for (u32 i = 0; i < c_cols; i++) {
+        for (u32 k = 0; k < ap_cols; k++) {
+            for (u32 j = 0; j < c_rows; j++) {
+                C[i + j * c_cols] += alpha * A[k + j * ap_cols] * B[i + k * c_cols];
+            }
+        }
+    }
+}
+
+void _mm_nt(
+    u32 c_rows, u32 c_cols, u32 ap_cols,
+    f32 alpha, f32* A, f32* B, f32* C
+) {
+    for (u32 k = 0; k < ap_cols; k++) {
+        for (u32 i = 0; i < c_cols; i++) {
+            for (u32 j = 0; j < c_rows; j++) {
+                C[i + j * c_cols] += alpha * A[k + j * ap_cols] * B[k + i * ap_cols];
+            }
+        }
+    }
+}
+
+void _mm_tn(
+    u32 c_rows, u32 c_cols, u32 ap_cols,
+    f32 alpha, f32* A, f32* B, f32* C
+) {
+    for (u32 i = 0; i < c_cols; i++) {
+        for (u32 j = 0; j < c_rows; j++) {
+            for (u32 k = 0; k < ap_cols; k++) {
+                C[i + j * c_cols] += alpha * A[j + k * c_rows] * B[i + k * c_cols];
+            }
+        }
+    }
+}
+
+void _mm_tt(
+    u32 c_rows, u32 c_cols, u32 ap_cols,
+    f32 alpha, f32* A, f32* B, f32* C
+) {
+    for (u32 i = 0; i < c_cols; i++) {
+        for (u32 k = 0; k < ap_cols; k++) {
+            for (u32 j = 0; j < c_rows; j++) {
+                C[i + j * c_cols] += alpha * A[j + k * c_rows] * B[k + i * ap_cols];
+            }
+        }
+    }
+}
+
+void matmul(
+    b8 transpose_a, b8 transpose_b,
+    u32 c_rows, u32 c_cols, u32 ap_cols, 
+    f32 alpha, f32* A, f32* B, f32 beta, f32* C
+) {
+    u32 c_size = c_rows * c_cols;
+
+    if (beta == 0.0f) {
+        memset(C, 0, c_size * sizeof(f32));
+    } else {
+        for (u32 i = 0; i < c_size; i++) {
+            C[i] *= beta;
+        }
+    }
+
+    u32 transpose_bits = (u32)((!!transpose_a << 1) | !!transpose_b);
+    switch (transpose_bits) {
+        case 0b00: _mm_nn(c_rows, c_cols, ap_cols, alpha, A, B, C); break;
+        case 0b01: _mm_nt(c_rows, c_cols, ap_cols, alpha, A, B, C); break;
+        case 0b10: _mm_tn(c_rows, c_cols, ap_cols, alpha, A, B, C); break;
+        case 0b11: _mm_tt(c_rows, c_cols, ap_cols, alpha, A, B, C); break;
+        
+        default: break;
+    }
+}
+

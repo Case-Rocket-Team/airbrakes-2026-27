@@ -1,6 +1,6 @@
 
 CC = clang
-CFLAGS = -m64 -std=c11 -Isrc
+CFLAGS = -std=c11 -I.
 DEBUG_CFLAGS = -DDEBUG -g -O0 -fsanitize=address
 RELEASE_CFLAGS = -DNDEBUG -O2
 

@@ -16,7 +16,7 @@ rotation.
 extern "C" {
 #endif
 
-#include "../base/base.h"
+#include "base/base.h"
 
 #define KF_STATE_DIM 3
 #define KF_CONTROL_DIM 1
