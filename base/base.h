@@ -107,6 +107,21 @@ void matmul(
     f32 alpha, f32* A, f32* B, f32 beta, f32* C
 );
 
+/*
+Somewhat modeled after LAPACK gesv
+
+Sovles a linear system A * X = B
+
+A must be (a_size, a_size)
+B must be (a_size, b_cols)
+
+Returns true if the linear system is consistent, false otherwise
+Upon exit, B conatins the solution to the system (if it is consistent)
+
+A is modified by the function
+*/
+b32 linear_solve(u32 a_size, u32 b_cols, f32* A, f32* B);
+
 #ifdef __cplusplus
 }
 #endif

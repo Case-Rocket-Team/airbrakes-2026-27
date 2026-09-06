@@ -210,3 +210,84 @@ void matmul(
     }
 }
 
+b32 linear_solve(u32 a_size, u32 b_cols, f32* A, f32* B) {
+    // This implementation uses gauss jordan elimination 
+
+    for (u32 i = 0; i < a_size; i++) {
+        // Finding the max element
+        f32 max_elem = 0.0f;
+        u32 max_index = 0;
+
+        for (u32 j = i; j < a_size; j++) {
+            f32 abs_elem = ABS(A[i + j * a_size]);
+
+            if (abs_elem > max_elem) {
+                max_elem = abs_elem;
+                max_index = j;
+            }
+        }
+
+        if (max_elem <= 1e-8f) { return false; }
+
+        // Pivoting rows if required
+        if (max_index != i) {
+            // Pivoting A
+            for (u32 j = 0; j < a_size; j++) {
+                u32 index0 = j + i * a_size;
+                u32 index1 = j + max_index * a_size;
+
+                f32 tmp = A[index0];
+                A[index0] = A[index1];
+                A[index1] = tmp;
+            }
+
+            // Pivoting B
+            for (u32 j = 0; j < b_cols; j++) {
+                u32 index0 = j + i * b_cols;
+                u32 index1 = j + max_index * b_cols;
+
+                f32 tmp = B[index0];
+                B[index0] = B[index1];
+                B[index1] = tmp;
+            }
+        }
+
+        // Applying the row options
+        for (u32 j = i + 1; j < a_size; j++) {
+            f32 factor = A[i + j * a_size] / A[i + i * a_size];
+
+            // Applying operation to A
+            for (u32 k = i + 1; k < a_size; k++) {
+                A[k + j * a_size] -= factor * A[k + i * a_size];
+            }
+
+            // Applying operation to B
+            for (u32 k = 0; k < b_cols; k++) {
+                B[k + j * b_cols] -= factor * B[k + i * b_cols];
+            }
+        }
+    }
+
+    // Final step is to rescale each row of B and add them back up
+    // Basically going from ref to rref without actually touching A
+    for (i32 i = (i32)a_size - 1; i >= 0; i--) {
+        f32 factor = 1.0f / A[(u32)i + (u32)i * a_size];
+
+        // Rescale
+        for (u32 j = 0; j < b_cols; j++) {
+            B[j + (u32)i * b_cols] *= factor;
+        }
+
+        // Add rows
+        for (u32 j = 0; j < (u32)i; j++) {
+            factor = -A[(u32)i + j * a_size];
+
+            for (u32 k = 0; k < b_cols; k++) {
+                B[k + j * b_cols] += factor * B[k + (u32)i * b_cols];
+            }
+        }
+    }
+
+    return true;
+}
+
