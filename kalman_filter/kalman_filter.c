@@ -39,19 +39,23 @@ void kf_predict(kalman_filter* kf, kf_control_input* control, f32 dt) {
 
     // P_n+1|n = F * P_n|n * F^T + Q
     {
-        f32 next_covariance[KF_STATE_DIM * KF_STATE_DIM] = { 0 };
+        f32 next_covariance[KF_STATE_DIM * KF_STATE_DIM];
+        memcpy(next_covariance, control->covariance, sizeof(next_covariance));
+
+        // Intermediate matrix equal to F * P_n|n
+        f32 FP[KF_STATE_DIM * KF_STATE_DIM] = { 0 };
 
         matmul(
             false, false,
             KF_STATE_DIM, KF_STATE_DIM, KF_STATE_DIM,
             1.0f, state_transition, kf->state.covariance,
-            0.0f, next_covariance
+            0.0f, FP
         );
         
         matmul(
             false, true,
             KF_STATE_DIM, KF_STATE_DIM, KF_STATE_DIM,
-            1.0f, kf->state.covariance, state_transition,
+            1.0f, FP, state_transition,
             1.0f, next_covariance
         );
 
