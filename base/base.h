@@ -100,6 +100,7 @@ B' must be (ap_cols, c_cols)
 C  must be (c_rows, c_cols)
 
 A, B, and C must be stored row major 
+A, B, and C must be non-overlapping
 */
 void matmul(
     b8 transpose_a, b8 transpose_b,

@@ -64,8 +64,18 @@ typedef struct {
     kf_state state;
 } kalman_filter;
 
+/*
+Predicts the state at time t+dt into the future.
+
+Should be called before kf_update
+*/
 void kf_predict(kalman_filter* kf, kf_control_input* control, f32 dt);
-void kf_update(kalman_filter* kf, kf_measure* measure, f32 dt);
+
+/*
+Should be proceeded by a kf_predict such that the time at the kf_update call is
+equal to the time at the latest kf_predict + dt
+*/
+void kf_update(kalman_filter* kf, kf_measure* measure);
 
 #ifdef __cplusplus
 }
