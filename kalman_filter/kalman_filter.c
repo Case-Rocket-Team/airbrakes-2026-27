@@ -140,5 +140,60 @@ void kf_update(kalman_filter* kf, kf_measure* measure) {
         1.0f, kalman_gain, innovation_vec,
         1.0f, kf->state.vec.v
     );
+
+    // Updating covariance according to
+    // P_n|n = (I - KH) * P_n|n-1 * (I - KH)^T + KRK^T
+    {
+        f32 cov_factor[KF_STATE_DIM * KF_STATE_DIM] = { 0 };
+
+        // Initializing with identity
+        for (u32 i = 0; i < KF_STATE_DIM; i++) {
+            cov_factor[i + i * KF_STATE_DIM] = 1.0f;
+        }
+
+        // I - KH
+        matmul(
+            false, false,
+            KF_STATE_DIM, KF_STATE_DIM, KF_MEASURE_DIM,
+            -1.0f, kalman_gain, observation_model,
+            1.0f, cov_factor
+        );
+
+        // Temporarily stores (I - KH) * P_n|n-1 and later KR
+        f32 leftmul[KF_STATE_DIM * MAX(KF_MEASURE_DIM, KF_STATE_DIM)] = { 0 };
+
+        // (I - KH) * P_n|n-1
+        matmul(
+            false, false,
+            KF_STATE_DIM, KF_STATE_DIM, KF_STATE_DIM,
+            1.0f, cov_factor, kf->state.covariance,
+            0.0f, leftmul
+        );
+
+        // P_n|n = (I - KH) * P_n|n-1 * (I - KH)^T
+        // (Just the first half of the covariaince update)
+        matmul(
+            false, true,
+            KF_STATE_DIM, KF_STATE_DIM, KF_STATE_DIM,
+            1.0f, leftmul, cov_factor,
+            0.0f, kf->state.covariance
+        );
+
+        // K*R
+        matmul(
+            false, false,
+            KF_STATE_DIM, KF_MEASURE_DIM, KF_MEASURE_DIM,
+            1.0f, kalman_gain, measure->covariance,
+            0.0f, leftmul
+        );
+
+        // P_n|n += KRK^T
+        matmul(
+            false, true,
+            KF_STATE_DIM, KF_STATE_DIM, KF_MEASURE_DIM,
+            1.0f, leftmul, kalman_gain,
+            1.0f, kf->state.covariance
+        );
+    }
 }
 
