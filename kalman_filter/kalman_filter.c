@@ -68,8 +68,77 @@ void kf_predict(kalman_filter* kf, kf_control_input* control, f32 dt) {
 }
 
 void kf_update(kalman_filter* kf, kf_measure* measure) {
+    // Commonly denoted H
     f32 observation_model[KF_MEASURE_DIM * KF_STATE_DIM] = {
         1.0f, 0.0f, 0.0f
     };
+
+    // y = z - Hx_n|n-1
+    f32 innovation_vec[KF_MEASURE_DIM];
+    memcpy(innovation_vec, measure->vec.v, sizeof(innovation_vec));
+    matmul(
+        false, false,
+        KF_MEASURE_DIM, 1, KF_STATE_DIM,
+        -1.0f, observation_model, kf->state.vec.v,
+        1.0f, innovation_vec
+    );
+
+    f32 kalman_gain[KF_STATE_DIM * KF_MEASURE_DIM] = { 0 };
+    {
+        f32 innovation_covariance_inv[KF_MEASURE_DIM * KF_MEASURE_DIM] = { 0 };
+
+        // Initialize with identity
+        for (u32 i = 0; i < KF_MEASURE_DIM; i++) {
+            innovation_covariance_inv[i + i * KF_MEASURE_DIM] = 1.0f;
+        }
+
+        // Stores P * observation_model^T
+        // This is used to get the innovation covariance as well as the kalman
+        // gain
+        f32 PH_T[KF_STATE_DIM * KF_MEASURE_DIM] = { 0 };
+
+        matmul(
+            false, true,
+            KF_STATE_DIM, KF_MEASURE_DIM, KF_STATE_DIM,
+            1.0f, kf->state.covariance, observation_model,
+            0.0f, PH_T
+        );
+
+        // S = HPH^T + R
+        // Where R is the measurement covariance
+        f32 innovation_covariance[KF_MEASURE_DIM * KF_MEASURE_DIM];
+        memcpy(
+            innovation_covariance, measure->covariance,
+            sizeof(innovation_covariance)
+        );
+
+        matmul(
+            false, false,
+            KF_MEASURE_DIM, KF_MEASURE_DIM, KF_STATE_DIM,
+            1.0f, observation_model, PH_T,
+            1.0f, innovation_covariance
+        );
+
+        linear_solve(
+            KF_MEASURE_DIM, KF_MEASURE_DIM,
+            innovation_covariance, innovation_covariance_inv
+        );
+
+        // K = PH^T * S^-1
+        matmul(
+            false, false,
+            KF_STATE_DIM, KF_MEASURE_DIM, KF_MEASURE_DIM,
+            1.0f, PH_T, innovation_covariance_inv,
+            0.0f, kalman_gain
+        );
+    }
+
+    // x_n|n = x_n|n-1 + Ky
+    matmul(
+        false, false,
+        KF_STATE_DIM, 1, KF_MEASURE_DIM,
+        1.0f, kalman_gain, innovation_vec,
+        1.0f, kf->state.vec.v
+    );
 }
 
