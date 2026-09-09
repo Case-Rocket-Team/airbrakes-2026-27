@@ -43,6 +43,11 @@ typedef uint8_t u8;
 typedef uint16_t u16;
 typedef uint32_t u32;
 
+#ifndef PLATFORM_MCU
+typedef int64_t i64;
+typedef uint64_t u64;
+#endif
+
 // Booleans
 typedef i8 b8;
 typedef i32 b32;
