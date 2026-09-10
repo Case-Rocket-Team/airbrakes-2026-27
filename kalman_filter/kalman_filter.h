@@ -36,32 +36,29 @@ typedef struct {
     f32 covariance[KF_STATE_DIM * KF_STATE_DIM];
 } kf_state;
 
-typedef struct {
-    union {
-        struct {
-            f32 accel_fps2;
-        };
+typedef union {
+    struct {
+        f32 accel_fps2;
+    };
 
-        f32 v[KF_CONTROL_DIM];
-    } vec;
-
-    f32 covariance[KF_CONTROL_DIM * KF_CONTROL_DIM];
+    f32 v[KF_CONTROL_DIM];
 } kf_control_input;
 
-typedef struct {
-    union {
-        struct {
-            f32 altitude_ft;
-        };
+typedef union {
+    struct {
+        f32 altitude_ft;
+    };
 
-        f32 v[KF_MEASURE_DIM];
-    } vec;
-
-    f32 covariance[KF_MEASURE_DIM * KF_MEASURE_DIM];
+    f32 v[KF_MEASURE_DIM];
 } kf_measure;
 
 typedef struct {
     kf_state state;
+
+    f32 accel_stddev_fps2;
+    f32 accel_bias_stddev_fps2;
+
+    f32 measure_covariance[KF_MEASURE_DIM * KF_MEASURE_DIM];
 } kalman_filter;
 
 /*

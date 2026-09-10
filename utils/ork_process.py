@@ -11,7 +11,6 @@ TODO: process ork format into 3d vectors for velocity and acceleration
 """
 
 import pandas as pd
-import matplotlib.pyplot as plt
 import numpy as np
 import sys
 

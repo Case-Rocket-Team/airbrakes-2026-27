@@ -30,7 +30,7 @@ void kf_predict(kalman_filter* kf, kf_control_input* control, f32 dt) {
         matmul(
             false, false,
             KF_STATE_DIM, 1, 1,
-            1.0f, control_model, control->vec.v, 
+            1.0f, control_model, control->v, 
             1.0f, next_state
         );
 
@@ -39,8 +39,16 @@ void kf_predict(kalman_filter* kf, kf_control_input* control, f32 dt) {
 
     // P_n+1|n = F * P_n|n * F^T + Q
     {
-        f32 next_covariance[KF_STATE_DIM * KF_STATE_DIM];
-        memcpy(next_covariance, control->covariance, sizeof(next_covariance));
+        // Filling this in the with process noise Q
+        // This is computed here because it is dependent on dt
+        f32 v_a = kf->accel_stddev_fps2 * kf->accel_stddev_fps2;
+        f32 v_b = kf->accel_bias_stddev_fps2 * kf->accel_bias_stddev_fps2;
+        f32 dt2 = dt * dt;
+        f32 next_covariance[KF_STATE_DIM * KF_STATE_DIM] = {
+            0.25f * dt2 * dt2 * v_a, 0.5f * dt2 * dt * v_a, 0.0f,
+            0.5f * dt2 * dt * v_a, dt2 * v_a, 0.0f,
+            0.0f, 0.0f, v_b,
+        };
 
         // Intermediate matrix equal to F * P_n|n
         f32 FP[KF_STATE_DIM * KF_STATE_DIM] = { 0 };
@@ -59,10 +67,6 @@ void kf_predict(kalman_filter* kf, kf_control_input* control, f32 dt) {
             1.0f, next_covariance
         );
 
-        for (u32 i = 0; i < KF_STATE_DIM * KF_STATE_DIM; i++) {
-            next_covariance[i] += control->covariance[i];
-        }
-
         memcpy(kf->state.covariance, next_covariance, sizeof(next_covariance));
     }
 }
@@ -75,7 +79,7 @@ void kf_update(kalman_filter* kf, kf_measure* measure) {
 
     // y = z - Hx_n|n-1
     f32 innovation_vec[KF_MEASURE_DIM];
-    memcpy(innovation_vec, measure->vec.v, sizeof(innovation_vec));
+    memcpy(innovation_vec, measure->v, sizeof(innovation_vec));
     matmul(
         false, false,
         KF_MEASURE_DIM, 1, KF_STATE_DIM,
@@ -108,7 +112,7 @@ void kf_update(kalman_filter* kf, kf_measure* measure) {
         // Where R is the measurement covariance
         f32 innovation_covariance[KF_MEASURE_DIM * KF_MEASURE_DIM];
         memcpy(
-            innovation_covariance, measure->covariance,
+            innovation_covariance, kf->measure_covariance,
             sizeof(innovation_covariance)
         );
 
@@ -183,7 +187,7 @@ void kf_update(kalman_filter* kf, kf_measure* measure) {
         matmul(
             false, false,
             KF_STATE_DIM, KF_MEASURE_DIM, KF_MEASURE_DIM,
-            1.0f, kalman_gain, measure->covariance,
+            1.0f, kalman_gain, kf->measure_covariance,
             0.0f, leftmul
         );
 
