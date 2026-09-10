@@ -58,6 +58,8 @@ typedef float f32;
 typedef struct { f32 x, y; } vec2f;
 typedef struct { f32 x, y, z; } vec3f;
 
+typedef struct { f32 x, y, z, w; } quatf;
+
 typedef struct {
     u8* str;
     u32 size;
@@ -91,6 +93,12 @@ b8 vec3f_eq(vec3f a, vec3f b);
 f32 vec3f_sqr_len(vec3f v);
 f32 vec3f_len(vec3f v);
 vec3f vec3f_norm(vec3f v);
+
+quatf quatf_mul(quatf a, quatf b);
+
+// Performs and optimized version of the operation qvq*
+// q must be a unit quaternion
+vec3f quatf_rot_vec3f(quatf q, vec3f v);
 
 /*
 This is essentially just a gemm

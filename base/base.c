@@ -132,6 +132,26 @@ vec3f vec3f_norm(vec3f v) {
     return (vec3f){ 1, 0, 0 };
 }
 
+quatf quatf_mul(quatf a, quatf b) {
+    return (quatf) {
+        .x = a.w * b.x + a.x * b.w + a.y * b.z - a.z * b.y,
+        .y = a.w * b.y - a.x * b.z + a.y * b.w + a.z * b.x,
+        .z = a.w * b.z + a.x * b.y - a.y * b.x + a.z * b.w,
+        .w = a.w * b.w - a.x * b.x - a.y * b.y - a.z * b.z,
+    };
+}
+
+vec3f quatf_rot_vec3f(quatf q, vec3f v) {
+    vec3f u = { q.x, q.y, q.z };
+
+    f32 s = q.w;
+
+    vec3f out = vec3f_scale(u, 2.0f * vec3f_dot(u, v));
+    out = vec3f_add(out, vec3f_scale(v, s * s - vec3f_dot(u, u)));
+    out = vec3f_add(out, vec3f_scale(vec3f_cross(u, v), 2.0f * s));
+    return out;
+}
+
 void _mm_nn(
     u32 c_rows, u32 c_cols, u32 ap_cols,
     f32 alpha, f32* A, f32* B, f32* C
