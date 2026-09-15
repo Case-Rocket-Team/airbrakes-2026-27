@@ -34,7 +34,7 @@ int main(void) {
     prng_seed(&rng, 1, 1);
 
     f32 accel_sdev_fps2 = 0.1058f;
-    f32 baro_sdev_ft = 50.0f;
+    f32 baro_sdev_ft = 20.0f;
 
     f32 accel_bias_fps2 = 0.1f;
     f32 accel_bias_sdev_fps2 = 0.01f;
@@ -63,7 +63,8 @@ int main(void) {
         "time_s,"
         "altitude_ft,vertical_vel_fps,accel_bias_fps2,"
         "m_altitude_ft,"
-        "kf_altitude_ft,kf_vertical_vel_fps,kf_accel_bias_fps2\n"
+        "kf_altitude_ft,kf_vertical_vel_fps,kf_accel_bias_fps2,"
+        "kf_altitude_sd_ft,kf_vertical_vel_sd_fps,kf_accel_bias_sd_fps2\n"
     );
 
     for (u32 i = 1; i < ork.len; i++) {
@@ -91,12 +92,16 @@ int main(void) {
             "%.10g,"
             "%.10g,%.10g,%.10g,"
             "%.10g,"
+            "%.10g,%.10g,%.10g,"
             "%.10g,%.10g,%.10g\n",
             ork.time_s[i],
             ork.altitude_ft[i], ork.vertical_vel_fps[i], accel_bias_fps2,
             measure.altitude_ft,
             kf.state.vec.altitude_ft, kf.state.vec.vertical_vel_fps,
-            kf.state.vec.accel_bias_fps2
+            kf.state.vec.accel_bias_fps2,
+            sqrtf(kf.state.covariance[0 * KF_STATE_DIM + 0]),
+            sqrtf(kf.state.covariance[1 * KF_STATE_DIM + 1]),
+            sqrtf(kf.state.covariance[2 * KF_STATE_DIM + 2])
         );
     }
 

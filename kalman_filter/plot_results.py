@@ -10,8 +10,17 @@ def main():
     t = df["time_s"]
 
     axs[0][0].plot(t, df["altitude_ft"], label="real")
-    axs[0][0].plot(t, df["kf_altitude_ft"], label="kalman")
     axs[0][0].plot(t, df["m_altitude_ft"], '.', markersize=1, label="measured")
+    axs[0][0].plot(t, df["kf_altitude_ft"], label="kalman")
+
+    for i in range(1, 4):
+        axs[0][0].fill_between(
+            t,
+            df["kf_altitude_ft"] - i * df["kf_altitude_sd_ft"],
+            df["kf_altitude_ft"] + i * df["kf_altitude_sd_ft"],
+            color="gray", alpha=0.25
+        )
+
     axs[0][0].legend()
     axs[0][0].set_ylabel("altitude (ft)")
 
@@ -21,6 +30,15 @@ def main():
 
     axs[1][0].plot(t, df["vertical_vel_fps"], label="real")
     axs[1][0].plot(t, df["kf_vertical_vel_fps"], label="kalman")
+
+    for i in range(1, 4):
+        axs[1][0].fill_between(
+            t,
+            df["kf_vertical_vel_fps"] - i * df["kf_vertical_vel_sd_fps"],
+            df["kf_vertical_vel_fps"] + i * df["kf_vertical_vel_sd_fps"],
+            color="gray", alpha=0.25
+        )
+
     axs[1][0].legend()
     axs[1][0].set_ylabel("vertical velocity (ft/s)")
 
@@ -30,6 +48,15 @@ def main():
 
     axs[2][0].plot(t, df["accel_bias_fps2"], label="real")
     axs[2][0].plot(t, df["kf_accel_bias_fps2"], label="kalman")
+
+    for i in range(1, 4):
+        axs[2][0].fill_between(
+            t,
+            df["kf_accel_bias_fps2"] - i * df["kf_accel_bias_sd_fps2"],
+            df["kf_accel_bias_fps2"] + i * df["kf_accel_bias_sd_fps2"],
+            color="gray", alpha=0.25
+        )
+
     axs[2][0].legend()
     axs[2][0].set_ylabel("accel bias (ft/s^2)")
 
