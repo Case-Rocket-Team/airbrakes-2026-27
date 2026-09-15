@@ -100,6 +100,9 @@ quatf quatf_mul(quatf a, quatf b);
 // q must be a unit quaternion
 vec3f quatf_rot_vec3f(quatf q, vec3f v);
 
+// The quaternion q must be normalized for this
+void quatf_to_mat3(quatf q, f32* m_out);
+
 /*
 This is essentially just a gemm
 

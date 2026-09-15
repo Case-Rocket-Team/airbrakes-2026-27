@@ -152,6 +152,20 @@ vec3f quatf_rot_vec3f(quatf q, vec3f v) {
     return out;
 }
 
+void quatf_to_mat3(quatf q, f32* m_out) {
+    m_out[0 * 3 + 0] = 2.0f * (q.w * q.w + q.x * q.x) - 1.0f;
+    m_out[0 * 3 + 1] = 2.0f * (q.x * q.y - q.w * q.z);
+    m_out[0 * 3 + 2] = 2.0f * (q.x * q.z + q.w * q.y);
+
+    m_out[1 * 3 + 0] = 2.0f * (q.x * q.y + q.w * q.z);
+    m_out[1 * 3 + 1] = 2.0f * (q.w * q.w + q.y * q.y) - 1.0f;
+    m_out[1 * 3 + 2] = 2.0f * (q.y * q.z - q.w * q.x);
+
+    m_out[2 * 3 + 0] = 2.0f * (q.x * q.z - q.w * q.y);
+    m_out[2 * 3 + 1] = 2.0f * (q.y * q.z + q.w * q.x);
+    m_out[2 * 3 + 2] = 2.0f * (q.w * q.w + q.z * q.z) - 1.0f;
+}
+
 void _mm_nn(
     u32 c_rows, u32 c_cols, u32 ap_cols,
     f32 alpha, f32* A, f32* B, f32* C
