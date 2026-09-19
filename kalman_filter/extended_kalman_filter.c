@@ -35,6 +35,27 @@ void _ekf_fill_quatmat(f32* m, quatf q, u32 row_off, u32 col_off, u32 stride) {
 void ekf_predict(
     extended_kalman_filter* ekf, ekf_control_input* control, f32 dt
 ) {
+    /*
+    There are two steps to the error state prediction:
+        1) Directly updating the nominal state
+        2) Updating the covariance based on a linearization of the process 
+            model
+    */
+
+    // Updating attitude
+    // q_k|k-1 = q_k-1|k-1 + 0.5 * dt * q_k-1|k-1 * (0, omega)
+    quatf attitude_diff = quatf_mul(
+        ekf->nominal_state.attitude,
+        (quatf){
+            .w = 0.0f,
+            .x = 0.5f * dt * control->gyro_radps.x,
+            .y = 0.5f * dt * control->gyro_radps.y,
+            .z = 0.5f * dt * control->gyro_radps.z,
+        }
+    );
+    ekf->nominal_state.attitude = quatf_norm(
+        quatf_add(ekf->nominal_state.attitude, attitude_diff)
+    );
 }
 
 void ekf_update(extended_kalman_filter* ekf, ekf_measure* measure) {

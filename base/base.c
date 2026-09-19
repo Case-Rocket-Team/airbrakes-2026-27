@@ -58,7 +58,7 @@ f32 vec2f_len(vec2f v) {
 vec2f vec2f_norm(vec2f v) {
     f32 len = sqrtf(v.x * v.x + v.y * v.y);
 
-    if (ABS(len) > 1e-8f) {
+    if (len > 1e-8f) {
         return (vec2f){ v.x / len, v.y / len };
     }
 
@@ -124,12 +124,21 @@ f32 vec3f_len(vec3f v) {
 vec3f vec3f_norm(vec3f v) {
     f32 len = sqrtf(v.x * v.x + v.y * v.y + v.z * v.z);
 
-    if (ABS(len) > 1e-8f) {
+    if (len > 1e-8f) {
         f32 r = 1.0f / len;
         return (vec3f){ v.x * r, v.y * r, v.z * r };
     }
 
     return (vec3f){ 1, 0, 0 };
+}
+
+quatf quatf_add(quatf a, quatf b) {
+    return (quatf){
+        .w = a.w + b.w,
+        .x = a.x + b.x,
+        .y = a.y + b.y,
+        .z = a.z + b.z,
+    };
 }
 
 quatf quatf_mul(quatf a, quatf b) {
@@ -139,6 +148,23 @@ quatf quatf_mul(quatf a, quatf b) {
         .z = a.w * b.z + a.x * b.y - a.y * b.x + a.z * b.w,
         .w = a.w * b.w - a.x * b.x - a.y * b.y - a.z * b.z,
     };
+}
+
+quatf quatf_norm(quatf q) {
+    f32 mag = sqrtf(q.w * q.w + q.x * q.x + q.y * q.y + q.z * q.z);
+
+    if (mag > 1e-8f) {
+        f32 r = 1.0f / mag;
+
+        return (quatf){
+            .w = r * q.w,
+            .x = r * q.x,
+            .y = r * q.y,
+            .z = r * q.z,
+        };
+    }
+
+    return (quatf){ .w = 1.0f };
 }
 
 vec3f quatf_rot_vec3f(quatf q, vec3f v) {

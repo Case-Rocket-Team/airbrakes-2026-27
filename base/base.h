@@ -94,7 +94,9 @@ f32 vec3f_sqr_len(vec3f v);
 f32 vec3f_len(vec3f v);
 vec3f vec3f_norm(vec3f v);
 
+quatf quatf_add(quatf a, quatf b);
 quatf quatf_mul(quatf a, quatf b);
+quatf quatf_norm(quatf q);
 
 // Performs and optimized version of the operation qvq*
 // q must be a unit quaternion
