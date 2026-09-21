@@ -23,6 +23,8 @@ extern "C" {
 #define EKF_MEASURE_DIM 4
 
 typedef struct {
+    // Stored such that left multiplication by attitude goes from world frame
+    // to body frame
     quatf attitude;
     vec3f pos_ft;
     vec3f vel_fps;
