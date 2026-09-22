@@ -53,9 +53,21 @@ test_control:
 	$(CXX) control/tests/test_control_interface.cpp $(CXXFLAGS) $(LFLAGS) -o $(BIN_DIR)test_control$(BIN_EXT)
 	$(BIN_DIR)test_control$(BIN_EXT)
 
-test: test_kf test_control
+test_atmosphere:
+	@$(MKDIR_BIN)
+	$(CXX) control/tests/test_atmosphere.cpp control/physics/atmosphere.cpp $(CXXFLAGS) $(LFLAGS) -o $(BIN_DIR)test_atmosphere$(BIN_EXT)
+	$(BIN_DIR)test_atmosphere$(BIN_EXT)
+
+test: test_kf test_control test_atmosphere
 
 clean:
 	$(RM_BIN)
 
+<<<<<<< HEAD
 .PHONY: clean test_kf test_ekf test_control test
+=======
+.PHONY: test_kf test_control test_atmosphere test clean
+
+
+
+>>>>>>> 9f4eff5 (feat(physics): add atmospheric density model)
