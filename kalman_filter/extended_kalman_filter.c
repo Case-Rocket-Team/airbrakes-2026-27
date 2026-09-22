@@ -15,62 +15,61 @@ void _ekf_fill_skew3(f32* m, vec3f v, u32 row_off, u32 col_off, u32 stride) {
     m[(row_off + 2) * stride + (col_off + 2)] = 0.0f;
 }
 
-void _ekf_fill_quatmat(f32* m, quatf q, u32 row_off, u32 col_off, u32 stride) {
-    f32 r_mat[9];
-    quatf_to_mat3(q, r_mat);
+void _ekf_fill_mat3(f32* dst, f32 src[3 * 3], u32 row_off, u32 col_off, u32 stride) {
+    dst[(row_off + 0) * stride + (col_off + 0)] = src[0];
+    dst[(row_off + 0) * stride + (col_off + 1)] = src[1];
+    dst[(row_off + 0) * stride + (col_off + 2)] = src[2];
 
-    m[(row_off + 0) * stride + (col_off + 0)] = r_mat[0];
-    m[(row_off + 0) * stride + (col_off + 1)] = r_mat[1];
-    m[(row_off + 0) * stride + (col_off + 2)] = r_mat[2];
+    dst[(row_off + 1) * stride + (col_off + 0)] = src[3];
+    dst[(row_off + 1) * stride + (col_off + 1)] = src[4];
+    dst[(row_off + 1) * stride + (col_off + 2)] = src[5];
 
-    m[(row_off + 1) * stride + (col_off + 0)] = r_mat[3];
-    m[(row_off + 1) * stride + (col_off + 1)] = r_mat[4];
-    m[(row_off + 1) * stride + (col_off + 2)] = r_mat[5];
+    dst[(row_off + 2) * stride + (col_off + 0)] = src[6];
+    dst[(row_off + 2) * stride + (col_off + 1)] = src[7];
+    dst[(row_off + 2) * stride + (col_off + 2)] = src[8];
+}
 
-    m[(row_off + 2) * stride + (col_off + 0)] = r_mat[6];
-    m[(row_off + 2) * stride + (col_off + 1)] = r_mat[7];
-    m[(row_off + 2) * stride + (col_off + 2)] = r_mat[8];
+void _ekf_linearize_state_transition(
+    extended_kalman_filter* ekf,
+    // Output state transition matrix
+    f32 F[EKF_STATE_DIM * EKF_STATE_DIM], 
+    vec3f gyro_meas_radps,
+    vec3f accel_meas_fps2
+) {
 }
 
 void ekf_predict(
     extended_kalman_filter* ekf, ekf_control_input* control, f32 dt
 ) {
-    // First, update nominal state given control input
-    quatf world_to_body = ekf->nominal_state.attitude;
-    quatf body_to_world = (quatf){
-        .w = world_to_body.w,
-        .x = -world_to_body.x,
-        .y = -world_to_body.y,
-        .z = -world_to_body.z,
-    };
-
-    vec3f gyro_radps = vec3f_sub(
+    vec3f gyro_meas_radps = vec3f_sub(
         control->gyro_radps,
         ekf->nominal_state.gyro_bias_radps
+    );
+
+    vec3f accel_meas_fps2 = vec3f_sub(
+        control->accel_fps2,
+        ekf->nominal_state.accel_bias_fps2
     );
 
     vec3f world_accel_fps2 = vec3f_add(
         // Accelerometers measure a constant -1g for gravity
         (vec3f){ 0.0f, 0.0f, 32.174f },
         quatf_rot_vec3f(
-            body_to_world,
-            vec3f_sub(
-                control->accel_fps2,
-                ekf->nominal_state.accel_bias_fps2
-            )
+            ekf->nominal_state.attitude,
+            accel_meas_fps2
         )
     );
 
     // Updating attitude
-    // q_k|k-1 = q_k-1|k-1 + 0.5 * dt * (0, omega) * q_k-1|k-1
+    // q_k|k-1 = q_k-1|k-1 + 0.5 * dt * q_k-1|k-1 * (0, omega)
     quatf attitude_diff = quatf_mul(
+        ekf->nominal_state.attitude,
         (quatf){
             .w = 0.0f,
-            .x = 0.5f * dt * gyro_radps.x,
-            .y = 0.5f * dt * gyro_radps.y,
-            .z = 0.5f * dt * gyro_radps.z,
-        },
-        ekf->nominal_state.attitude
+            .x = 0.5f * dt * gyro_meas_radps.x,
+            .y = 0.5f * dt * gyro_meas_radps.y,
+            .z = 0.5f * dt * gyro_meas_radps.z,
+        }
     );
     
     quatf new_attitude = quatf_norm(

@@ -103,7 +103,7 @@ quatf quatf_norm(quatf q);
 vec3f quatf_rot_vec3f(quatf q, vec3f v);
 
 // The quaternion q must be normalized for this
-void quatf_to_mat3(quatf q, f32* m_out);
+void quatf_to_mat3(quatf q, f32 m_out[3 * 3]);
 
 /*
 This is essentially just a gemm

@@ -23,21 +23,27 @@ extern "C" {
 #define EKF_MEASURE_DIM 4
 
 typedef struct {
-    // Stored such that left multiplication by attitude goes from world frame
-    // to body frame
+    // Stored such that left multiplication by attitude goes from body frame
+    // to world frame
     quatf attitude;
+
+    // Position is in the world's frame of reference
     vec3f pos_ft;
+
+    // Velocity is in the world's frame of reference
     vec3f vel_fps;
-    vec3f accel_bias_fps2;
+
     vec3f gyro_bias_radps; // radians / sec
+    vec3f accel_bias_fps2;
 } ekf_nominal_state;
 
 typedef union {
     struct {
-        vec3f pos_ft;
+        vec3f small_angle_rad;
         vec3f vel_fps;
-        vec3f accel_bias_fps2;
+        vec3f pos_ft;
         vec3f gyro_bias_radps;
+        vec3f accel_bias_fps2;
     };
     
     f32 v[EKF_STATE_DIM];
