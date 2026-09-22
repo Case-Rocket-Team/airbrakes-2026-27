@@ -1,18 +1,24 @@
 
 CC = clang
+CXX = clang++
 CFLAGS = -std=c11 -I.
+CXXFLAGS = -std=c++17 -I.
 DEBUG_CFLAGS = -DDEBUG -g -O0 -fsanitize=address
 RELEASE_CFLAGS = -DNDEBUG -O2
 
 CFLAGS += -Wall -Wextra -pedantic -Wconversion
 CFLAGS += -Wno-gnu-binary-literal -Wno-c23-extensions
 
+CXXFLAGS += -Wall -Wextra -pedantic -Wconversion
+
 config ?= debug
  
 ifeq ($(config), debug)
 	CFLAGS += $(DEBUG_CFLAGS)
+	CXXFLAGS += $(DEBUG_CFLAGS)
 else
 	CFLAGS += $(RELEASE_CFLAGS)
+	CXXFLAGS += $(RELEASE_CFLAGS)
 endif
 
 # OS-Specific Stuff
@@ -42,7 +48,14 @@ test_ekf:
 	@$(MKDIR_BIN)
 	$(CC) kalman_filter/test_ekf.c $(CFLAGS) $(LFLAGS) -o $(BIN_DIR)test_ekf$(BIN_EXT)
 
+test_control:
+	@$(MKDIR_BIN)
+	$(CXX) control/tests/test_control_interface.cpp $(CXXFLAGS) $(LFLAGS) -o $(BIN_DIR)test_control$(BIN_EXT)
+	$(BIN_DIR)test_control$(BIN_EXT)
+
+test: test_kf test_control
+
 clean:
 	$(RM_BIN)
 
-.PHONY: clean test_kf test_ekf
+.PHONY: clean test_kf test_ekf test_control test
