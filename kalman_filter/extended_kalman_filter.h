@@ -18,7 +18,7 @@ extern "C" {
 
 #include "base/base.h"
 
-#define EKF_STATE_DIM 15
+#define EKF_STATE_DIM 18
 #define EKF_CONTROL_DIM 6
 #define EKF_MEASURE_DIM 4
 
@@ -35,6 +35,7 @@ typedef struct {
 
     vec3f gyro_bias_radps; // radians / sec
     vec3f accel_bias_fps2;
+    vec3f magn_bias_gauss;
 } ekf_nominal_state;
 
 typedef union {
@@ -44,10 +45,13 @@ typedef union {
         vec3f pos_ft;
         vec3f gyro_bias_radps;
         vec3f accel_bias_fps2;
+        vec3f magn_bias_gauss;
     };
     
     f32 v[EKF_STATE_DIM];
 } ekf_err_state;
+
+static_assert(sizeof(ekf_err_state) == sizeof(f32) * EKF_STATE_DIM);
 
 typedef union {
     struct {
@@ -58,17 +62,21 @@ typedef union {
     f32 v[EKF_CONTROL_DIM];
 } ekf_control_input;
 
+static_assert(sizeof(ekf_control_input) == sizeof(f32) * EKF_CONTROL_DIM);
+
 typedef union {
     struct {
         // From barometer
         f32 altitude_ft;
 
-        // From magnetometer (units do not particularly matter for this one)
-        vec3f magn_north;
+        // From magnetometer 
+        vec3f magn_north_gauss;
     };
 
     f32 v[EKF_MEASURE_DIM];
 } ekf_measure;
+
+static_assert(sizeof(ekf_measure) == sizeof(f32) * EKF_MEASURE_DIM);
 
 typedef struct {
     ekf_nominal_state nominal_state;
@@ -83,6 +91,7 @@ typedef struct {
     f32 accel_bias_var_f2ps4;
     f32 gyro_var_rad2ps2;
     f32 gyro_bias_var_rad2ps2;
+    f32 magn_bias_var_gauss2;
 
     f32 measure_covar[EKF_MEASURE_DIM * EKF_MEASURE_DIM];
 } extended_kalman_filter;

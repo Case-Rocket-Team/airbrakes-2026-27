@@ -33,20 +33,79 @@ void _ekf_linearize_state_transition(
     extended_kalman_filter* ekf,
     // Output state transition matrix
     f32 F[EKF_STATE_DIM * EKF_STATE_DIM], 
-    vec3f gyro_meas_radps,
-    vec3f accel_meas_fps2
+    vec3f gyro_radps,
+    vec3f accel_fps2,
+    f32 dt
 ) {
+    memset(F, 0, sizeof(f32) * EKF_STATE_DIM * EKF_STATE_DIM);
+
+    // Filling in gryo update for small angle error
+    gyro_radps.x *= -1;
+    gyro_radps.y *= -1;
+    gyro_radps.z *= -1;
+    _ekf_fill_skew3(F, gyro_radps, 0, 0, EKF_STATE_DIM);
+
+    // Filling in attitude based error props
+    {
+        f32 R[3 * 3];
+        quatf_to_mat3(ekf->nominal_state.attitude, R);
+        for (u32 i = 0; i < 9; i++) { R[i] *= -1.0f; }
+
+        _ekf_fill_mat3(F, R, 1 * 3, 4 * 3, EKF_STATE_DIM);
+
+        f32 f_b[3 * 3];
+        _ekf_fill_skew3(f_b, accel_fps2, 0, 0, 3);
+
+        f32 res[3 * 3] = { 0 };
+        matmul(
+            false, false,
+            3, 3, 3,
+            1.0f, R, f_b,
+            0.0f, res
+        );
+
+        _ekf_fill_mat3(F, res, 1  * 3, 0, EKF_STATE_DIM);
+    }
+
+    // Filling in I and -I error props
+    {
+        f32 I[3 * 3] = {
+            1.0f, 0.0f, 0.0f,
+            0.0f, 1.0f, 0.0f,
+            0.0f, 0.0f, 1.0f,
+        };
+
+        _ekf_fill_mat3(F, I, 2 * 3, 1 * 3, EKF_STATE_DIM);
+
+        I[0 * 3 + 0] *= -1;
+        I[1 * 3 + 1] *= -1;
+        I[2 * 3 + 2] *= -1;
+
+        _ekf_fill_mat3(F, I, 0, 3 * 3, EKF_STATE_DIM);
+    }
+
+    // Right here, F stores the jacobian of the error state transition. To get
+    // to the full state transition, you need to multiply by dt and add I
+    for (u32 i = 0; i < EKF_STATE_DIM; i++) {
+        for (u32 j = 0; j < EKF_STATE_DIM; j++) {
+            F[i * EKF_STATE_DIM + j] *= dt;
+
+            if (i == j) {
+                F[i * EKF_STATE_DIM + j] += 1.0f;
+            }
+        }
+    }
 }
 
 void ekf_predict(
     extended_kalman_filter* ekf, ekf_control_input* control, f32 dt
 ) {
-    vec3f gyro_meas_radps = vec3f_sub(
+    vec3f gyro_radps = vec3f_sub(
         control->gyro_radps,
         ekf->nominal_state.gyro_bias_radps
     );
 
-    vec3f accel_meas_fps2 = vec3f_sub(
+    vec3f accel_fps2 = vec3f_sub(
         control->accel_fps2,
         ekf->nominal_state.accel_bias_fps2
     );
@@ -56,7 +115,7 @@ void ekf_predict(
         (vec3f){ 0.0f, 0.0f, 32.174f },
         quatf_rot_vec3f(
             ekf->nominal_state.attitude,
-            accel_meas_fps2
+            accel_fps2
         )
     );
 
@@ -66,9 +125,9 @@ void ekf_predict(
         ekf->nominal_state.attitude,
         (quatf){
             .w = 0.0f,
-            .x = 0.5f * dt * gyro_meas_radps.x,
-            .y = 0.5f * dt * gyro_meas_radps.y,
-            .z = 0.5f * dt * gyro_meas_radps.z,
+            .x = 0.5f * dt * gyro_radps.x,
+            .y = 0.5f * dt * gyro_radps.y,
+            .z = 0.5f * dt * gyro_radps.z,
         }
     );
     
