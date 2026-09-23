@@ -7,6 +7,9 @@ This is an error state extended kalman filter that tracks rocket's attitude as
 a quaternion. It also tracks position, velocity, and accelerometer and 
 gyroscope bias.
 
+Most of this implementation was based off of the following article by Matthew
+Hampsey: https://matthewhampsey.github.io/blog/2020/07/18/mekf
+
 */
 
 #ifndef EXTENDED_KALMAN_FILTER_H
@@ -82,6 +85,7 @@ typedef struct {
     ekf_nominal_state nominal_state;
     ekf_err_state err_state;
 
+    // Covariance for the error state
     f32 state_cov[EKF_STATE_DIM * EKF_STATE_DIM];
 
     // Should be normalized

@@ -97,6 +97,52 @@ void _ekf_linearize_state_transition(
     }
 }
 
+// Given a float `src`, fills in a 3x3 region of `dst` with src along the
+// diagonal. Only the diagonal entries are actually set
+void _ekf_fill_diag3(f32* dst, f32 src, u32 row_off, u32 col_off, u32 stride) {
+    dst[(row_off + 0) * stride + (col_off + 0)] = src;
+    dst[(row_off + 1) * stride + (col_off + 1)] = src;
+    dst[(row_off + 2) * stride + (col_off + 2)] = src;
+}
+
+void _ekf_build_process_covariance(
+    extended_kalman_filter* ekf,
+    f32 Q[EKF_STATE_DIM * EKF_STATE_DIM],
+    f32 dt
+) {
+    memset(Q, 0, sizeof(f32) * EKF_STATE_DIM * EKF_STATE_DIM);
+
+    f32 dt2_2 = dt * dt;
+    f32 dt3_3 = dt2_2 * dt;
+    f32 dt4_8 = dt2_2 * dt2_2;
+    f32 dt5_20 = dt3_3 * dt2_2;
+
+    dt2_2 /= 2.0f;
+    dt3_3 /= 3.0f;
+    f32 dt3_6 = dt3_3 / 2.0f;
+    dt4_8 /= 8.0f;
+    dt5_20 /= 20.0f;
+
+    #define _EKF_FILLD(s, r, c) _ekf_fill_diag3(Q, (s), (r) * 3, (c) * 3, EKF_STATE_DIM)
+
+    _EKF_FILLD(ekf->gyro_var_rad2ps2 * dt, 0, 0);
+    _EKF_FILLD(-ekf->gyro_bias_var_rad2ps2 * dt2_2, 0, 1);
+    _EKF_FILLD(ekf->accel_var_f2ps4 * dt + ekf->accel_bias_var_f2ps4 * dt3_3, 1, 1);
+    _EKF_FILLD(ekf->accel_var_f2ps4 * dt2_2 + ekf->accel_bias_var_f2ps4 * dt4_8, 1, 2);
+    _EKF_FILLD(-ekf->accel_bias_var_f2ps4 * dt2_2, 1, 4);
+    _EKF_FILLD(ekf->accel_var_f2ps4 * dt2_2 + ekf->accel_bias_var_f2ps4 * dt4_8, 2, 1);
+    _EKF_FILLD(ekf->accel_var_f2ps4 * dt3_3 + ekf->accel_bias_var_f2ps4 * dt5_20, 2, 2);
+    _EKF_FILLD(-ekf->accel_bias_var_f2ps4 * dt2_2, 2, 4);
+    _EKF_FILLD(-ekf->gyro_bias_var_rad2ps2 * dt2_2, 3, 0);
+    _EKF_FILLD(ekf->gyro_bias_var_rad2ps2 * dt, 3, 3);
+    _EKF_FILLD(-ekf->accel_bias_var_f2ps4 * dt2_2, 4, 1);
+    _EKF_FILLD(-ekf->accel_bias_var_f2ps4 * dt3_6, 4, 2);
+    _EKF_FILLD(ekf->accel_bias_var_f2ps4 * dt, 4, 4);
+    _EKF_FILLD(ekf->magn_bias_var_gauss2 * dt, 5, 5);
+
+    #undef _EKF_FILLD
+}
+
 void ekf_predict(
     extended_kalman_filter* ekf, ekf_control_input* control, f32 dt
 ) {
@@ -149,12 +195,41 @@ void ekf_predict(
         )
     );
 
-    // In the prediction step, the accelerometer and gyro bias are unchanged
+    // In the prediction step, the biases are unchanged
 
     // Next, update the state's covariance given a linearization of the state
     // transition, control model, and process covariance
 
-    // TODO: covariance update
+    // P_n+1|n = F * P_n|n * F^T + Q
+    {
+        // Also called F
+        f32 state_transition[EKF_STATE_DIM * EKF_STATE_DIM];
+        _ekf_linearize_state_transition(
+            ekf, state_transition, gyro_radps, accel_fps2, dt
+        );
+
+        // Intermediate matrix equal to F * P_n|n
+        f32 FP[EKF_STATE_DIM * EKF_STATE_DIM] = { 0 };
+
+        matmul(
+            false, false,
+            EKF_STATE_DIM, EKF_STATE_DIM, EKF_STATE_DIM,
+            1.0f, state_transition, ekf->state_cov,
+            0.0f, FP
+        );
+
+        // Building process covariance directly into the state covariance to 
+        // avoid an additional temporary variable. Also, P has already been 
+        // consumed by the previous operation
+        _ekf_build_process_covariance(ekf, ekf->state_cov, dt);
+
+        matmul(
+            false, true,
+            EKF_STATE_DIM, EKF_STATE_DIM, EKF_STATE_DIM,
+            1.0f, FP, state_transition,
+            1.0f, ekf->state_cov
+        );
+    }
 
     ekf->nominal_state.attitude = new_attitude;
     ekf->nominal_state.vel_fps = new_vel_fps;
