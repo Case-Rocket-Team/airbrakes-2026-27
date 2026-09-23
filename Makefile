@@ -54,12 +54,17 @@ test_atmosphere:
 	$(CXX) control/tests/test_atmosphere.cpp control/physics/atmosphere.cpp $(CXXFLAGS) $(LFLAGS) -o $(BIN_DIR)test_atmosphere$(BIN_EXT)
 	$(BIN_DIR)test_atmosphere$(BIN_EXT)
 
-test: test_kf test_control test_atmosphere
+test_drag:
+	@$(MKDIR_BIN)
+	$(CXX) control/tests/test_drag.cpp control/physics/drag.cpp $(CXXFLAGS) $(LFLAGS) -o $(BIN_DIR)test_drag$(BIN_EXT)
+	$(BIN_DIR)test_drag$(BIN_EXT)
+
+test: test_kf test_control test_atmosphere test_drag
 
 clean:
 	$(RM_BIN)
 
-.PHONY: test_kf test_control test_atmosphere test clean
+.PHONY: test_kf test_control test_atmosphere test_drag test clean
 
 
 
