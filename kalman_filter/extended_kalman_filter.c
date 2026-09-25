@@ -237,32 +237,35 @@ void ekf_predict(
 }
 
 void ekf_update(extended_kalman_filter* ekf, ekf_measure* measure) {
-    // Commonly denoted H
+    // Constructing observation model (commonly denoted H)
     f32 observation_model[EKF_MEASURE_DIM * EKF_STATE_DIM] = { 0 };
+    {
+        quatf world_to_body = (quatf){
+            .w = ekf->nominal_state.attitude.w,
+            .x = -ekf->nominal_state.attitude.x,
+            .y = -ekf->nominal_state.attitude.y,
+            .z = -ekf->nominal_state.attitude.z,
+        };
 
-    quatf world_to_body = (quatf){
-        .w = ekf->nominal_state.attitude.w,
-        .x = -ekf->nominal_state.attitude.x,
-        .y = -ekf->nominal_state.attitude.y,
-        .z = -ekf->nominal_state.attitude.z,
-    };
+        // TODO: separate baro and magn measure and throw out north vector of
+        // length 0
+        vec3f body_magn_north = quatf_rot_vec3f(
+            world_to_body, measure->magn_north_gauss
+        );
 
-    // TODO: separate baro and magn measure and throw out north vector of
-    // length 0
-    vec3f world_magn_north = vec3f_norm(measure->magn_north_gauss);
-    vec3f body_magn_north = quatf_rot_vec3f(world_to_body, world_magn_north);
+        // For attitude
+        _ekf_fill_skew3(observation_model, body_magn_north, 1, 0, EKF_STATE_DIM);
 
-    // For attitude
-    _ekf_fill_skew3(observation_model, body_magn_north, 1, 0, EKF_STATE_DIM);
+        // For magnetometer bias
+        observation_model[1 * EKF_STATE_DIM + 15] = 1.0f;
+        observation_model[2 * EKF_STATE_DIM + 16] = 1.0f;
+        observation_model[3 * EKF_STATE_DIM + 17] = 1.0f;
 
-    // For magnetometer bias
-    observation_model[1 * EKF_STATE_DIM + 15] = 1.0f;
-    observation_model[2 * EKF_STATE_DIM + 16] = 1.0f;
-    observation_model[3 * EKF_STATE_DIM + 17] = 1.0f;
+        // For altitude
+        observation_model[0 * EKF_STATE_DIM + 8] = 1.0f;
+    }
 
-    // For altitude
-    observation_model[0 * EKF_STATE_DIM + 8] = 1.0f;
-
+    // Forming Kalman gain
     f32 kalman_gain[EKF_STATE_DIM * EKF_MEASURE_DIM] = { 0 };
     {
         f32 innovation_covariance_inv[EKF_MEASURE_DIM * EKF_MEASURE_DIM] = { 0 };
@@ -316,8 +319,6 @@ void ekf_update(extended_kalman_filter* ekf, ekf_measure* measure) {
             0.0f, kalman_gain
         );
     }
-
-    // TODO: nominal state update
 
     // Updating covariance according to
     // P_n|n = (I - KH) * P_n|n-1 * (I - KH)^T + KRK^T
@@ -373,5 +374,64 @@ void ekf_update(extended_kalman_filter* ekf, ekf_measure* measure) {
             1.0f, leftmul, kalman_gain,
             1.0f, ekf->state_covar
         );
+    }
+
+    // Updating nominal state
+    {
+        ekf_measure predicted_measure = {
+            .altitude_ft = ekf->nominal_state.pos_ft.z,
+            .magn_north_gauss = vec3f_add(
+                quatf_rot_vec3f(
+                    ekf->nominal_state.attitude,
+                    ekf->world_magn_north_guass
+                ),
+                ekf->nominal_state.magn_bias_gauss
+            )
+        };
+
+        // y = (z - h(x))
+        f32 innovation_vec[EKF_MEASURE_DIM];
+        for (u32 i = 0; i < EKF_MEASURE_DIM; i++) {
+            innovation_vec[i] = measure->v[i] - predicted_measure.v[i];
+        }
+
+        ekf_err_state err = { 0 };
+
+        // e = Ky
+        matmul(
+            false, false,
+            EKF_STATE_DIM, 1, EKF_MEASURE_DIM,
+            1.0f, kalman_gain, innovation_vec,
+            0.0f, err.v
+        );
+
+        // Inject error correction back into nominal state
+        quatf rot_err = {
+            .w = 1.0f,
+            .x = 0.5f * err.small_angle_rad.x,
+            .y = 0.5f * err.small_angle_rad.y,
+            .z = 0.5f * err.small_angle_rad.z,
+        };
+
+        ekf_nominal_state nominal = ekf->nominal_state;
+
+        ekf->nominal_state = (ekf_nominal_state){
+            .attitude = quatf_norm(quatf_mul(nominal.attitude, rot_err)),
+
+            .pos_ft = vec3f_add(nominal.pos_ft, err.pos_ft),
+            .vel_fps = vec3f_add(nominal.vel_fps, err.vel_fps),
+
+            .gyro_bias_radps = vec3f_add(
+                nominal.gyro_bias_radps, err.gyro_bias_radps
+             ),
+
+            .accel_bias_fps2 = vec3f_add(
+                nominal.accel_bias_fps2, err.accel_bias_fps2
+             ),
+
+            .magn_bias_gauss = vec3f_add(
+                nominal.magn_bias_gauss, err.magn_bias_gauss
+            ),
+        };
     }
 }

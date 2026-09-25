@@ -87,8 +87,7 @@ typedef struct {
     // Covariance for the *error* state
     f32 state_covar[EKF_STATE_DIM * EKF_STATE_DIM];
 
-    // Should be normalized
-    vec3f world_magn_north;
+    vec3f world_magn_north_guass;
 
     f32 accel_var_f2ps4;
     f32 accel_bias_var_f2ps4;
