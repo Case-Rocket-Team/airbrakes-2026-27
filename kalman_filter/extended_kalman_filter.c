@@ -214,20 +214,20 @@ void ekf_predict(
         matmul(
             false, false,
             EKF_STATE_DIM, EKF_STATE_DIM, EKF_STATE_DIM,
-            1.0f, state_transition, ekf->state_cov,
+            1.0f, state_transition, ekf->state_covar,
             0.0f, FP
         );
 
         // Building process covariance directly into the state covariance to 
         // avoid an additional temporary variable. Also, P has already been 
         // consumed by the previous operation
-        _ekf_build_process_covariance(ekf, ekf->state_cov, dt);
+        _ekf_build_process_covariance(ekf, ekf->state_covar, dt);
 
         matmul(
             false, true,
             EKF_STATE_DIM, EKF_STATE_DIM, EKF_STATE_DIM,
             1.0f, FP, state_transition,
-            1.0f, ekf->state_cov
+            1.0f, ekf->state_covar
         );
     }
 
@@ -262,4 +262,116 @@ void ekf_update(extended_kalman_filter* ekf, ekf_measure* measure) {
 
     // For altitude
     observation_model[0 * EKF_STATE_DIM + 8] = 1.0f;
+
+    f32 kalman_gain[EKF_STATE_DIM * EKF_MEASURE_DIM] = { 0 };
+    {
+        f32 innovation_covariance_inv[EKF_MEASURE_DIM * EKF_MEASURE_DIM] = { 0 };
+
+        // Initialize with identity
+        for (u32 i = 0; i < EKF_MEASURE_DIM; i++) {
+            innovation_covariance_inv[i + i * EKF_MEASURE_DIM] = 1.0f;
+        }
+
+        // Stores P * observation_model^T
+        // This is used to get the innovation covariance as well as the kalman
+        // gain
+        f32 PH_T[EKF_STATE_DIM * EKF_MEASURE_DIM] = { 0 };
+
+        matmul(
+            false, true,
+            EKF_STATE_DIM, EKF_MEASURE_DIM, EKF_STATE_DIM,
+            1.0f, ekf->state_covar, observation_model,
+            0.0f, PH_T
+        );
+
+        // S = HPH^T + R
+        // Where R is the measurement covariance
+        f32 innovation_covariance[EKF_MEASURE_DIM * EKF_MEASURE_DIM];
+
+        // Initializing with R
+        memcpy(
+            innovation_covariance, ekf->measure_covar,
+            sizeof(innovation_covariance)
+        );
+
+        // R += HPH^T
+        matmul(
+            false, false,
+            EKF_MEASURE_DIM, EKF_MEASURE_DIM, EKF_STATE_DIM,
+            1.0f, observation_model, PH_T,
+            1.0f, innovation_covariance
+        );
+
+        // Invertting S
+        linear_solve(
+            EKF_MEASURE_DIM, EKF_MEASURE_DIM,
+            innovation_covariance, innovation_covariance_inv
+        );
+
+        // K = PH^T * S^-1
+        matmul(
+            false, false,
+            EKF_STATE_DIM, EKF_MEASURE_DIM, EKF_MEASURE_DIM,
+            1.0f, PH_T, innovation_covariance_inv,
+            0.0f, kalman_gain
+        );
+    }
+
+    // TODO: nominal state update
+
+    // Updating covariance according to
+    // P_n|n = (I - KH) * P_n|n-1 * (I - KH)^T + KRK^T
+    {
+        // Stores (I - KH)
+        f32 cov_factor[EKF_STATE_DIM * EKF_STATE_DIM] = { 0 };
+
+        // Initializing with identity
+        for (u32 i = 0; i < EKF_STATE_DIM; i++) {
+            cov_factor[i + i * EKF_STATE_DIM] = 1.0f;
+        }
+
+        // I - KH
+        matmul(
+            false, false,
+            EKF_STATE_DIM, EKF_STATE_DIM, EKF_MEASURE_DIM,
+            -1.0f, kalman_gain, observation_model,
+            1.0f, cov_factor
+        );
+
+        // Temporarily stores (I - KH) * P_n|n-1 and later KR
+        f32 leftmul[EKF_STATE_DIM * MAX(EKF_MEASURE_DIM, EKF_STATE_DIM)] = { 0 };
+
+        // (I - KH) * P_n|n-1
+        matmul(
+            false, false,
+            EKF_STATE_DIM, EKF_STATE_DIM, EKF_STATE_DIM,
+            1.0f, cov_factor, ekf->state_covar,
+            0.0f, leftmul
+        );
+
+        // P_n|n = (I - KH) * P_n|n-1 * (I - KH)^T
+        // (Just the first half of the covariaince update)
+        matmul(
+            false, true,
+            EKF_STATE_DIM, EKF_STATE_DIM, EKF_STATE_DIM,
+            1.0f, leftmul, cov_factor,
+            0.0f, ekf->state_covar
+        );
+
+        // K*R
+        matmul(
+            false, false,
+            EKF_STATE_DIM, EKF_MEASURE_DIM, EKF_MEASURE_DIM,
+            1.0f, kalman_gain, ekf->measure_covar,
+            0.0f, leftmul
+        );
+
+        // P_n|n += KRK^T
+        matmul(
+            false, true,
+            EKF_STATE_DIM, EKF_STATE_DIM, EKF_MEASURE_DIM,
+            1.0f, leftmul, kalman_gain,
+            1.0f, ekf->state_covar
+        );
+    }
 }

@@ -85,7 +85,7 @@ typedef struct {
     ekf_nominal_state nominal_state;
 
     // Covariance for the *error* state
-    f32 state_cov[EKF_STATE_DIM * EKF_STATE_DIM];
+    f32 state_covar[EKF_STATE_DIM * EKF_STATE_DIM];
 
     // Should be normalized
     vec3f world_magn_north;
