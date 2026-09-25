@@ -237,4 +237,29 @@ void ekf_predict(
 }
 
 void ekf_update(extended_kalman_filter* ekf, ekf_measure* measure) {
+    // Commonly denoted H
+    f32 observation_model[EKF_MEASURE_DIM * EKF_STATE_DIM] = { 0 };
+
+    quatf world_to_body = (quatf){
+        .w = ekf->nominal_state.attitude.w,
+        .x = -ekf->nominal_state.attitude.x,
+        .y = -ekf->nominal_state.attitude.y,
+        .z = -ekf->nominal_state.attitude.z,
+    };
+
+    // TODO: separate baro and magn measure and throw out north vector of
+    // length 0
+    vec3f world_magn_north = vec3f_norm(measure->magn_north_gauss);
+    vec3f body_magn_north = quatf_rot_vec3f(world_to_body, world_magn_north);
+
+    // For attitude
+    _ekf_fill_skew3(observation_model, body_magn_north, 1, 0, EKF_STATE_DIM);
+
+    // For magnetometer bias
+    observation_model[1 * EKF_STATE_DIM + 15] = 1.0f;
+    observation_model[2 * EKF_STATE_DIM + 16] = 1.0f;
+    observation_model[3 * EKF_STATE_DIM + 17] = 1.0f;
+
+    // For altitude
+    observation_model[0 * EKF_STATE_DIM + 8] = 1.0f;
 }

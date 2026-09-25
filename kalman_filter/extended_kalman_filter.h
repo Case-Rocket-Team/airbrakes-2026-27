@@ -83,9 +83,8 @@ static_assert(sizeof(ekf_measure) == sizeof(f32) * EKF_MEASURE_DIM);
 
 typedef struct {
     ekf_nominal_state nominal_state;
-    ekf_err_state err_state;
 
-    // Covariance for the error state
+    // Covariance for the *error* state
     f32 state_cov[EKF_STATE_DIM * EKF_STATE_DIM];
 
     // Should be normalized
