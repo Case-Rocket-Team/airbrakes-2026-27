@@ -247,7 +247,8 @@ void _mm_tt(
 void matmul(
     b8 transpose_a, b8 transpose_b,
     u32 c_rows, u32 c_cols, u32 ap_cols, 
-    f32 alpha, f32* A, f32* B, f32 beta, f32* C
+    f32 alpha, const f32* A, const f32* B,
+    f32 beta, f32* C
 ) {
     u32 c_size = c_rows * c_cols;
 

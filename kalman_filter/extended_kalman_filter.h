@@ -23,18 +23,18 @@ extern "C" {
 
 #define EKF_STATE_DIM 18
 #define EKF_CONTROL_DIM 6
-#define EKF_MEASURE_DIM 4
+#define EKF_MAX_MEASURE_DIM 3
 
 typedef struct {
     // Stored such that left multiplication by attitude goes from body frame
     // to world frame
     quatf attitude;
 
-    // Position is in the world's frame of reference
-    vec3f pos_ft;
-
     // Velocity is in the world's frame of reference
     vec3f vel_fps;
+
+    // Position is in the world's frame of reference
+    vec3f pos_ft;
 
     vec3f gyro_bias_radps; // radians / sec
     vec3f accel_bias_fps2;
@@ -76,16 +76,16 @@ typedef struct {
     // Timestamp of the current state estimate
     u32 state_time_us;
 
-    // Previous control input, cached so that we can predict to the exact
+    // Most recent control input, cached so that we can predict to the exact
     // timestamp needed during a given update step
-    ekf_control_input prev_control_input;
+    ekf_control_input control_input;
 
     // Covariance for the *error* state
     f32 state_covar[EKF_STATE_DIM * EKF_STATE_DIM];
 } extended_kalman_filter;
 
 // Call with IMU data
-void ekf_inject_control(
+void ekf_inject_imu(
     extended_kalman_filter* ekf,
     const ekf_control_input* control,
     u32 timestamp_us
