@@ -86,5 +86,42 @@ int main() {
     assert(drag_apogee < predicted_apogee);
     assert(drag_apogee > initial_state.altitude_ft);
 
+        // Arbitrary aerodynamic test parameters, not actual rocket values.
+    const control::aero::AeroParameters aero_parameters{
+        0.30f,  // base drag coefficient
+        0.20f   // maximum brake drag contribution
+    };
+
+    const f32 retracted_apogee =
+        control::predictor::predict_apogee(
+            initial_state,
+            parameters,
+            aero_parameters,
+            0.0f,
+            0.01f
+        );
+
+    const f32 half_extension_apogee =
+        control::predictor::predict_apogee(
+            initial_state,
+            parameters,
+            aero_parameters,
+            0.5f,
+            0.01f
+        );
+
+    const f32 full_extension_apogee =
+        control::predictor::predict_apogee(
+            initial_state,
+            parameters,
+            aero_parameters,
+            1.0f,
+            0.01f
+        );
+
+    // More brake extension should produce a lower predicted apogee.
+    assert(retracted_apogee > half_extension_apogee);
+    assert(half_extension_apogee > full_extension_apogee);
+
     return 0;
 }
