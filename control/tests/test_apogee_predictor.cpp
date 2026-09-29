@@ -46,6 +46,21 @@ int main() {
         0.1f
     ));
 
+    // Check prediction accuracy with a larger timestep.
+    const f32 predicted_apogee_large_dt =
+        control::predictor::predict_apogee(
+            initial_state,
+            parameters,
+            0.0f,
+            0.1f
+        );
+
+    assert(approximately_equal(
+        predicted_apogee_large_dt,
+        expected_apogee,
+        1.0f
+    ));
+
     // Prediction must not modify the input state.
     assert(approximately_equal(
         initial_state.altitude_ft,
