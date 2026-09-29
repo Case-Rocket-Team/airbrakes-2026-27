@@ -3,6 +3,7 @@
 
 #include "base/base.h"
 #include "control/physics/dynamics.hpp"
+#include "control/aero/brake_aero.hpp"
 
 namespace control::predictor {
 
@@ -26,6 +27,20 @@ f32 predict_apogee(
     const physics::VerticalState& initial_state,
     const physics::RocketParameters& parameters,
     f32 drag_coefficient,
+    f32 dt
+);
+
+/*
+ * Predicts apogee for a fixed brake extension.
+ *
+ * The brake position is assumed to remain constant for the duration
+ * of the prediction.
+ */
+f32 predict_apogee(
+    const physics::VerticalState& initial_state,
+    const physics::RocketParameters& parameters,
+    const aero::AeroParameters& aero_parameters,
+    f32 brake_extension,
     f32 dt
 );
 

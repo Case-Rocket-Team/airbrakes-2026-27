@@ -70,7 +70,7 @@ test_dynamics:
 
 test_apogee_predictor:
 	@$(MKDIR_BIN)
-	$(CXX) control/tests/test_apogee_predictor.cpp control/predictor/apogee_predictor.cpp control/physics/dynamics.cpp control/physics/atmosphere.cpp control/physics/drag.cpp $(CXXFLAGS) $(LFLAGS) -o $(BIN_DIR)test_apogee_predictor$(BIN_EXT)
+	$(CXX) control/tests/test_apogee_predictor.cpp control/predictor/apogee_predictor.cpp control/aero/brake_aero.cpp control/physics/dynamics.cpp control/physics/atmosphere.cpp control/physics/drag.cpp $(CXXFLAGS) $(LFLAGS) -o $(BIN_DIR)test_apogee_predictor$(BIN_EXT)
 	$(BIN_DIR)test_apogee_predictor$(BIN_EXT)
 
 test_brake_aero:
