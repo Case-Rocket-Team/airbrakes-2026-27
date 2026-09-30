@@ -38,6 +38,10 @@ test_kf:
 	@$(MKDIR_BIN)
 	$(CC) kalman_filter/test_kf.c $(CFLAGS) $(LFLAGS) -o $(BIN_DIR)test_kf$(BIN_EXT)
 
+test_ekf:
+	@$(MKDIR_BIN)
+	$(CC) kalman_filter/test_ekf.c $(CFLAGS) $(LFLAGS) -o $(BIN_DIR)test_ekf$(BIN_EXT)
+
 clean:
 	$(RM_BIN)
 

@@ -58,7 +58,7 @@ typedef float f32;
 typedef struct { f32 x, y; } vec2f;
 typedef struct { f32 x, y, z; } vec3f;
 
-typedef struct { f32 x, y, z, w; } quatf;
+typedef struct { f32 w, x, y, z; } quatf;
 
 typedef struct {
     u8* str;

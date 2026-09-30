@@ -89,7 +89,7 @@ Damping Ratio ()
 
 
 def integrate_attitudes(nrows, dts, gyros_radps):
-    out = np.zeros((nrows, 4))
+    out = np.zeros((nrows, 4), dtype=np.float32)
 
     attitude = Quaternion(axis=(0, 1, 0), degrees=6)
 
@@ -113,7 +113,7 @@ def process_6dof(full_data):
     pos_ft = np.array([
         col("Position East of launch (ft)"),
         col("Position North of launch (ft)"),
-        col("Altitude (ft)") ,
+        col("Altitude (ft)"),
     ]).T
 
     gyros_radps = 2 * math.pi * np.array([
@@ -130,7 +130,7 @@ def process_6dof(full_data):
 
     total_vel_fps = col("Total velocity (ft/s)")
 
-    vel_fps = np.zeros((nrows + 1, 3))
+    vel_fps = np.zeros((nrows + 1, 3), dtype=np.float32)
     for i in range(nrows + 1):
         vel_fps[i,:] = np.array([
             lateral_vel_fps[i] * math.sin(lateral_dir_deg[i] * math.pi / 180),
@@ -142,15 +142,15 @@ def process_6dof(full_data):
     # does not include the acceleration vector components directly. I compared
     # the finite difference total and vertical accel with ORK data, and it is 
     # close enough that I do not think it would cuase an issue for this test
-    world_accel_fps2 = np.zeros((nrows, 3))
+    world_accel_fps2 = np.zeros((nrows, 3), dtype=np.float32)
     for i in range(nrows):
         dt = times[i + 1] - times[i]
-        world_accel_fps2[i] = (vel_fps[i+1,:] - vel_fps[i,:]) / dt
+        world_accel_fps2[i] = ((vel_fps[i+1,:] - vel_fps[i,:]) / dt) 
 
     attitudes = integrate_attitudes(nrows, dts, gyros_radps)
 
     g = np.array([0, 0, 1])
-    accelerometer_fps2 = np.zeros((nrows, 3))
+    accelerometer_fps2 = np.zeros((nrows, 3), dtype=np.float32)
     for i in range(nrows):
         quat = Quaternion(attitudes[i,:]).conjugate
         accelerometer_fps2[i,:] = quat.rotate(world_accel_fps2[i,:] + g)
@@ -158,13 +158,15 @@ def process_6dof(full_data):
     with open("ork_processed_6dof.bin", "wb") as f:
         f.write(nrows.to_bytes(4, byteorder="little", signed=False))
 
-        times[:nrows].tofile(f)
-        attitudes[:nrows].tofile(f)
-        pos_ft[:nrows].tofile(f)
-        vel_fps[:nrows].tofile(f)
-        gyros_radps[:nrows].tofile(f)
-        accelerometer_fps2[:nrows].tofile(f)
+        def insert(arr):
+            arr[:nrows].astype(np.float32).tofile(f)
 
+        insert(times)
+        insert(attitudes)
+        insert(pos_ft)
+        insert(vel_fps)
+        insert(gyros_radps)
+        insert(accelerometer_fps2)
 
 def process_1d(full_data):
     def col(s):

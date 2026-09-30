@@ -194,7 +194,7 @@ void quatf_to_mat3(quatf q, f32 m_out[3 * 3]) {
 
 void _mm_nn(
     u32 c_rows, u32 c_cols, u32 ap_cols,
-    f32 alpha, f32* A, f32* B, f32* C
+    f32 alpha, const f32* A, const f32* B, f32* C
 ) {
     for (u32 i = 0; i < c_cols; i++) {
         for (u32 k = 0; k < ap_cols; k++) {
@@ -207,7 +207,7 @@ void _mm_nn(
 
 void _mm_nt(
     u32 c_rows, u32 c_cols, u32 ap_cols,
-    f32 alpha, f32* A, f32* B, f32* C
+    f32 alpha, const f32* A, const f32* B, f32* C
 ) {
     for (u32 k = 0; k < ap_cols; k++) {
         for (u32 i = 0; i < c_cols; i++) {
@@ -220,7 +220,7 @@ void _mm_nt(
 
 void _mm_tn(
     u32 c_rows, u32 c_cols, u32 ap_cols,
-    f32 alpha, f32* A, f32* B, f32* C
+    f32 alpha, const f32* A, const f32* B, f32* C
 ) {
     for (u32 i = 0; i < c_cols; i++) {
         for (u32 j = 0; j < c_rows; j++) {
@@ -233,7 +233,7 @@ void _mm_tn(
 
 void _mm_tt(
     u32 c_rows, u32 c_cols, u32 ap_cols,
-    f32 alpha, f32* A, f32* B, f32* C
+    f32 alpha, const f32* A, const f32* B, f32* C
 ) {
     for (u32 i = 0; i < c_cols; i++) {
         for (u32 k = 0; k < ap_cols; k++) {
