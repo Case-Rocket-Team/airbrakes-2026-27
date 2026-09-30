@@ -53,18 +53,18 @@ typedef union {
 static_assert(sizeof(ekf_control_input) == sizeof(f32) * EKF_CONTROL_DIM);
 
 typedef struct {
-    vec3f world_magn_north_guass;
-
     f32 accel_var_f2ps4;
     f32 accel_bias_var_f2ps4;
 
     f32 gyro_var_rad2ps2;
     f32 gyro_bias_var_rad2ps2;
 
+    f32 baro_var_ft2;
+
+    vec3f world_magn_north_guass;
+    f32 magn_covar_gauss2[3 * 3];
     f32 magn_bias_var_gauss2;
 
-    f32 baro_var_ft2;
-    f32 magn_covar_gauss2[3 * 3];
     f32 gnss_covar_ft2[3 * 3];
 } ekf_settings;
 
@@ -77,12 +77,21 @@ typedef struct {
     u32 state_time_us;
 
     // Most recent control input, cached so that we can predict to the exact
-    // timestamp needed during a given update step
+    // timestamp needed during a given update/prediction step
     ekf_control_input control_input;
 
     // Covariance for the *error* state
     f32 state_covar[EKF_STATE_DIM * EKF_STATE_DIM];
 } extended_kalman_filter;
+
+// Initializes the kalman filter to zero state and the given settings.
+// You can just create the `extended_kalman_filter` structure if you would like
+// more control, but this ensures you start with a valid attitude quaternion.
+void ekf_init(
+    extended_kalman_filter* ekf,
+    const ekf_settings* settings,
+    u32 timestamp_us
+);
 
 // Call with IMU data
 void ekf_inject_imu(

@@ -11,7 +11,6 @@
 #include "utils/prng.c"
 #include "extended_kalman_filter.c"
 
-
 typedef struct {
     u32 len;
 
@@ -30,6 +29,41 @@ int main(void) {
 
     // This file is created by utils/ork_process.py
     read_ork_6dof("ork_processed_6dof.bin", &ork);
+
+    prng rng = { 0 };
+    prng_seed(&rng, 1, 1);
+
+    vec3f world_north = { 0.0f, 1.0f, 0.0f };
+
+    // Note(Ian) As best I could, these values are relatively accurate to
+    // our sensors and their operating conditions. These values will 
+    // require more care and tuning for the final version
+    ekf_settings settings = {
+        .accel_var_f2ps4 = 0.011196358441216f,
+        .accel_bias_var_f2ps4 = 1e-4f,
+
+        .gyro_var_rad2ps2 = 1.09662e-6f,
+        .gyro_bias_var_rad2ps2 = 1e-5f,
+
+        .baro_var_ft2 = 100.0f,
+
+        .world_magn_north_guass = world_north,
+        .magn_covar_gauss2 = {
+            3.2e-3f * 3.2e-3f, 0.0f, 0.0f,
+            0.0f, 3.2e-3f * 3.2e-3f, 0.0f,
+            0.0f, 0.0f, 4.1e-3f * 4.1e-3f,
+        },
+        .magn_bias_var_gauss2 = 1e-5f,
+
+        .gnss_covar_ft2 = {
+            18.0f, 0.0f, 0.0f,
+            0.0f, 18.0f, 0.0f,
+            0.0f, 0.0f, 200.0f,
+        },
+    };
+
+    extended_kalman_filter ekf;
+    ekf_init(&ekf, &settings, 0);
 
     return 0;
 }

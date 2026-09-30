@@ -1,6 +1,28 @@
 
 #include "extended_kalman_filter.h"
 
+void ekf_init(
+    extended_kalman_filter* ekf,
+    const ekf_settings* settings,
+    u32 timestamp_us
+) {
+    *ekf = (extended_kalman_filter) {
+        .nominal_state = {
+            .attitude = (quatf){ .w = 1  }
+        },
+
+        .settings = *settings,
+        
+        .state_time_us = timestamp_us,
+    };
+
+    // Initializing the covariance with identity because I think 0 covariance 
+    // might mess up subsequent update steps, but this might not be necessary
+    for (u32 i = 0; i < EKF_STATE_DIM; i++) {
+        ekf->state_covar[i * EKF_STATE_DIM + i] = 1.0f;
+    }
+}
+
 typedef union {
     struct {
         vec3f small_angle_rad;
