@@ -10,9 +10,13 @@ TODO: process ork format into 3d vectors for velocity and acceleration
 
 """
 
+import matplotlib.pyplot as plt
 import pandas as pd
 import numpy as np
+import math
 import sys
+
+from pyquaternion import Quaternion
 
 """
 
@@ -84,6 +88,20 @@ CNalpha ()
 Damping Ratio ()
 """
 
+def integrate_attitudes(nrows, dts, gyros_radps):
+    out = np.zeros((nrows, 4))
+
+    attitude = Quaternion(axis=(0, 1, 0), degrees=6)
+
+    for i in range(nrows):
+        out[i,:] = attitude.elements
+
+        attitude_diff = 0.5 * dts[i] * attitude * \
+            Quaternion(real=0, imaginary=gyros_radps[i,:])
+        attitude = (attitude + attitude_diff).unit
+
+    return out.astype(np.float32)
+
 def main():
     full_data = pd.read_csv(
         "ork_flight_30k.csv" if len(sys.argv) <= 1 else sys.argv[1],
@@ -94,17 +112,30 @@ def main():
         return full_data[s].to_numpy().astype(np.float32)
 
     times = col("Time (s)")
-    altitudes_ft = col("Altitude (ft)")
-    vertical_vel_fps = col("Vertical velocity (ft/s)")
-    vertical_accel_fps2 = col("Vertical acceleration (ft/s²)")
+    dts = col("Simulation time step (s)")
+
+    pos_ft = np.array([
+        col("Position East of launch (ft)"),
+        col("Position North of launch (ft)"),
+        col("Altitude (ft)") ,
+    ]).T
+
+    gyros_radps = 2 * math.pi * np.array([
+        col("Pitch rate (r/s)"),
+        col("Yaw rate (r/s)"),
+        col("Roll rate (r/s)")
+    ]).T
+
+    nrows = int(np.where(np.isnan(gyros_radps))[0][0])
+
+    attitudes = integrate_attitudes(nrows, dts, gyros_radps)
 
     with open("ork_processed.bin", "wb") as f:
-        f.write(len(times).to_bytes(4, byteorder="little", signed=False))
+        f.write(nrows.to_bytes(4, byteorder="little", signed=False))
 
-        times.tofile(f)
-        altitudes_ft.tofile(f)
-        vertical_vel_fps.tofile(f)
-        vertical_accel_fps2.tofile(f)
+        times[:nrows].tofile(f)
+        pos_ft[:nrows].tofile(f)
+        attitudes[:nrows].tofile(f)
 
 if __name__ == "__main__":
     main()
