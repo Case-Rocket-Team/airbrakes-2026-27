@@ -28,7 +28,7 @@ int main(void) {
     ork_data ork = { 0 };
 
     // This file is created by utils/ork_process.py
-    read_ork_bin("ork_processed.bin", &ork);
+    read_ork_bin("ork_processed_1d.bin", &ork);
 
     prng rng = { 0 };
     prng_seed(&rng, 1, 1);
