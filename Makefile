@@ -45,4 +45,4 @@ test_ekf:
 clean:
 	$(RM_BIN)
 
-.PHONY: clean
+.PHONY: clean test_kf test_ekf

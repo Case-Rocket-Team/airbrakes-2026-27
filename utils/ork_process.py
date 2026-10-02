@@ -168,6 +168,7 @@ def process_6dof(full_data):
         insert(gyros_radps)
         insert(accelerometer_fps2)
 
+
 def process_1d(full_data):
     def col(s):
         return full_data[s].to_numpy().astype(np.float32)

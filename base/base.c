@@ -150,6 +150,10 @@ quatf quatf_mul(quatf a, quatf b) {
     };
 }
 
+f32 quatf_dot(quatf a, quatf b) {
+    return (a.w * b.w + a.x * b.x + a.y * b.y + a.z * b.z);
+}
+
 quatf quatf_norm(quatf q) {
     f32 mag = sqrtf(q.w * q.w + q.x * q.x + q.y * q.y + q.z * q.z);
 

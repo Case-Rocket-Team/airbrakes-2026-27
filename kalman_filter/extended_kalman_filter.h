@@ -96,7 +96,8 @@ void ekf_init(
 // Call with IMU data
 void ekf_inject_imu(
     extended_kalman_filter* ekf,
-    const ekf_control_input* control,
+    vec3f accel_fps2,
+    vec3f gyro_radps,
     u32 timestamp_us
 );
 

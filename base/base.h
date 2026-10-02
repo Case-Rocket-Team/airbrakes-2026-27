@@ -96,6 +96,7 @@ vec3f vec3f_norm(vec3f v);
 
 quatf quatf_add(quatf a, quatf b);
 quatf quatf_mul(quatf a, quatf b);
+f32 quatf_dot(quatf a, quatf b);
 quatf quatf_norm(quatf q);
 
 // Performs and optimized version of the operation qvq*

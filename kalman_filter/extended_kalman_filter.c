@@ -162,22 +162,22 @@ void _ekf_build_process_covariance(
 
     ekf_settings* set = &ekf->settings;
 
-    #define _EKF_FILLD(s, r, c) _ekf_fill_diag3(Q, (s), (r) * 3, (c) * 3, EKF_STATE_DIM)
+    #define _EKF_FILLD(r, c, s) _ekf_fill_diag3(Q, (s), (r) * 3, (c) * 3, EKF_STATE_DIM)
 
-    _EKF_FILLD(set->gyro_var_rad2ps2 * dt, 0, 0);
-    _EKF_FILLD(-set->gyro_bias_var_rad2ps2 * dt2_2, 0, 1);
-    _EKF_FILLD(set->accel_var_f2ps4 * dt + set->accel_bias_var_f2ps4 * dt3_3, 1, 1);
-    _EKF_FILLD(set->accel_var_f2ps4 * dt2_2 + set->accel_bias_var_f2ps4 * dt4_8, 1, 2);
-    _EKF_FILLD(-set->accel_bias_var_f2ps4 * dt2_2, 1, 4);
-    _EKF_FILLD(set->accel_var_f2ps4 * dt2_2 + set->accel_bias_var_f2ps4 * dt4_8, 2, 1);
-    _EKF_FILLD(set->accel_var_f2ps4 * dt3_3 + set->accel_bias_var_f2ps4 * dt5_20, 2, 2);
-    _EKF_FILLD(-set->accel_bias_var_f2ps4 * dt2_2, 2, 4);
-    _EKF_FILLD(-set->gyro_bias_var_rad2ps2 * dt2_2, 3, 0);
-    _EKF_FILLD(set->gyro_bias_var_rad2ps2 * dt, 3, 3);
-    _EKF_FILLD(-set->accel_bias_var_f2ps4 * dt2_2, 4, 1);
-    _EKF_FILLD(-set->accel_bias_var_f2ps4 * dt3_6, 4, 2);
-    _EKF_FILLD(set->accel_bias_var_f2ps4 * dt, 4, 4);
-    _EKF_FILLD(set->magn_bias_var_gauss2 * dt, 5, 5);
+    _EKF_FILLD(0, 0, set->gyro_var_rad2ps2 * dt + set->gyro_bias_var_rad2ps2 * dt3_3);
+    _EKF_FILLD(0, 3, -set->gyro_bias_var_rad2ps2 * dt2_2);
+    _EKF_FILLD(1, 1, set->accel_var_f2ps4 * dt + set->accel_bias_var_f2ps4 * dt3_3);
+    _EKF_FILLD(1, 2, set->accel_var_f2ps4 * dt2_2 + set->accel_bias_var_f2ps4 * dt4_8);
+    _EKF_FILLD(1, 4, -set->accel_bias_var_f2ps4 * dt2_2);
+    _EKF_FILLD(2, 1, set->accel_var_f2ps4 * dt2_2 + set->accel_bias_var_f2ps4 * dt4_8);
+    _EKF_FILLD(2, 2, set->accel_var_f2ps4 * dt3_3 + set->accel_bias_var_f2ps4 * dt5_20);
+    _EKF_FILLD(2, 4, -set->accel_bias_var_f2ps4 * dt3_6);
+    _EKF_FILLD(3, 0, -set->gyro_bias_var_rad2ps2 * dt2_2);
+    _EKF_FILLD(3, 3, set->gyro_bias_var_rad2ps2 * dt);
+    _EKF_FILLD(4, 1, -set->accel_bias_var_f2ps4 * dt2_2);
+    _EKF_FILLD(4, 2, -set->accel_bias_var_f2ps4 * dt3_6);
+    _EKF_FILLD(4, 4, set->accel_bias_var_f2ps4 * dt);
+    _EKF_FILLD(5, 5, set->magn_bias_var_gauss2 * dt);
 
     #undef _EKF_FILLD
 }
@@ -187,6 +187,8 @@ void _ekf_predict_to(
     ekf_control_input* control,
     u32 timestamp_us
 ) {
+    if (timestamp_us == ekf->state_time_us) { return; }
+
     // Note(Ian) This has to be a subtract that can over and underflow for 
     // it to work correctly
     u32 dt_us = timestamp_us - ekf->state_time_us;
@@ -204,8 +206,8 @@ void _ekf_predict_to(
     );
 
     vec3f world_accel_fps2 = vec3f_add(
-        // Accelerometers measure a constant -1g for gravity
-        (vec3f){ 0.0f, 0.0f, 32.174f },
+        // Accelerometers measure a constant 1g for gravity
+        (vec3f){ 0.0f, 0.0f, -32.174f },
         quatf_rot_vec3f(
             ekf->nominal_state.attitude,
             accel_fps2
@@ -467,13 +469,17 @@ void _ekf_update(
 
 void ekf_inject_imu(
     extended_kalman_filter* ekf,
-    const ekf_control_input* control,
+    vec3f accel_fps2,
+    vec3f gyro_radps,
     u32 timestamp_us
 ) {
     // Predict previous control input to now
     _ekf_predict_to(ekf, &ekf->control_input, timestamp_us);
 
-    ekf->control_input = *control;
+    ekf->control_input = (ekf_control_input){
+        .accel_fps2 = accel_fps2,
+        .gyro_radps = gyro_radps,
+    };
 }
 
 void ekf_inject_baro(
@@ -516,33 +522,31 @@ void ekf_inject_magn(
         .z = -ekf->nominal_state.attitude.z,
     };
 
-    vec3f body_magn_north = quatf_rot_vec3f(
-        world_to_body, magn_north_gauss
-    );
+    _ekf_vec3_u predicted_measure = {
+        .vec = quatf_rot_vec3f(
+            world_to_body,
+            ekf->settings.world_magn_north_guass
+        )
+    };
 
     // For attitude
-    _ekf_fill_skew3(observation_model, body_magn_north, 0, 0, EKF_STATE_DIM);
+    _ekf_fill_skew3(observation_model, predicted_measure.vec, 0, 0, EKF_STATE_DIM);
 
     // For magnetometer bias
     observation_model[0 * EKF_STATE_DIM + 15] = 1.0f;
     observation_model[1 * EKF_STATE_DIM + 16] = 1.0f;
     observation_model[2 * EKF_STATE_DIM + 17] = 1.0f;
 
-    _ekf_vec3_u predicted_measure = {
-        .vec = vec3f_add(
-            quatf_rot_vec3f(
-                ekf->nominal_state.attitude,
-                ekf->settings.world_magn_north_guass
-            ),
-            ekf->nominal_state.magn_bias_gauss
-        )
-    };
-
     f32 measure[3] = {
         magn_north_gauss.x,
         magn_north_gauss.y,
         magn_north_gauss.z,
     };
+
+    predicted_measure.vec = vec3f_add(
+        predicted_measure.vec,
+        ekf->nominal_state.magn_bias_gauss
+    );
 
     _ekf_update(
         ekf, 3,
