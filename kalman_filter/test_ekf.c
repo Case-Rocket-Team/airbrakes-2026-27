@@ -120,18 +120,23 @@ int main(void) {
 
         ekf_inject_magn(&ekf, magn_gauss, ts);
 
-        vec3f gnss_ft = vec3f_add(
-            ork.pos_ft[i],
-            (vec3f){
-                ekf.settings.gnss_covar_ft2[0 * 3 + 0] * prng_std_norm(&rng),
-                ekf.settings.gnss_covar_ft2[1 * 3 + 1] * prng_std_norm(&rng),
-                ekf.settings.gnss_covar_ft2[2 * 3 + 2] * prng_std_norm(&rng),
-            }
-        );
+        if ((i % 20) == 0) {
+            vec3f gnss_ft = vec3f_add(
+                ork.pos_ft[i],
+                (vec3f){
+                    sqrtf(ekf.settings.gnss_covar_ft2[0 * 3 + 0]) * prng_std_norm(&rng),
+                    sqrtf(ekf.settings.gnss_covar_ft2[1 * 3 + 1]) * prng_std_norm(&rng),
+                    sqrtf(ekf.settings.gnss_covar_ft2[2 * 3 + 2]) * prng_std_norm(&rng),
+                }
+            );
 
-        ekf_inject_gnss(&ekf, gnss_ft, ts);
+            ekf_inject_gnss(&ekf, gnss_ft, ts);
+        }
 
-        att_similarity[i] = quatf_dot(ork.attitude[i], ekf.nominal_state.attitude);
+        att_similarity[i] = acosf(
+            quatf_dot(ork.attitude[i], ekf.nominal_state.attitude)
+        ) * 180.0f / 3.1415926535f;
+
         pos_err_x[i] = err_fn(ork.pos_ft[i].x, ekf.nominal_state.pos_ft.x);
         pos_err_y[i] = err_fn(ork.pos_ft[i].y, ekf.nominal_state.pos_ft.y);
         pos_err_z[i] = err_fn(ork.pos_ft[i].z, ekf.nominal_state.pos_ft.z);
