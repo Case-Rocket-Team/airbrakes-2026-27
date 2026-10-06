@@ -150,6 +150,10 @@ quatf quatf_mul(quatf a, quatf b) {
     };
 }
 
+f32 quatf_dot(quatf a, quatf b) {
+    return (a.w * b.w + a.x * b.x + a.y * b.y + a.z * b.z);
+}
+
 quatf quatf_norm(quatf q) {
     f32 mag = sqrtf(q.w * q.w + q.x * q.x + q.y * q.y + q.z * q.z);
 
@@ -194,7 +198,7 @@ void quatf_to_mat3(quatf q, f32 m_out[3 * 3]) {
 
 void _mm_nn(
     u32 c_rows, u32 c_cols, u32 ap_cols,
-    f32 alpha, f32* A, f32* B, f32* C
+    f32 alpha, const f32* A, const f32* B, f32* C
 ) {
     for (u32 i = 0; i < c_cols; i++) {
         for (u32 k = 0; k < ap_cols; k++) {
@@ -207,7 +211,7 @@ void _mm_nn(
 
 void _mm_nt(
     u32 c_rows, u32 c_cols, u32 ap_cols,
-    f32 alpha, f32* A, f32* B, f32* C
+    f32 alpha, const f32* A, const f32* B, f32* C
 ) {
     for (u32 k = 0; k < ap_cols; k++) {
         for (u32 i = 0; i < c_cols; i++) {
@@ -220,7 +224,7 @@ void _mm_nt(
 
 void _mm_tn(
     u32 c_rows, u32 c_cols, u32 ap_cols,
-    f32 alpha, f32* A, f32* B, f32* C
+    f32 alpha, const f32* A, const f32* B, f32* C
 ) {
     for (u32 i = 0; i < c_cols; i++) {
         for (u32 j = 0; j < c_rows; j++) {
@@ -233,7 +237,7 @@ void _mm_tn(
 
 void _mm_tt(
     u32 c_rows, u32 c_cols, u32 ap_cols,
-    f32 alpha, f32* A, f32* B, f32* C
+    f32 alpha, const f32* A, const f32* B, f32* C
 ) {
     for (u32 i = 0; i < c_cols; i++) {
         for (u32 k = 0; k < ap_cols; k++) {
@@ -247,7 +251,8 @@ void _mm_tt(
 void matmul(
     b8 transpose_a, b8 transpose_b,
     u32 c_rows, u32 c_cols, u32 ap_cols, 
-    f32 alpha, f32* A, f32* B, f32 beta, f32* C
+    f32 alpha, const f32* A, const f32* B,
+    f32 beta, f32* C
 ) {
     u32 c_size = c_rows * c_cols;
 

@@ -19,16 +19,16 @@ typedef struct {
     f32* altitude_ft;
     f32* vertical_vel_fps;
     f32* vertical_accel_fps2;
-} ork_data;
+} ork_data_1d;
 
 void printmat(f32* M, u32 rows, u32 cols);
-void read_ork_bin(const char* path, ork_data* ork);
+void read_ork_1d(const char* path, ork_data_1d* ork);
 
 int main(void) {
-    ork_data ork = { 0 };
+    ork_data_1d ork = { 0 };
 
     // This file is created by utils/ork_process.py
-    read_ork_bin("ork_processed.bin", &ork);
+    read_ork_1d("ork_processed_1d.bin", &ork);
 
     prng rng = { 0 };
     prng_seed(&rng, 1, 1);
@@ -110,7 +110,7 @@ int main(void) {
     return 0;
 }
 
-void read_ork_bin(const char* path, ork_data* ork) {
+void read_ork_1d(const char* path, ork_data_1d* ork) {
     FILE* f = fopen(path, "rb");
 
     fread(&ork->len, sizeof(u32), 1, f);

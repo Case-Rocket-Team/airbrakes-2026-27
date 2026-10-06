@@ -23,38 +23,23 @@ extern "C" {
 
 #define EKF_STATE_DIM 18
 #define EKF_CONTROL_DIM 6
-#define EKF_MEASURE_DIM 4
+#define EKF_MAX_MEASURE_DIM 3
 
 typedef struct {
     // Stored such that left multiplication by attitude goes from body frame
     // to world frame
     quatf attitude;
 
-    // Position is in the world's frame of reference
-    vec3f pos_ft;
-
     // Velocity is in the world's frame of reference
     vec3f vel_fps;
+
+    // Position is in the world's frame of reference
+    vec3f pos_ft;
 
     vec3f gyro_bias_radps; // radians / sec
     vec3f accel_bias_fps2;
     vec3f magn_bias_gauss;
 } ekf_nominal_state;
-
-typedef union {
-    struct {
-        vec3f small_angle_rad;
-        vec3f vel_fps;
-        vec3f pos_ft;
-        vec3f gyro_bias_radps;
-        vec3f accel_bias_fps2;
-        vec3f magn_bias_gauss;
-    };
-    
-    f32 v[EKF_STATE_DIM];
-} ekf_err_state;
-
-static_assert(sizeof(ekf_err_state) == sizeof(f32) * EKF_STATE_DIM);
 
 typedef union {
     struct {
@@ -67,53 +52,75 @@ typedef union {
 
 static_assert(sizeof(ekf_control_input) == sizeof(f32) * EKF_CONTROL_DIM);
 
-typedef union {
-    struct {
-        // From barometer
-        f32 altitude_ft;
+typedef struct {
+    f32 accel_var_f2ps4;
+    f32 accel_bias_var_f2ps4;
 
-        // From magnetometer 
-        vec3f magn_north_gauss;
-    };
+    f32 gyro_var_rad2ps2;
+    f32 gyro_bias_var_rad2ps2;
 
-    f32 v[EKF_MEASURE_DIM];
-} ekf_measure;
+    f32 baro_var_ft2;
 
-static_assert(sizeof(ekf_measure) == sizeof(f32) * EKF_MEASURE_DIM);
+    vec3f world_magn_north_guass;
+    f32 magn_covar_gauss2[3 * 3];
+    f32 magn_bias_var_gauss2;
+
+    f32 gnss_covar_ft2[3 * 3];
+} ekf_settings;
 
 typedef struct {
     ekf_nominal_state nominal_state;
-    ekf_err_state err_state;
 
-    // Covariance for the error state
-    f32 state_cov[EKF_STATE_DIM * EKF_STATE_DIM];
+    ekf_settings settings;
+    
+    // Timestamp of the current state estimate
+    u32 state_time_us;
 
-    // Should be normalized
-    vec3f world_magn_north;
+    // Most recent control input, cached so that we can predict to the exact
+    // timestamp needed during a given update/prediction step
+    ekf_control_input control_input;
 
-    f32 accel_var_f2ps4;
-    f32 accel_bias_var_f2ps4;
-    f32 gyro_var_rad2ps2;
-    f32 gyro_bias_var_rad2ps2;
-    f32 magn_bias_var_gauss2;
-
-    f32 measure_covar[EKF_MEASURE_DIM * EKF_MEASURE_DIM];
+    // Covariance for the *error* state
+    f32 state_covar[EKF_STATE_DIM * EKF_STATE_DIM];
 } extended_kalman_filter;
 
-/*
-Predicts the state at dt seconds into the future.
-
-Should be called before ekf_update
-*/
-void ekf_predict(
-    extended_kalman_filter* ekf, ekf_control_input* control, f32 dt
+// Initializes the kalman filter to zero state and the given settings.
+// You can just create the `extended_kalman_filter` structure if you would like
+// more control, but this ensures you start with a valid attitude quaternion.
+void ekf_init(
+    extended_kalman_filter* ekf,
+    const ekf_settings* settings,
+    u32 timestamp_us
 );
 
-/*
-Should be proceeded by an ekf_predict such that the time at the ekf_update call
-is equal to the time at the latest kf_predict + dt
-*/
-void ekf_update(extended_kalman_filter* ekf, ekf_measure* measure);
+// Call with IMU data
+void ekf_inject_imu(
+    extended_kalman_filter* ekf,
+    vec3f accel_fps2,
+    vec3f gyro_radps,
+    u32 timestamp_us
+);
+
+// Call with new barometeric altitude data
+void ekf_inject_baro(
+    extended_kalman_filter* ekf,
+    f32 altitude_ft,
+    u32 timestamp_us
+);
+
+// Call with new magnetometer data
+void ekf_inject_magn(
+    extended_kalman_filter* ekf,
+    vec3f magn_north_gauss,
+    u32 timestamp_us
+);
+
+// Call with new GPS data
+void ekf_inject_gnss(
+    extended_kalman_filter* ekf,
+    vec3f pos_ft,
+    u32 timestamp_us
+);
 
 #ifdef __cplusplus
 }
