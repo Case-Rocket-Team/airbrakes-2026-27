@@ -1,6 +1,8 @@
 #ifndef CONTROL_ROCKET_STATE_HPP
 #define CONTROL_ROCKET_STATE_HPP
 
+#include "../base/base.h"
+
 namespace control {
 
 /*
@@ -11,8 +13,9 @@ namespace control {
  * to this interface before being passed to the controller.
  */
 struct RocketState {
-    float altitude_ft;
-    float vertical_velocity_fps;
+    f32 altitude_ft;
+    f32 vertical_velocity_fps;
+    u32 timestamp_us;
 };
 
 }  // namespace control
