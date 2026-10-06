@@ -78,8 +78,13 @@ test_brake_aero:
 	$(CXX) control/tests/test_brake_aero.cpp control/aero/brake_aero.cpp $(CXXFLAGS) $(LFLAGS) -o $(BIN_DIR)test_brake_aero$(BIN_EXT)
 	$(BIN_DIR)test_brake_aero$(BIN_EXT)
 
-test: test_kf test_control test_atmosphere test_drag test_dynamics test_apogee_predictor test_brake_aero
+test_ideal_mpc:
+	@$(MKDIR_BIN)
+	$(CXX) control/tests/test_ideal_mpc.cpp control/controller/ideal_mpc.cpp control/predictor/apogee_predictor.cpp control/aero/brake_aero.cpp control/physics/dynamics.cpp control/physics/atmosphere.cpp control/physics/drag.cpp $(CXXFLAGS) $(LFLAGS) -o $(BIN_DIR)test_ideal_mpc$(BIN_EXT)
+	$(BIN_DIR)test_ideal_mpc$(BIN_EXT)
+
+test: test_kf test_control test_atmosphere test_drag test_dynamics test_apogee_predictor test_brake_aero test_ideal_mpc
 
 clean:
 	$(RM_BIN)
-.PHONY: clean test_kf test_ekf test_control test_atmosphere test_drag test_dynamics test_apogee_predictor test_brake_aero test
+.PHONY: clean test_kf test_ekf test_control test_atmosphere test_drag test_dynamics test_apogee_predictor test_brake_aero test_ideal_mpc test
