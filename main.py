@@ -16,7 +16,19 @@ env.set_date(
 env.set_atmospheric_model(type="Forecast", file="GFS")
 
 env.info()
+date = datetime.datetime(2022, 9, 29, 18)
 
+
+env2 = Environment(
+    gravity=None,
+    date=date,
+    latitude=32.990629,
+    longitude=-106.976097,
+    elevation=100.0,
+    datum="SIRGAS2000",
+    timezone="UTC",
+    max_expected_height=80000.0,
+)
 
 
 # Your motor
@@ -38,6 +50,12 @@ example_solid = SolidMotor(
     throat_radius=11 / 1000,
     coordinate_system_orientation="nozzle_to_combustion_chamber",
 )
+
+# F44W = SolidMotor(
+#     thrust_source='./data/F44w.eng',
+#     burn_time=1.03,
+#     dry_mass = 48 - 19.7,
+# )
 
 # Save original show
 # _original_show = plt.show
@@ -89,14 +107,24 @@ nose_cone = calisto.add_nose(
     length=0.55829, kind="von karman", position=1.278
 )
 
+# fin_set = calisto.add_trapezoidal_fins(
+#     n=4,
+#     root_chord=0.120,
+#     tip_chord=0.060,
+#     span=0.110,
+#     position=-1.04956,
+#     cant_angle=0.5,
+#     airfoil=("./data/NACA0012-radians.txt","radians"),
+# )
 fin_set = calisto.add_trapezoidal_fins(
     n=4,
-    root_chord=0.120,
-    tip_chord=0.060,
-    span=0.110,
-    position=-1.04956,
-    cant_angle=0.5,
-    airfoil=("./data/NACA0012-radians.txt","radians"),
+    root_chord=0.20,
+    tip_chord=0.10,
+    span=0.08,
+    cant_angle=0,
+    sweep_length=0.05,
+    position=-.97,
+    name="Main Fins",
 )
 
 tail = calisto.add_tail(
@@ -128,9 +156,10 @@ drogue = calisto.add_parachute(
 calisto.draw()
 
 test_flight = Flight(
-    rocket=calisto, environment=env, rail_length=5.2, inclination=85, heading=0
+    rocket=calisto, environment=env2, rail_length=5.2, inclination=85, heading=0
     )
-# init\
+
+# init
 test_flight.prints.initial_conditions()
 test_flight.prints.surface_wind_conditions()
 
