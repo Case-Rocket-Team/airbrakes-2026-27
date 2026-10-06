@@ -92,7 +92,7 @@
 					)
 				)
 			)
-			(pin unspecified line
+			(pin power_in line
 				(at -12.7 6.35 0)
 				(length 2.54)
 				(name "Vin"
@@ -110,7 +110,7 @@
 					)
 				)
 			)
-			(pin unspecified line
+			(pin power_out line
 				(at -12.7 2.54 0)
 				(length 2.54)
 				(name "3Vo"
@@ -128,7 +128,7 @@
 					)
 				)
 			)
-			(pin unspecified line
+			(pin power_in line
 				(at -12.7 -1.27 0)
 				(length 2.54)
 				(name "GND"
@@ -146,7 +146,7 @@
 					)
 				)
 			)
-			(pin unspecified line
+			(pin input line
 				(at -12.7 -5.08 0)
 				(length 2.54)
 				(name "SCL"
@@ -164,7 +164,7 @@
 					)
 				)
 			)
-			(pin unspecified line
+			(pin output line
 				(at 12.7 6.35 180)
 				(length 2.54)
 				(name "SDO"
@@ -182,7 +182,7 @@
 					)
 				)
 			)
-			(pin unspecified line
+			(pin input line
 				(at 12.7 2.54 180)
 				(length 2.54)
 				(name "SDA"
@@ -200,7 +200,7 @@
 					)
 				)
 			)
-			(pin unspecified line
+			(pin input line
 				(at 12.7 -1.27 180)
 				(length 2.54)
 				(name "CS"
@@ -218,7 +218,7 @@
 					)
 				)
 			)
-			(pin unspecified line
+			(pin output line
 				(at 12.7 -5.08 180)
 				(length 2.54)
 				(name "INT"
@@ -329,7 +329,7 @@
 					)
 				)
 			)
-			(pin unspecified line
+			(pin power_in line
 				(at -10.16 3.81 0)
 				(length 2.54)
 				(name "Vin"
@@ -347,7 +347,7 @@
 					)
 				)
 			)
-			(pin unspecified line
+			(pin power_out line
 				(at -10.16 0 0)
 				(length 2.54)
 				(name "3Vo"
@@ -365,7 +365,7 @@
 					)
 				)
 			)
-			(pin unspecified line
+			(pin power_in line
 				(at -10.16 -3.81 0)
 				(length 2.54)
 				(name "GND"
@@ -383,7 +383,7 @@
 					)
 				)
 			)
-			(pin unspecified line
+			(pin input line
 				(at 8.89 3.81 180)
 				(length 2.54)
 				(name "SCL"
@@ -401,7 +401,7 @@
 					)
 				)
 			)
-			(pin unspecified line
+			(pin bidirectional line
 				(at 8.89 0 180)
 				(length 2.54)
 				(name "SDA"
@@ -419,7 +419,7 @@
 					)
 				)
 			)
-			(pin unspecified line
+			(pin output line
 				(at 8.89 -3.81 180)
 				(length 2.54)
 				(name "INT"
@@ -530,7 +530,7 @@
 					)
 				)
 			)
-			(pin unspecified line
+			(pin output line
 				(at -13.97 10.16 0)
 				(length 2.54)
 				(name "SDO/SA0"
@@ -584,7 +584,7 @@
 					)
 				)
 			)
-			(pin unspecified line
+			(pin output line
 				(at -13.97 2.54 0)
 				(length 2.54)
 				(name "INT1"
@@ -602,7 +602,7 @@
 					)
 				)
 			)
-			(pin unspecified line
+			(pin power_in line
 				(at -13.97 -2.54 0)
 				(length 2.54)
 				(name "Vdd_IO"
@@ -620,7 +620,7 @@
 					)
 				)
 			)
-			(pin unspecified line
+			(pin power_in line
 				(at -13.97 -5.08 0)
 				(length 2.54)
 				(name "GND"
@@ -638,7 +638,7 @@
 					)
 				)
 			)
-			(pin unspecified line
+			(pin power_in line
 				(at -13.97 -7.62 0)
 				(length 2.54)
 				(name "GND"
@@ -656,7 +656,7 @@
 					)
 				)
 			)
-			(pin unspecified line
+			(pin power_in line
 				(at 13.97 10.16 180)
 				(length 2.54)
 				(name "Vdd"
@@ -674,7 +674,7 @@
 					)
 				)
 			)
-			(pin unspecified line
+			(pin output line
 				(at 13.97 7.62 180)
 				(length 2.54)
 				(name "INT2"
@@ -728,7 +728,7 @@
 					)
 				)
 			)
-			(pin unspecified line
+			(pin input line
 				(at 13.97 -2.54 180)
 				(length 2.54)
 				(name "CS"
@@ -746,7 +746,7 @@
 					)
 				)
 			)
-			(pin unspecified line
+			(pin input line
 				(at 13.97 -5.08 180)
 				(length 2.54)
 				(name "SCL"
@@ -764,7 +764,7 @@
 					)
 				)
 			)
-			(pin unspecified line
+			(pin input line
 				(at 13.97 -7.62 180)
 				(length 2.54)
 				(name "SDA"
@@ -1976,7 +1976,7 @@
 					)
 				)
 			)
-			(pin unspecified line
+			(pin power_in line
 				(at -13.97 -3.81 0)
 				(length 2.54)
 				(name "GND"
@@ -1994,7 +1994,7 @@
 					)
 				)
 			)
-			(pin unspecified line
+			(pin power_in line
 				(at -13.97 13.97 0)
 				(length 2.54)
 				(name "V_IO"
@@ -2012,7 +2012,7 @@
 					)
 				)
 			)
-			(pin unspecified line
+			(pin power_in line
 				(at -13.97 11.43 0)
 				(length 2.54)
 				(name "V_BCKP"
@@ -2030,7 +2030,7 @@
 					)
 				)
 			)
-			(pin unspecified line
+			(pin power_in line
 				(at -13.97 -6.35 0)
 				(length 2.54)
 				(name "GND"
@@ -2048,7 +2048,7 @@
 					)
 				)
 			)
-			(pin unspecified line
+			(pin power_in line
 				(at -13.97 -8.89 0)
 				(length 2.54)
 				(name "GND"
@@ -2066,7 +2066,7 @@
 					)
 				)
 			)
-			(pin unspecified line
+			(pin power_in line
 				(at -13.97 -11.43 0)
 				(length 2.54)
 				(name "GND"
@@ -2120,7 +2120,7 @@
 					)
 				)
 			)
-			(pin unspecified line
+			(pin bidirectional line
 				(at -13.97 1.27 0)
 				(length 2.54)
 				(name "SDA"
@@ -2138,7 +2138,7 @@
 					)
 				)
 			)
-			(pin unspecified line
+			(pin power_in line
 				(at -13.97 -13.97 0)
 				(length 2.54)
 				(name "GND"
@@ -2156,7 +2156,7 @@
 					)
 				)
 			)
-			(pin unspecified line
+			(pin power_in line
 				(at 13.97 -6.35 180)
 				(length 2.54)
 				(name "GND"
@@ -2174,7 +2174,7 @@
 					)
 				)
 			)
-			(pin unspecified line
+			(pin input line
 				(at 13.97 13.97 180)
 				(length 2.54)
 				(name "SCL"
@@ -2228,7 +2228,7 @@
 					)
 				)
 			)
-			(pin unspecified line
+			(pin power_in line
 				(at 13.97 -8.89 180)
 				(length 2.54)
 				(name "GND"
@@ -2246,7 +2246,7 @@
 					)
 				)
 			)
-			(pin unspecified line
+			(pin power_in line
 				(at 13.97 -11.43 180)
 				(length 2.54)
 				(name "GND"
@@ -2264,7 +2264,7 @@
 					)
 				)
 			)
-			(pin unspecified line
+			(pin power_in line
 				(at -13.97 8.89 0)
 				(length 2.54)
 				(name "VCC"
@@ -2318,7 +2318,7 @@
 					)
 				)
 			)
-			(pin unspecified line
+			(pin power_in line
 				(at 13.97 -13.97 180)
 				(length 2.54)
 				(name "GND"
@@ -2329,6 +2329,200 @@
 					)
 				)
 				(number "20"
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
+				)
+			)
+		)
+		(embedded_fonts no)
+	)
+	(symbol "am-3637b"
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(in_pos_files yes)
+		(duplicate_pin_numbers_are_jumpers no)
+		(property "Reference" "M"
+			(at 4.318 9.398 0)
+			(show_name no)
+			(do_not_autoplace yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" ""
+			(at 0 0 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 0 0 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 0 0 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Description" ""
+			(at 0 0 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(symbol "am-3637b_0_1"
+			(rectangle
+				(start -6.35 8.255)
+				(end 6.35 -7.62)
+				(stroke
+					(width 0)
+					(type default)
+				)
+				(fill
+					(type color)
+					(color 255 255 194 1)
+				)
+			)
+		)
+		(symbol "am-3637b_1_1"
+			(text "am-3637b\n19.2:1 Gear Ratio\n~344 RPM"
+				(at -6.858 -11.176 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(justify left)
+				)
+			)
+			(pin input line
+				(at -8.89 2.54 0)
+				(length 2.54)
+				(name "M-"
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
+				)
+				(number "1"
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
+				)
+			)
+			(pin input line
+				(at -8.89 -2.54 0)
+				(length 2.54)
+				(name "M+"
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
+				)
+				(number "2"
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
+				)
+			)
+			(pin input line
+				(at 8.89 6.35 180)
+				(length 2.54)
+				(name "Vcc"
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
+				)
+				(number "3"
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
+				)
+			)
+			(pin input line
+				(at 8.89 2.54 180)
+				(length 2.54)
+				(name "GND"
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
+				)
+				(number "4"
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
+				)
+			)
+			(pin input line
+				(at 8.89 -1.27 180)
+				(length 2.54)
+				(name "Ch.A"
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
+				)
+				(number "5"
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
+				)
+			)
+			(pin input line
+				(at 8.89 -5.08 180)
+				(length 2.54)
+				(name "Ch.B"
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
+				)
+				(number "6"
 					(effects
 						(font
 							(size 1.27 1.27)

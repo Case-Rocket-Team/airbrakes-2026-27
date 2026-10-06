@@ -92,7 +92,7 @@
 					)
 				)
 			)
-			(pin unspecified line
+			(pin power_in line
 				(at -12.7 6.35 0)
 				(length 2.54)
 				(name "Vin"
@@ -110,7 +110,7 @@
 					)
 				)
 			)
-			(pin unspecified line
+			(pin power_out line
 				(at -12.7 2.54 0)
 				(length 2.54)
 				(name "3Vo"
@@ -128,7 +128,7 @@
 					)
 				)
 			)
-			(pin unspecified line
+			(pin power_in line
 				(at -12.7 -1.27 0)
 				(length 2.54)
 				(name "GND"
@@ -146,7 +146,7 @@
 					)
 				)
 			)
-			(pin unspecified line
+			(pin input line
 				(at -12.7 -5.08 0)
 				(length 2.54)
 				(name "SCL"
@@ -164,7 +164,7 @@
 					)
 				)
 			)
-			(pin unspecified line
+			(pin output line
 				(at 12.7 6.35 180)
 				(length 2.54)
 				(name "SDO"
@@ -182,7 +182,7 @@
 					)
 				)
 			)
-			(pin unspecified line
+			(pin input line
 				(at 12.7 2.54 180)
 				(length 2.54)
 				(name "SDA"
@@ -200,7 +200,7 @@
 					)
 				)
 			)
-			(pin unspecified line
+			(pin input line
 				(at 12.7 -1.27 180)
 				(length 2.54)
 				(name "CS"
@@ -218,7 +218,7 @@
 					)
 				)
 			)
-			(pin unspecified line
+			(pin output line
 				(at 12.7 -5.08 180)
 				(length 2.54)
 				(name "INT"
@@ -329,7 +329,7 @@
 					)
 				)
 			)
-			(pin unspecified line
+			(pin power_in line
 				(at -10.16 3.81 0)
 				(length 2.54)
 				(name "Vin"
@@ -347,7 +347,7 @@
 					)
 				)
 			)
-			(pin unspecified line
+			(pin power_out line
 				(at -10.16 0 0)
 				(length 2.54)
 				(name "3Vo"
@@ -365,7 +365,7 @@
 					)
 				)
 			)
-			(pin unspecified line
+			(pin power_in line
 				(at -10.16 -3.81 0)
 				(length 2.54)
 				(name "GND"
@@ -383,7 +383,7 @@
 					)
 				)
 			)
-			(pin unspecified line
+			(pin input line
 				(at 8.89 3.81 180)
 				(length 2.54)
 				(name "SCL"
@@ -401,7 +401,7 @@
 					)
 				)
 			)
-			(pin unspecified line
+			(pin bidirectional line
 				(at 8.89 0 180)
 				(length 2.54)
 				(name "SDA"
@@ -419,7 +419,7 @@
 					)
 				)
 			)
-			(pin unspecified line
+			(pin output line
 				(at 8.89 -3.81 180)
 				(length 2.54)
 				(name "INT"
@@ -530,7 +530,7 @@
 					)
 				)
 			)
-			(pin unspecified line
+			(pin output line
 				(at -13.97 10.16 0)
 				(length 2.54)
 				(name "SDO/SA0"
@@ -584,7 +584,7 @@
 					)
 				)
 			)
-			(pin unspecified line
+			(pin output line
 				(at -13.97 2.54 0)
 				(length 2.54)
 				(name "INT1"
@@ -602,7 +602,7 @@
 					)
 				)
 			)
-			(pin unspecified line
+			(pin power_in line
 				(at -13.97 -2.54 0)
 				(length 2.54)
 				(name "Vdd_IO"
@@ -620,7 +620,7 @@
 					)
 				)
 			)
-			(pin unspecified line
+			(pin power_in line
 				(at -13.97 -5.08 0)
 				(length 2.54)
 				(name "GND"
@@ -638,7 +638,7 @@
 					)
 				)
 			)
-			(pin unspecified line
+			(pin power_in line
 				(at -13.97 -7.62 0)
 				(length 2.54)
 				(name "GND"
@@ -656,7 +656,7 @@
 					)
 				)
 			)
-			(pin unspecified line
+			(pin power_in line
 				(at 13.97 10.16 180)
 				(length 2.54)
 				(name "Vdd"
@@ -674,7 +674,7 @@
 					)
 				)
 			)
-			(pin unspecified line
+			(pin output line
 				(at 13.97 7.62 180)
 				(length 2.54)
 				(name "INT2"
@@ -728,7 +728,7 @@
 					)
 				)
 			)
-			(pin unspecified line
+			(pin input line
 				(at 13.97 -2.54 180)
 				(length 2.54)
 				(name "CS"
@@ -746,7 +746,7 @@
 					)
 				)
 			)
-			(pin unspecified line
+			(pin input line
 				(at 13.97 -5.08 180)
 				(length 2.54)
 				(name "SCL"
@@ -764,7 +764,7 @@
 					)
 				)
 			)
-			(pin unspecified line
+			(pin input line
 				(at 13.97 -7.62 180)
 				(length 2.54)
 				(name "SDA"
@@ -1976,8 +1976,8 @@
 					)
 				)
 			)
-			(pin unspecified line
-				(at -13.97 12.7 0)
+			(pin power_in line
+				(at -13.97 -3.81 0)
 				(length 2.54)
 				(name "GND"
 					(effects
@@ -1994,8 +1994,8 @@
 					)
 				)
 			)
-			(pin unspecified line
-				(at -13.97 10.16 0)
+			(pin power_in line
+				(at -13.97 13.97 0)
 				(length 2.54)
 				(name "V_IO"
 					(effects
@@ -2012,8 +2012,8 @@
 					)
 				)
 			)
-			(pin unspecified line
-				(at -13.97 7.62 0)
+			(pin power_in line
+				(at -13.97 11.43 0)
 				(length 2.54)
 				(name "V_BCKP"
 					(effects
@@ -2030,8 +2030,8 @@
 					)
 				)
 			)
-			(pin unspecified line
-				(at -13.97 5.08 0)
+			(pin power_in line
+				(at -13.97 -6.35 0)
 				(length 2.54)
 				(name "GND"
 					(effects
@@ -2048,8 +2048,8 @@
 					)
 				)
 			)
-			(pin unspecified line
-				(at -13.97 2.54 0)
+			(pin power_in line
+				(at -13.97 -8.89 0)
 				(length 2.54)
 				(name "GND"
 					(effects
@@ -2066,8 +2066,8 @@
 					)
 				)
 			)
-			(pin unspecified line
-				(at -13.97 -2.54 0)
+			(pin power_in line
+				(at -13.97 -11.43 0)
 				(length 2.54)
 				(name "GND"
 					(effects
@@ -2085,7 +2085,7 @@
 				)
 			)
 			(pin unspecified line
-				(at -13.97 -5.08 0)
+				(at -13.97 6.35 0)
 				(length 2.54)
 				(name "TIMEPULSE"
 					(effects
@@ -2103,7 +2103,7 @@
 				)
 			)
 			(pin unspecified line
-				(at -13.97 -7.62 0)
+				(at -13.97 3.81 0)
 				(length 2.54)
 				(name "SAFEBOOT_N"
 					(effects
@@ -2120,8 +2120,8 @@
 					)
 				)
 			)
-			(pin unspecified line
-				(at -13.97 -10.16 0)
+			(pin bidirectional line
+				(at -13.97 1.27 0)
 				(length 2.54)
 				(name "SDA"
 					(effects
@@ -2138,8 +2138,8 @@
 					)
 				)
 			)
-			(pin unspecified line
-				(at -13.97 -12.7 0)
+			(pin power_in line
+				(at -13.97 -13.97 0)
 				(length 2.54)
 				(name "GND"
 					(effects
@@ -2156,8 +2156,8 @@
 					)
 				)
 			)
-			(pin unspecified line
-				(at 13.97 12.7 180)
+			(pin power_in line
+				(at 13.97 -6.35 180)
 				(length 2.54)
 				(name "GND"
 					(effects
@@ -2174,8 +2174,8 @@
 					)
 				)
 			)
-			(pin unspecified line
-				(at 13.97 10.16 180)
+			(pin input line
+				(at 13.97 13.97 180)
 				(length 2.54)
 				(name "SCL"
 					(effects
@@ -2193,7 +2193,7 @@
 				)
 			)
 			(pin unspecified line
-				(at 13.97 7.62 180)
+				(at 13.97 11.43 180)
 				(length 2.54)
 				(name "TXD"
 					(effects
@@ -2211,7 +2211,7 @@
 				)
 			)
 			(pin unspecified line
-				(at 13.97 5.08 180)
+				(at 13.97 8.89 180)
 				(length 2.54)
 				(name "RXD"
 					(effects
@@ -2228,8 +2228,8 @@
 					)
 				)
 			)
-			(pin unspecified line
-				(at 13.97 2.54 180)
+			(pin power_in line
+				(at 13.97 -8.89 180)
 				(length 2.54)
 				(name "GND"
 					(effects
@@ -2246,8 +2246,8 @@
 					)
 				)
 			)
-			(pin unspecified line
-				(at 13.97 -2.54 180)
+			(pin power_in line
+				(at 13.97 -11.43 180)
 				(length 2.54)
 				(name "GND"
 					(effects
@@ -2264,8 +2264,8 @@
 					)
 				)
 			)
-			(pin unspecified line
-				(at 13.97 -5.08 180)
+			(pin power_in line
+				(at -13.97 8.89 0)
 				(length 2.54)
 				(name "VCC"
 					(effects
@@ -2283,7 +2283,7 @@
 				)
 			)
 			(pin unspecified line
-				(at 13.97 -7.62 180)
+				(at 13.97 6.35 180)
 				(length 2.54)
 				(name "RESET_N"
 					(effects
@@ -2301,7 +2301,7 @@
 				)
 			)
 			(pin unspecified line
-				(at 13.97 -10.16 180)
+				(at 13.97 3.81 180)
 				(length 2.54)
 				(name "EXTINT"
 					(effects
@@ -2318,8 +2318,8 @@
 					)
 				)
 			)
-			(pin unspecified line
-				(at 13.97 -12.7 180)
+			(pin power_in line
+				(at 13.97 -13.97 180)
 				(length 2.54)
 				(name "GND"
 					(effects
