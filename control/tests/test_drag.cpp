@@ -1,13 +1,9 @@
 #include "control/physics/drag.hpp"
+#include "control/tests/test_common.hpp"
 
 #include <cassert>
-#include <cmath>
 
 namespace {
-
-bool approximately_equal(f32 actual, f32 expected, f32 tolerance) {
-    return std::fabs(actual - expected) <= tolerance;
-}
 
 }  // namespace
 
