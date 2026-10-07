@@ -1,0 +1,445 @@
+2026.Oct.06 19:21:19 - rocketserializer.cli - WARNING - [ork2notebook] Output folder not specified. Using '/home/jcg/Documents/school/CWRU/26F/rocket/github/RocketPy' instead.
+2026.Oct.06 19:21:20 - rocketserializer._helpers - INFO - Successfully extracted rocket.ork from "/home/jcg/Documents/school/CWRU/26F/rocket/github/RocketPy/AB_1.ork" to "/home/jcg/Documents/school/CWRU/26F/rocket/github/RocketPy"
+2026.Oct.06 19:21:20 - rocketserializer._helpers - INFO - Successfully parsed .ork file at '/home/jcg/Documents/school/CWRU/26F/rocket/github/RocketPy/rocket.ork' with 1257 datapoints
+2026.Oct.06 19:21:20 - orhelper._orhelper - INFO - Starting JVM from /usr/lib/jvm/java-25-openjdk/lib/server/libjvm.so CLASSPATH=OpenRocket-24.12.jar
+2026.Oct.06 19:21:22 - rocketserializer.ork_extractor - INFO - Successfully initialized vectors with 483 datapoints
+2026.Oct.06 19:21:22 - rocketserializer.ork_extractor - INFO - Initialized data vectors from the ORK file.
+2026.Oct.06 19:21:22 - rocketserializer.components.motor - INFO - Collected motor geometry: motor length and motor radius.
+2026.Oct.06 19:21:22 - rocketserializer.components.motor - INFO - The motor dry mass is 0.713 kg.
+2026.Oct.06 19:21:22 - rocketserializer.components.motor - INFO - The total propellant mass is 0.510 kg. The motor dry mass is 0.713 kg.
+2026.Oct.06 19:21:22 - rocketserializer.components.motor - INFO - Calculated motor mass properties.
+2026.Oct.06 19:21:22 - rocketserializer.components.motor - INFO - Successfully configured the motor.
+                        grain_density: 467.5820023221925
+                       grain_initial_inner_radius: 0.0135
+                       grain_outer_radius: 0.027
+                       grain_initial_height: 0.635
+                       nozzle_radius: 0.02025
+                       throat_radius: 0.0135
+                       dry_mass: 0
+                       dry_inertia: (0, 0, 0)
+                       center_of_dry_mass_position: 0
+                       grains_center_of_mass_position: 0
+                       grain_number: 1
+                       grain_separation: 0
+                       nozzle_position: -0.3175
+                       coordinate_system_orientation: nozzle_to_combustion_chamber
+
+2026.Oct.06 19:21:22 - rocketserializer.components.motor - INFO - The motor dry mass is 0.713 kg.
+2026.Oct.06 19:21:22 - rocketserializer.components.motor - INFO - The total propellant mass is 0.510 kg. The motor dry mass is 0.713 kg.
+2026.Oct.06 19:21:22 - rocketserializer.ork_extractor - INFO - Motor parameters retrieved.
+2026.Oct.06 19:21:22 - rocketserializer.components.id - INFO - Collected the rocket name: 'Rocket'
+2026.Oct.06 19:21:22 - rocketserializer.components.id - WARNING - No auxiliary comment was found in the file.
+2026.Oct.06 19:21:22 - rocketserializer.components.id - WARNING - No designer name was found in the file.
+2026.Oct.06 19:21:22 - rocketserializer.components.id - INFO - Identification information extracted.
+                        rocket_name: Rocket
+                       comment: None
+                       designer: None
+                       filepath: /home/jcg/Documents/school/CWRU/26F/rocket/github/RocketPy/rocket.ork
+
+2026.Oct.06 19:21:22 - rocketserializer.ork_extractor - INFO - Metadata parameters retrieved.
+2026.Oct.06 19:21:22 - rocketserializer.components.environment - INFO - Collected first environment settings: latitude, longitude, elevation, wind_average, wind_turbulence, geodetic_method
+2026.Oct.06 19:21:22 - rocketserializer.components.environment - INFO - The base temperature was found in the .ork file. It is 283.150000 °C.
+2026.Oct.06 19:21:22 - rocketserializer.components.environment - INFO - The base pressure was found in the .ork file. It is 101325.000000 Pa.
+2026.Oct.06 19:21:22 - rocketserializer.components.environment - INFO - Successfully extracted all the environment settings.
+                        latitude: 33.2
+                       longitude: 112.0
+                       elevation: 337.0
+                       wind_average: 2.0
+                       wind_turbulence: 0.1
+                       geodetic_method: spherical
+                       base_temperature: 283.15000000000003
+                       base_pressure: 101325.0
+                       date: None
+
+2026.Oct.06 19:21:22 - rocketserializer.ork_extractor - INFO - Environment parameters retrieved.
+2026.Oct.06 19:21:22 - rocketserializer.components.rocket - INFO - The maximum radius of the rocket is: 0.051105
+2026.Oct.06 19:21:22 - rocketserializer.components.rocket - INFO - Collected rocket radius.
+2026.Oct.06 19:21:22 - rocketserializer.components.rocket - INFO - Collected rocket mass.
+2026.Oct.06 19:21:22 - rocketserializer.components.rocket - INFO - The moment of inertia of the rocket is: 1.237000 (longitudinal) and 0.011000 (rotational)
+2026.Oct.06 19:21:22 - rocketserializer.components.rocket - INFO - Collected rocket inertia.
+2026.Oct.06 19:21:22 - rocketserializer.components.rocket - INFO - Collected rocket center of mass.
+2026.Oct.06 19:21:22 - rocketserializer.components.rocket - INFO - All the Rocket information was collected:
+                       radius: 0.0511048
+                       mass: 7.668
+                       inertia: (0.011, 0.011, 1.237)
+                       center_of_mass_without_propellant: 1.136
+                       coordinate_system_orientation: nose_to_tail
+
+2026.Oct.06 19:21:22 - rocketserializer.ork_extractor - INFO - Rocket parameters retrieved.
+2026.Oct.06 19:21:22 - rocketserializer.components.flight - INFO - Collected launch conditions: launch rod length, launch rod angle, launch rod direction.
+2026.Oct.06 19:21:22 - rocketserializer.components.flight - INFO - Exported launch conditions.
+                       rail_length: 1.778
+                       inclination: 90.0
+                       heading: 90.0
+
+2026.Oct.06 19:21:22 - rocketserializer.ork_extractor - INFO - Flight conditions retrieved.
+2026.Oct.06 19:21:22 - rocketserializer.components.open_rocket_wrangler - INFO - Starting to process element 'Rocket' of type 'Rocket'
+2026.Oct.06 19:21:22 - rocketserializer.components.open_rocket_wrangler - INFO - Starting to process element 'Sustainer' of type 'AxialStage'
+2026.Oct.06 19:21:22 - rocketserializer.components.open_rocket_wrangler - INFO - Starting to process element 'Nose Cone' of type 'NoseCone'
+2026.Oct.06 19:21:22 - rocketserializer.components.open_rocket_wrangler - INFO - No more children for 'Nose Cone'
+2026.Oct.06 19:21:22 - rocketserializer.components.open_rocket_wrangler - INFO - Finished processing 'Nose Cone'
+2026.Oct.06 19:21:22 - rocketserializer.components.open_rocket_wrangler - INFO - Child 'Nose Cone' processed
+2026.Oct.06 19:21:22 - rocketserializer.components.open_rocket_wrangler - INFO - Moving to the next child
+2026.Oct.06 19:21:22 - rocketserializer.components.open_rocket_wrangler - INFO - Starting to process element 'Body Tube' of type 'BodyTube'
+2026.Oct.06 19:21:22 - rocketserializer.components.open_rocket_wrangler - INFO - Starting to process element 'Tube Coupler' of type 'TubeCoupler'
+2026.Oct.06 19:21:22 - rocketserializer.components.open_rocket_wrangler - INFO - No more children for 'Tube Coupler'
+2026.Oct.06 19:21:22 - rocketserializer.components.open_rocket_wrangler - INFO - Finished processing 'Tube Coupler'
+2026.Oct.06 19:21:22 - rocketserializer.components.open_rocket_wrangler - INFO - Child 'Tube Coupler' processed
+2026.Oct.06 19:21:22 - rocketserializer.components.open_rocket_wrangler - INFO - Moving to the next child
+2026.Oct.06 19:21:22 - rocketserializer.components.open_rocket_wrangler - INFO - Child 'SkyAngle Classic 24 [Cd 1.16 (3.5 oz) 38.1 in^3]' processed
+2026.Oct.06 19:21:22 - rocketserializer.components.open_rocket_wrangler - INFO - Moving to the next child
+2026.Oct.06 19:21:22 - rocketserializer.components.open_rocket_wrangler - INFO - No more children for 'Body Tube'
+2026.Oct.06 19:21:22 - rocketserializer.components.open_rocket_wrangler - INFO - Finished processing 'Body Tube'
+2026.Oct.06 19:21:22 - rocketserializer.components.open_rocket_wrangler - INFO - Child 'Body Tube' processed
+2026.Oct.06 19:21:22 - rocketserializer.components.open_rocket_wrangler - INFO - Moving to the next child
+2026.Oct.06 19:21:22 - rocketserializer.components.open_rocket_wrangler - INFO - Starting to process element 'Body Tube' of type 'BodyTube'
+2026.Oct.06 19:21:22 - rocketserializer.components.open_rocket_wrangler - INFO - Starting to process element 'Inner Tube' of type 'InnerTube'
+2026.Oct.06 19:21:22 - rocketserializer.components.open_rocket_wrangler - INFO - No more children for 'Inner Tube'
+2026.Oct.06 19:21:22 - rocketserializer.components.open_rocket_wrangler - INFO - Finished processing 'Inner Tube'
+2026.Oct.06 19:21:22 - rocketserializer.components.open_rocket_wrangler - INFO - Child 'Inner Tube' processed
+2026.Oct.06 19:21:22 - rocketserializer.components.open_rocket_wrangler - INFO - Moving to the next child
+2026.Oct.06 19:21:22 - rocketserializer.components.open_rocket_wrangler - INFO - Starting to process element 'Centering Ring' of type 'CenteringRing'
+2026.Oct.06 19:21:22 - rocketserializer.components.open_rocket_wrangler - INFO - No more children for 'Centering Ring'
+2026.Oct.06 19:21:22 - rocketserializer.components.open_rocket_wrangler - INFO - Finished processing 'Centering Ring'
+2026.Oct.06 19:21:22 - rocketserializer.components.open_rocket_wrangler - INFO - Child 'Centering Ring' processed
+2026.Oct.06 19:21:22 - rocketserializer.components.open_rocket_wrangler - INFO - Moving to the next child
+2026.Oct.06 19:21:22 - rocketserializer.components.open_rocket_wrangler - INFO - Starting to process element 'Centering Ring' of type 'CenteringRing'
+2026.Oct.06 19:21:22 - rocketserializer.components.open_rocket_wrangler - INFO - No more children for 'Centering Ring'
+2026.Oct.06 19:21:22 - rocketserializer.components.open_rocket_wrangler - INFO - Finished processing 'Centering Ring'
+2026.Oct.06 19:21:22 - rocketserializer.components.open_rocket_wrangler - INFO - Child 'Centering Ring' processed
+2026.Oct.06 19:21:22 - rocketserializer.components.open_rocket_wrangler - INFO - Moving to the next child
+2026.Oct.06 19:21:22 - rocketserializer.components.open_rocket_wrangler - INFO - Starting to process element 'Trapezoidal Fin Set' of type 'TrapezoidFinSet'
+2026.Oct.06 19:21:22 - rocketserializer.components.open_rocket_wrangler - INFO - No more children for 'Trapezoidal Fin Set'
+2026.Oct.06 19:21:22 - rocketserializer.components.open_rocket_wrangler - INFO - Finished processing 'Trapezoidal Fin Set'
+2026.Oct.06 19:21:22 - rocketserializer.components.open_rocket_wrangler - INFO - Child 'Trapezoidal Fin Set' processed
+2026.Oct.06 19:21:22 - rocketserializer.components.open_rocket_wrangler - INFO - Moving to the next child
+2026.Oct.06 19:21:22 - rocketserializer.components.open_rocket_wrangler - INFO - Child 'Airbreaks' processed
+2026.Oct.06 19:21:22 - rocketserializer.components.open_rocket_wrangler - INFO - Moving to the next child
+2026.Oct.06 19:21:22 - rocketserializer.components.open_rocket_wrangler - INFO - Starting to process element 'Bulkhead' of type 'Bulkhead'
+2026.Oct.06 19:21:22 - rocketserializer.components.open_rocket_wrangler - INFO - No more children for 'Bulkhead'
+2026.Oct.06 19:21:22 - rocketserializer.components.open_rocket_wrangler - INFO - Finished processing 'Bulkhead'
+2026.Oct.06 19:21:22 - rocketserializer.components.open_rocket_wrangler - INFO - Child 'Bulkhead' processed
+2026.Oct.06 19:21:22 - rocketserializer.components.open_rocket_wrangler - INFO - Moving to the next child
+2026.Oct.06 19:21:22 - rocketserializer.components.open_rocket_wrangler - INFO - Starting to process element 'Bulkhead' of type 'Bulkhead'
+2026.Oct.06 19:21:22 - rocketserializer.components.open_rocket_wrangler - INFO - No more children for 'Bulkhead'
+2026.Oct.06 19:21:22 - rocketserializer.components.open_rocket_wrangler - INFO - Finished processing 'Bulkhead'
+2026.Oct.06 19:21:22 - rocketserializer.components.open_rocket_wrangler - INFO - Child 'Bulkhead' processed
+2026.Oct.06 19:21:22 - rocketserializer.components.open_rocket_wrangler - INFO - Moving to the next child
+2026.Oct.06 19:21:22 - rocketserializer.components.open_rocket_wrangler - INFO - Child 'SkyAngle Classic 52 [Cd 1.46 (9 oz) 77.8 in^3]' processed
+2026.Oct.06 19:21:22 - rocketserializer.components.open_rocket_wrangler - INFO - Moving to the next child
+2026.Oct.06 19:21:22 - rocketserializer.components.open_rocket_wrangler - INFO - Child 'Ebay' processed
+2026.Oct.06 19:21:22 - rocketserializer.components.open_rocket_wrangler - INFO - Moving to the next child
+2026.Oct.06 19:21:22 - rocketserializer.components.open_rocket_wrangler - INFO - Child 'TIp tip' processed
+2026.Oct.06 19:21:22 - rocketserializer.components.open_rocket_wrangler - INFO - Moving to the next child
+2026.Oct.06 19:21:22 - rocketserializer.components.open_rocket_wrangler - INFO - No more children for 'Body Tube'
+2026.Oct.06 19:21:22 - rocketserializer.components.open_rocket_wrangler - INFO - Finished processing 'Body Tube'
+2026.Oct.06 19:21:22 - rocketserializer.components.open_rocket_wrangler - INFO - Child 'Body Tube' processed
+2026.Oct.06 19:21:22 - rocketserializer.components.open_rocket_wrangler - INFO - Moving to the next child
+2026.Oct.06 19:21:22 - rocketserializer.components.open_rocket_wrangler - INFO - Starting to process element 'Transition' of type 'Transition'
+2026.Oct.06 19:21:22 - rocketserializer.components.open_rocket_wrangler - INFO - No more children for 'Transition'
+2026.Oct.06 19:21:22 - rocketserializer.components.open_rocket_wrangler - INFO - Finished processing 'Transition'
+2026.Oct.06 19:21:22 - rocketserializer.components.open_rocket_wrangler - INFO - Child 'Transition' processed
+2026.Oct.06 19:21:22 - rocketserializer.components.open_rocket_wrangler - INFO - Moving to the next child
+2026.Oct.06 19:21:22 - rocketserializer.components.open_rocket_wrangler - INFO - No more children for 'Sustainer'
+2026.Oct.06 19:21:22 - rocketserializer.components.open_rocket_wrangler - INFO - Finished processing 'Sustainer'
+2026.Oct.06 19:21:22 - rocketserializer.components.open_rocket_wrangler - INFO - Child 'Sustainer' processed
+2026.Oct.06 19:21:22 - rocketserializer.components.open_rocket_wrangler - INFO - Moving to the next child
+2026.Oct.06 19:21:22 - rocketserializer.components.open_rocket_wrangler - INFO - No more children for 'Rocket'
+2026.Oct.06 19:21:22 - rocketserializer.components.open_rocket_wrangler - INFO - Finished processing 'Rocket'
+2026.Oct.06 19:21:22 - rocketserializer.ork_extractor - INFO - The elements are:
+                       1739007734686928368: 
+                           type: Rocket
+                           name: Rocket
+                           length: 2.0065430000000006
+                           position: 0
+                       -5679497127958013396: 
+                           type: AxialStage
+                           name: Sustainer
+                           length: 2.0065430000000006
+                           position: 2.0065430000000006
+                       -5376989472489070449: 
+                           type: NoseCone
+                           name: Nose Cone
+                           length: 0.563118
+                           position: 0.0
+                       652685105379260307: 
+                           type: BodyTube
+                           name: Body Tube
+                           length: 0.27622500000000005
+                           position: 0.563118
+                       -8272416254533457353: 
+                           type: TubeCoupler
+                           name: Tube Coupler
+                           length: 0.2032
+                           position: 0.6361430000000001
+                       -5051557963512495887: 
+                           type: BodyTube
+                           name: Body Tube
+                           length: 1.0922000000000005
+                           position: 0.8393430000000001
+                       -3171018367462854211: 
+                           type: InnerTube
+                           name: Inner Tube
+                           length: 0.635
+                           position: 1.2965430000000007
+                       -2697872570439357595: 
+                           type: CenteringRing
+                           name: Centering Ring
+                           length: 0.00635
+                           position: 2.5347930000000005
+                       -3427561307953905452: 
+                           type: CenteringRing
+                           name: Centering Ring
+                           length: 0.00635
+                           position: 2.185543000000001
+                       -5038789585595482902: 
+                           type: TrapezoidFinSet
+                           name: Trapezoidal Fin Set
+                           length: 0.1651
+                           position: 2.414143000000001
+                       -5954334982693920912: 
+                           type: Bulkhead
+                           name: Bulkhead
+                           length: 0.00635
+                           position: 2.2553930000000006
+                       3582897226001332961: 
+                           type: Bulkhead
+                           name: Bulkhead
+                           length: 0.00635
+                           position: 2.0966430000000007
+                       2109075252313471632: 
+                           type: Transition
+                           name: Transition
+                           length: 0.07500000000000001
+                           position: 1.9315430000000005
+
+2026.Oct.06 19:21:22 - rocketserializer.components.nose_cone - INFO - Collected the dimensions of the nosecone: length, shape and position.
+2026.Oct.06 19:21:22 - rocketserializer.components.nose_cone - INFO - Nosecone is a haack nosecone, searching for the shape parameter
+2026.Oct.06 19:21:22 - rocketserializer.components.nose_cone - INFO - Shape parameter of the nosecone: 0.0
+2026.Oct.06 19:21:22 - rocketserializer.components.nose_cone - INFO - Nosecone setting defined:
+                        name: Nose Cone
+                       kind: Von Karman
+                       length: 0.563118
+                       base_radius: 0.0511048
+                       position: 0.0
+
+2026.Oct.06 19:21:22 - rocketserializer.components.fins - INFO - A total of 1 trapezoidal fin sets were detected
+2026.Oct.06 19:21:22 - rocketserializer.components.fins - INFO - Starting collecting the settings for the trapezoidal fin set number '0'
+2026.Oct.06 19:21:22 - rocketserializer.components.fins - INFO - Found the element 'Trapezoidal Fin Set' in the elements dictionary.
+2026.Oct.06 19:21:22 - rocketserializer.components.fins - INFO - Number of fins retrieved: 4
+2026.Oct.06 19:21:22 - rocketserializer.components.fins - INFO - Root chord retrieved: 0.165100
+2026.Oct.06 19:21:22 - rocketserializer.components.fins - INFO - Tip chord retrieved: 0.088900
+2026.Oct.06 19:21:22 - rocketserializer.components.fins - INFO - Span retrieved: 0.101600
+2026.Oct.06 19:21:22 - rocketserializer.components.fins - INFO - Sweep length and angle retrieved: 0.07619999999999999, None
+2026.Oct.06 19:21:22 - rocketserializer.components.fins - INFO - Cant angle retrieved: 0.000000
+2026.Oct.06 19:21:22 - rocketserializer.components.fins - INFO - Crosssection format retrieved
+2026.Oct.06 19:21:22 - rocketserializer.components.fins - INFO - Trapezoidal fin set number '0' was defined:
+                       name: Trapezoidal Fin Set
+                       number: 4
+                       root_chord: 0.1651
+                       tip_chord: 0.08889999999999999
+                       span: 0.10159999999999998
+                       position: 2.414143000000001
+                       sweep_length: 0.07619999999999999
+                       sweep_angle: None
+                       cant_angle: 0.0
+                       section: airfoil
+
+2026.Oct.06 19:21:22 - rocketserializer.components.fins - INFO - Finished collecting all the trapezoidal fins.
+2026.Oct.06 19:21:22 - rocketserializer.components.fins - INFO - A total of 0 elliptical fin sets were detected
+2026.Oct.06 19:21:22 - rocketserializer.components.fins - INFO - Since no elliptical fins were detected, returning empty dictionary
+2026.Oct.06 19:21:22 - rocketserializer.components.transition - INFO - A total of 1 transitions were found
+2026.Oct.06 19:21:22 - rocketserializer.components.transition - INFO - Starting to collect the settings of the transition number 0
+2026.Oct.06 19:21:22 - rocketserializer.components.transition - INFO - Collected the name of the transition number 0
+2026.Oct.06 19:21:22 - rocketserializer.components.transition - INFO - Collected the dimensions of the transition number 0
+2026.Oct.06 19:21:22 - rocketserializer.components.transition - INFO - The transition number 0 was defined with the following settings:
+                       name: Transition
+                       top_radius: 0.0511048
+                       bottom_radius: 0.025
+                       length: 0.07500000000000001
+                       position: 1.9315430000000005
+
+2026.Oct.06 19:21:22 - rocketserializer.components.transition - INFO - All the 1 transition settings were defined
+2026.Oct.06 19:21:22 - rocketserializer.components.rail_buttons - INFO - Could not fetch a pair of rail buttons
+2026.Oct.06 19:21:22 - rocketserializer.components.parachute - INFO - A total of 2 parachutes were detected
+2026.Oct.06 19:21:22 - rocketserializer.components.parachute - INFO - Starting to collect the settings of the parachute number 0
+2026.Oct.06 19:21:22 - rocketserializer.components.parachute - INFO - Parachute 'SkyAngle Classic 24 [Cd 1.16 (3.5 oz) 38.1 in^3]' has a drag coefficient of 1.160000
+2026.Oct.06 19:21:22 - rocketserializer.components.parachute - INFO - Parachute 'SkyAngle Classic 24 [Cd 1.16 (3.5 oz) 38.1 in^3]' will deploy at apogee
+2026.Oct.06 19:21:22 - rocketserializer.components.parachute - INFO - The Parachute number 0 had its settings defined:
+                       name: SkyAngle Classic 24 [Cd 1.16 (3.5 oz) 38.1 in^3]
+                       cd: 1.16
+                       cds: 0.338561669233784
+                       area: 0.29186350796015864
+                       deploy_event: apogee
+                       deploy_delay: 0.5
+                       deploy_altitude: None
+
+2026.Oct.06 19:21:22 - rocketserializer.components.parachute - INFO - Starting to collect the settings of the parachute number 1
+2026.Oct.06 19:21:22 - rocketserializer.components.parachute - INFO - Parachute 'SkyAngle Classic 52 [Cd 1.46 (9 oz) 77.8 in^3]' has a drag coefficient of 1.460000
+2026.Oct.06 19:21:22 - rocketserializer.components.parachute - INFO - Parachute 'SkyAngle Classic 52 [Cd 1.46 (9 oz) 77.8 in^3]' will deploy at altitude
+2026.Oct.06 19:21:22 - rocketserializer.components.parachute - INFO - The Parachute number 1 had its settings defined:
+                       name: SkyAngle Classic 52 [Cd 1.46 (9 oz) 77.8 in^3]
+                       cd: 1.46
+                       cds: 2.000400054280265
+                       area: 1.3701370234796337
+                       deploy_event: altitude
+                       deploy_delay: 0.0
+                       deploy_altitude: 228.60000000000002
+
+2026.Oct.06 19:21:22 - rocketserializer.components.parachute - INFO - All parachutes settings were collected
+2026.Oct.06 19:21:22 - rocketserializer.components.stored_results - INFO - Found the 'flightdata' tag in the 'simulation' tag.
+2026.Oct.06 19:21:22 - rocketserializer.components.stored_results - INFO - Retrieved the 'max_altitude' value from the .ork file: 2319.388
+2026.Oct.06 19:21:22 - rocketserializer.components.stored_results - INFO - Retrieved the 'max_velocity' value from the .ork file: 262.185
+2026.Oct.06 19:21:22 - rocketserializer.components.stored_results - INFO - Retrieved the 'max_acceleration' value from the .ork file: 132.971
+2026.Oct.06 19:21:22 - rocketserializer.components.stored_results - INFO - Retrieved the 'max_mach' value from the .ork file: 0.781
+2026.Oct.06 19:21:22 - rocketserializer.components.stored_results - INFO - Retrieved the 'time_to_apogee' value from the .ork file: 20.786
+2026.Oct.06 19:21:22 - rocketserializer.components.stored_results - INFO - Retrieved the 'flight_time' value from the .ork file: 154.127
+2026.Oct.06 19:21:22 - rocketserializer.components.stored_results - INFO - Retrieved the 'ground_hit_velocity' value from the .ork file: 7.31
+2026.Oct.06 19:21:22 - rocketserializer.components.stored_results - INFO - Retrieved the 'launch_rod_velocity' value from the .ork file: 21.887
+2026.Oct.06 19:21:22 - rocketserializer.components.stored_results - INFO - The flight data was successfully retrieved:
+                       max_altitude: 2319.388
+                       max_velocity: 262.185
+                       max_acceleration: 132.971
+                       max_mach: 0.781
+                       time_to_apogee: 20.786
+                       flight_time: 154.127
+                       ground_hit_velocity: 7.31
+                       launch_rod_velocity: 21.887
+                       max_stability_margin: 2.46
+                       min_stability_margin: 0.0
+                       burnout_stability_margin: 2.423
+                       max_thrust: 541.417
+
+2026.Oct.06 19:21:22 - rocketserializer.components.drag_curve - INFO - Collected altitude vector
+2026.Oct.06 19:21:22 - rocketserializer.components.drag_curve - INFO - Removed data after apogee
+2026.Oct.06 19:21:22 - rocketserializer.components.drag_curve - INFO - Collected drag coefficient and Mach number
+2026.Oct.06 19:21:22 - rocketserializer.components.drag_curve - INFO - Successfully created the drag curve
+2026.Oct.06 19:21:22 - rocketserializer.components.drag_curve - INFO - Successfully saved the drag curve file to: '/home/jcg/Documents/school/CWRU/26F/rocket/github/RocketPy/drag_curve.csv'
+2026.Oct.06 19:21:22 - rocketserializer.ork_extractor - INFO - Drag curve generated.
+2026.Oct.06 19:21:22 - rocketserializer.components.motor - INFO - Collected thrust vector
+2026.Oct.06 19:21:22 - rocketserializer.components.motor - INFO - The thrust points were sorted to be in ascending order
+2026.Oct.06 19:21:22 - rocketserializer.components.motor - INFO - Successfully clipped the thrust curve to remove negative values
+2026.Oct.06 19:21:22 - rocketserializer.components.motor - INFO - Successfully created the thrust curve
+2026.Oct.06 19:21:22 - rocketserializer.components.motor - INFO - Successfully saved the thrust curve to: '/home/jcg/Documents/school/CWRU/26F/rocket/github/RocketPy/thrust_source.csv'
+2026.Oct.06 19:21:22 - rocketserializer.ork_extractor - INFO - Thrust curve generated.
+2026.Oct.06 19:21:22 - rocketserializer.ork_extractor - INFO - Extraction completed. A dictionary with all the parameters was generated.
+2026.Oct.06 19:21:22 - rocketserializer.ork_extractor - INFO - Dictionary with the parameters:
+                       id: 
+                           rocket_name: Rocket
+                           comment: None
+                           designer: None
+                           filepath: /home/jcg/Documents/school/CWRU/26F/rocket/github/RocketPy/rocket.ork
+                       environment: 
+                           latitude: 33.2
+                           longitude: 112.0
+                           elevation: 337.0
+                           wind_average: 2.0
+                           wind_turbulence: 0.1
+                           geodetic_method: spherical
+                           base_temperature: 283.15000000000003
+                           base_pressure: 101325.0
+                           date: None
+                       rocket: 
+                           radius: 0.0511048
+                           mass: 7.668
+                           inertia: (0.011, 0.011, 1.237)
+                           center_of_mass_without_propellant: 1.136
+                           coordinate_system_orientation: nose_to_tail
+                           drag_curve: /home/jcg/Documents/school/CWRU/26F/rocket/github/RocketPy/drag_curve.csv
+                       nosecones: 
+                           name: Nose Cone
+                           kind: Von Karman
+                           length: 0.563118
+                           base_radius: 0.0511048
+                           position: 0.0
+                       trapezoidal_fins: 
+                           0: 
+                               name: Trapezoidal Fin Set
+                               number: 4
+                               root_chord: 0.1651
+                               tip_chord: 0.08889999999999999
+                               span: 0.10159999999999998
+                               position: 2.414143000000001
+                               sweep_length: 0.07619999999999999
+                               sweep_angle: None
+                               cant_angle: 0.0
+                               section: airfoil
+                       elliptical_fins: 
+                       tails: 
+                           0: 
+                               name: Transition
+                               top_radius: 0.0511048
+                               bottom_radius: 0.025
+                               length: 0.07500000000000001
+                               position: 1.9315430000000005
+                       parachutes: 
+                           0: 
+                               name: SkyAngle Classic 24 [Cd 1.16 (3.5 oz) 38.1 in^3]
+                               cd: 1.16
+                               cds: 0.338561669233784
+                               area: 0.29186350796015864
+                               deploy_event: apogee
+                               deploy_delay: 0.5
+                               deploy_altitude: None
+                           1: 
+                               name: SkyAngle Classic 52 [Cd 1.46 (9 oz) 77.8 in^3]
+                               cd: 1.46
+                               cds: 2.000400054280265
+                               area: 1.3701370234796337
+                               deploy_event: altitude
+                               deploy_delay: 0.0
+                               deploy_altitude: 228.60000000000002
+                       rail_buttons: 
+                       motors: 
+                           grain_density: 467.5820023221925
+                           grain_initial_inner_radius: 0.0135
+                           grain_outer_radius: 0.027
+                           grain_initial_height: 0.635
+                           nozzle_radius: 0.02025
+                           throat_radius: 0.0135
+                           dry_mass: 0
+                           dry_inertia: (0, 0, 0)
+                           center_of_dry_mass_position: 0
+                           grains_center_of_mass_position: 0
+                           grain_number: 1
+                           grain_separation: 0
+                           nozzle_position: -0.3175
+                           coordinate_system_orientation: nozzle_to_combustion_chamber
+                           position: 1.6010235294117678
+                           thrust_source: /home/jcg/Documents/school/CWRU/26F/rocket/github/RocketPy/thrust_source.csv
+                       flight: 
+                           rail_length: 1.778
+                           inclination: 90.0
+                           heading: 90.0
+                       stored_results: 
+                           max_altitude: 2319.388
+                           max_velocity: 262.185
+                           max_acceleration: 132.971
+                           max_mach: 0.781
+                           time_to_apogee: 20.786
+                           flight_time: 154.127
+                           ground_hit_velocity: 7.31
+                           launch_rod_velocity: 21.887
+                           max_stability_margin: 2.46
+                           min_stability_margin: 0.0
+                           burnout_stability_margin: 2.423
+                           max_thrust: 541.417
+
+2026.Oct.06 19:21:22 - orhelper._orhelper - INFO - JVM shut down
+2026.Oct.06 19:21:22 - rocketserializer.nb_builder - INFO - [NOTEBOOK BUILDER] Header created
+2026.Oct.06 19:21:22 - rocketserializer.nb_builder - INFO - [NOTEBOOK BUILDER] Imports section created
+2026.Oct.06 19:21:22 - rocketserializer.nb_builder - INFO - [NOTEBOOK BUILDER] Environment section created
+2026.Oct.06 19:21:22 - rocketserializer.nb_builder - INFO - [NOTEBOOK BUILDER] Motor section created
+2026.Oct.06 19:21:22 - rocketserializer.nb_builder - INFO - [NOTEBOOK BUILDER] Nosecone created.
+2026.Oct.06 19:21:22 - rocketserializer.nb_builder - INFO - [NOTEBOOK BUILDER] Trapezoidal fins created.
+2026.Oct.06 19:21:22 - rocketserializer.nb_builder - INFO - [NOTEBOOK BUILDER] 1 fins were added to the rocket.
+2026.Oct.06 19:21:22 - rocketserializer.nb_builder - INFO - [NOTEBOOK BUILDER] Tails created.
+2026.Oct.06 19:21:22 - rocketserializer.nb_builder - INFO - [NOTEBOOK BUILDER] All aerodynamic surfaces created.
+2026.Oct.06 19:21:22 - rocketserializer.nb_builder - INFO - [NOTEBOOK BUILDER] Parachutes created.
+2026.Oct.06 19:21:22 - rocketserializer.nb_builder - WARNING - No rail buttons were added to the rocket.
+2026.Oct.06 19:21:22 - rocketserializer.nb_builder - INFO - [NOTEBOOK BUILDER] Rocket section created
+2026.Oct.06 19:21:22 - rocketserializer.nb_builder - INFO - [NOTEBOOK BUILDER] Flight section created.
+2026.Oct.06 19:21:22 - rocketserializer.nb_builder - INFO - [NOTEBOOK BUILDER] Compare Results section created.
+2026.Oct.06 19:21:22 - rocketserializer.nb_builder - INFO - [NOTEBOOK BUILDER] Notebook saved to '/home/jcg/Documents/school/CWRU/26F/rocket/github/RocketPy/simulation.ipynb'
+2026.Oct.06 19:21:22 - rocketserializer.nb_builder - INFO - [NOTEBOOK BUILDER] Black formatting applied to the final notebook
+2026.Oct.06 19:21:22 - rocketserializer.nb_builder - INFO - [NOTEBOOK BUILDER] Notebook successfully built! You can find it at: /home/jcg/Documents/school/CWRU/26F/rocket/github/RocketPy

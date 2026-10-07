@@ -1,0 +1,124 @@
+{
+    "elliptical_fins": {},
+    "environment": {
+        "base_pressure": 101325.0,
+        "base_temperature": 283.15000000000003,
+        "date": null,
+        "elevation": 337.0,
+        "geodetic_method": "spherical",
+        "latitude": 33.2,
+        "longitude": 112.0,
+        "wind_average": 2.0,
+        "wind_turbulence": 0.1
+    },
+    "flight": {
+        "heading": 90.0,
+        "inclination": 90.0,
+        "rail_length": 1.778
+    },
+    "id": {
+        "comment": null,
+        "designer": null,
+        "filepath": "/home/jcg/Documents/school/CWRU/26F/rocket/github/RocketPy/rocket.ork",
+        "rocket_name": "Rocket"
+    },
+    "motors": {
+        "center_of_dry_mass_position": 0,
+        "coordinate_system_orientation": "nozzle_to_combustion_chamber",
+        "dry_inertia": [
+            0,
+            0,
+            0
+        ],
+        "dry_mass": 0,
+        "grain_density": 467.5820023221925,
+        "grain_initial_height": 0.635,
+        "grain_initial_inner_radius": 0.0135,
+        "grain_number": 1,
+        "grain_outer_radius": 0.027,
+        "grain_separation": 0,
+        "grains_center_of_mass_position": 0,
+        "nozzle_position": -0.3175,
+        "nozzle_radius": 0.02025,
+        "position": 1.6010235294117678,
+        "throat_radius": 0.0135,
+        "thrust_source": "/home/jcg/Documents/school/CWRU/26F/rocket/github/RocketPy/thrust_source.csv"
+    },
+    "nosecones": {
+        "base_radius": 0.0511048,
+        "kind": "Von Karman",
+        "length": 0.563118,
+        "name": "Nose Cone",
+        "position": 0.0
+    },
+    "parachutes": {
+        "0": {
+            "area": 0.29186350796015864,
+            "cd": 1.16,
+            "cds": 0.338561669233784,
+            "deploy_altitude": null,
+            "deploy_delay": 0.5,
+            "deploy_event": "apogee",
+            "name": "SkyAngle Classic 24 [Cd 1.16 (3.5 oz) 38.1 in^3]"
+        },
+        "1": {
+            "area": 1.3701370234796337,
+            "cd": 1.46,
+            "cds": 2.000400054280265,
+            "deploy_altitude": 228.60000000000002,
+            "deploy_delay": 0.0,
+            "deploy_event": "altitude",
+            "name": "SkyAngle Classic 52 [Cd 1.46 (9 oz) 77.8 in^3]"
+        }
+    },
+    "rail_buttons": {},
+    "rocket": {
+        "center_of_mass_without_propellant": 1.136,
+        "coordinate_system_orientation": "nose_to_tail",
+        "drag_curve": "/home/jcg/Documents/school/CWRU/26F/rocket/github/RocketPy/drag_curve.csv",
+        "inertia": [
+            0.011,
+            0.011,
+            1.237
+        ],
+        "mass": 7.668,
+        "radius": 0.0511048
+    },
+    "stored_results": {
+        "burnout_stability_margin": 2.423,
+        "flight_time": 154.127,
+        "ground_hit_velocity": 7.31,
+        "launch_rod_velocity": 21.887,
+        "max_acceleration": 132.971,
+        "max_altitude": 2319.388,
+        "max_mach": 0.781,
+        "max_stability_margin": 2.46,
+        "max_thrust": 541.417,
+        "max_velocity": 262.185,
+        "min_stability_margin": 0.0,
+        "time_to_apogee": 20.786
+    },
+    "tails": {
+        "0": {
+            "bottom_radius": 0.025,
+            "length": 0.07500000000000001,
+            "name": "Transition",
+            "position": 1.9315430000000005,
+            "top_radius": 0.0511048
+        }
+    },
+    "trapezoidal_fins": {
+        "0": {
+            "cant_angle": 0.0,
+            "name": "Trapezoidal Fin Set",
+            "number": 4,
+            "position": 2.414143000000001,
+            "root_chord": 0.1651,
+            "section": "airfoil",
+            "span": 0.10159999999999998,
+            "sweep_angle": null,
+            "sweep_length": 0.07619999999999999,
+            "tip_chord": 0.08889999999999999
+        }
+    }
+}
