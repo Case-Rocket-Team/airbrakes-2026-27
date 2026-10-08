@@ -96,8 +96,9 @@ def integrate_attitudes(nrows, dts, gyros_radps):
     for i in range(nrows):
         out[i,:] = attitude.elements
 
-        attitude_diff = 0.5 * dts[i] * attitude * \
-            Quaternion(real=0, imaginary=gyros_radps[i,:])
+        attitude_diff = attitude * Quaternion(
+            real=0, imaginary=0.5 * dts[i] * gyros_radps[i,:]
+        )
         attitude = (attitude + attitude_diff).unit
 
     return out.astype(np.float32)
@@ -149,7 +150,7 @@ def process_6dof(full_data):
 
     attitudes = integrate_attitudes(nrows, dts, gyros_radps)
 
-    g = np.array([0, 0, 1])
+    g = np.array([0, 0, 32.174])
     accelerometer_fps2 = np.zeros((nrows, 3), dtype=np.float32)
     for i in range(nrows):
         quat = Quaternion(attitudes[i,:]).conjugate

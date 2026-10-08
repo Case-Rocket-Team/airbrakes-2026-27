@@ -77,25 +77,58 @@ int main(void) {
         },
     };
 
-    f32* att_similarity = calloc(ork.len, sizeof(f32));
-    f32* pos_err_x = calloc(ork.len, sizeof(f32)); 
-    f32* pos_err_y = calloc(ork.len, sizeof(f32));
-    f32* pos_err_z = calloc(ork.len, sizeof(f32));
-    f32* vel_err_x = calloc(ork.len, sizeof(f32));
-    f32* vel_err_y = calloc(ork.len, sizeof(f32));
-    f32* vel_err_z = calloc(ork.len, sizeof(f32));
+    FILE* out_file = fopen("ekf_results.csv", "w");
+    fprintf(
+        out_file,
+        "time_us,att_similarity,"
+        "pos_err_x,pos_err_y,pos_err_z,"
+        "vel_err_x,vel_err_y,vel_err_z,"
+        "accel_bias_err_x,accel_bias_err_y,accel_bias_err_z,"
+        "gyro_bias_err_x,gyro_bias_err_y,gyro_bias_err_z,"
+        "magn_bias_err_x,magn_bias_err_y,magn_bias_err_z,"
+        "\n"
+    );
 
     extended_kalman_filter ekf;
     ekf_init(&ekf, &settings, 0);
 
+    vec3f accel_bias_fps2 = {
+        prng_rand_f32(&rng),
+        prng_rand_f32(&rng),
+        prng_rand_f32(&rng),
+    };
+
+    vec3f gyro_bias_radps = {
+        0.2f * prng_rand_f32(&rng),
+        0.2f * prng_rand_f32(&rng),
+        0.2f * prng_rand_f32(&rng),
+    };
+
+    vec3f magn_bias_gauss = {
+        prng_rand_f32(&rng),
+        prng_rand_f32(&rng),
+        prng_rand_f32(&rng),
+    };
+
     for (u32 i = 0; i < ork.len; i++) {
         u32 ts = (u32)(ork.time_s[i] * 1e6f);
 
-        vec3f accel_fps2 = vec3f_perturb(
-            &rng, ork.accel_fps2[i], settings.accel_var_f2ps4
+        vec3f accel_fps2 = vec3f_add(
+            vec3f_perturb(
+                &rng, accel_bias_fps2, settings.accel_bias_var_f2ps4
+            ),
+            vec3f_perturb(
+                &rng, ork.accel_fps2[i], settings.accel_var_f2ps4
+            )
         );
-        vec3f gyro_radps = vec3f_perturb(
-            &rng, ork.gyro_radps[i], settings.gyro_var_rad2ps2
+
+        vec3f gyro_radps = vec3f_add(
+            vec3f_perturb(
+                &rng, gyro_bias_radps, settings.gyro_bias_var_rad2ps2
+            ),
+            vec3f_perturb(
+                &rng, ork.gyro_radps[i], settings.gyro_var_rad2ps2
+            )
         );
 
         ekf_inject_imu(&ekf, accel_fps2, gyro_radps, ts);
@@ -112,10 +145,15 @@ int main(void) {
             .z = -ork.attitude[i].z,
         };
 
-        vec3f magn_gauss = vec3f_perturb(
-            &rng,
-            quatf_rot_vec3f(world_to_body, world_north),
-            5e-3f * 5e-3f
+        vec3f magn_gauss = vec3f_add(
+            vec3f_perturb(
+                &rng, magn_bias_gauss, settings.magn_bias_var_gauss2
+            ),
+            vec3f_perturb(
+                &rng,
+                quatf_rot_vec3f(world_to_body, world_north),
+                5e-3f * 5e-3f
+            )
         );
 
         ekf_inject_magn(&ekf, magn_gauss, ts);
@@ -133,19 +171,49 @@ int main(void) {
             ekf_inject_gnss(&ekf, gnss_ft, ts);
         }
 
-        att_similarity[i] = acosf(
-            quatf_dot(ork.attitude[i], ekf.nominal_state.attitude)
+        f32 att_dot = quatf_dot(ork.attitude[i], ekf.nominal_state.attitude);
+        f32 att_similarity = acosf(
+            CLAMP(att_dot, -1.0f, 1.0f)
         ) * 180.0f / 3.1415926535f;
 
-        pos_err_x[i] = err_fn(ork.pos_ft[i].x, ekf.nominal_state.pos_ft.x);
-        pos_err_y[i] = err_fn(ork.pos_ft[i].y, ekf.nominal_state.pos_ft.y);
-        pos_err_z[i] = err_fn(ork.pos_ft[i].z, ekf.nominal_state.pos_ft.z);
-        vel_err_x[i] = err_fn(ork.vel_fps[i].x, ekf.nominal_state.vel_fps.x);
-        vel_err_y[i] = err_fn(ork.vel_fps[i].y, ekf.nominal_state.vel_fps.y);
-        vel_err_z[i] = err_fn(ork.vel_fps[i].z, ekf.nominal_state.vel_fps.z);
+        f32 pos_err_x = err_fn(ork.pos_ft[i].x, ekf.nominal_state.pos_ft.x);
+        f32 pos_err_y = err_fn(ork.pos_ft[i].y, ekf.nominal_state.pos_ft.y);
+        f32 pos_err_z = err_fn(ork.pos_ft[i].z, ekf.nominal_state.pos_ft.z);
+        f32 vel_err_x = err_fn(ork.vel_fps[i].x, ekf.nominal_state.vel_fps.x);
+        f32 vel_err_y = err_fn(ork.vel_fps[i].y, ekf.nominal_state.vel_fps.y);
+        f32 vel_err_z = err_fn(ork.vel_fps[i].z, ekf.nominal_state.vel_fps.z);
+
+        f32 accel_bias_err_x = err_fn(accel_bias_fps2.x, ekf.nominal_state.accel_bias_fps2.x);
+        f32 accel_bias_err_y = err_fn(accel_bias_fps2.y, ekf.nominal_state.accel_bias_fps2.y);
+        f32 accel_bias_err_z = err_fn(accel_bias_fps2.z, ekf.nominal_state.accel_bias_fps2.z);
+
+        f32 gyro_bias_err_x = err_fn(gyro_bias_radps.x, ekf.nominal_state.gyro_bias_radps.x);
+        f32 gyro_bias_err_y = err_fn(gyro_bias_radps.y, ekf.nominal_state.gyro_bias_radps.y);
+        f32 gyro_bias_err_z = err_fn(gyro_bias_radps.z, ekf.nominal_state.gyro_bias_radps.z);
+
+        f32 magn_bias_err_x = err_fn(magn_bias_gauss.x, ekf.nominal_state.magn_bias_gauss.x);
+        f32 magn_bias_err_y = err_fn(magn_bias_gauss.y, ekf.nominal_state.magn_bias_gauss.y);
+        f32 magn_bias_err_z = err_fn(magn_bias_gauss.z, ekf.nominal_state.magn_bias_gauss.z);
+
+        fprintf(
+            out_file,
+            "%u,%.10g,"
+            "%.10g,%.10g,%.10g,"
+            "%.10g,%.10g,%.10g,"
+            "%.10g,%.10g,%.10g,"
+            "%.10g,%.10g,%.10g,"
+            "%.10g,%.10g,%.10g"
+            "\n",
+            ts, att_similarity,
+            pos_err_x, pos_err_y, pos_err_z,
+            vel_err_x, vel_err_y, vel_err_z,
+            accel_bias_err_x, accel_bias_err_y, accel_bias_err_z,
+            gyro_bias_err_x, gyro_bias_err_y, gyro_bias_err_z,
+            magn_bias_err_x, magn_bias_err_y, magn_bias_err_z
+        );
     }
 
-    printf("Attitude Stats - ");
+    /*printf("Attitude Stats - ");
     print_stats(calc_stats(att_similarity, ork.len));
 
     printf("Position Err x - ");
@@ -160,13 +228,15 @@ int main(void) {
     printf("Velocity Err y - ");
     print_stats(calc_stats(vel_err_y, ork.len));
     printf("Velocity Err z - ");
-    print_stats(calc_stats(vel_err_z, ork.len));
+    print_stats(calc_stats(vel_err_z, ork.len));*/
+
+    fclose(out_file);
 
     return 0;
 }
 
 f32 err_fn(f32 a, f32 b) {
-    return ABS(a - b);
+    return a - b;
 }
 
 arr_stats calc_stats(f32* nums, u32 n) {
