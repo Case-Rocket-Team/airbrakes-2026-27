@@ -73,8 +73,9 @@ test_apogee_predictor:
 	$(CXX) control/tests/test_apogee_predictor.cpp control/predictor/apogee_predictor.cpp control/physics/dynamics.cpp control/physics/atmosphere.cpp control/physics/drag.cpp $(CXXFLAGS) $(LFLAGS) -o $(BIN_DIR)test_apogee_predictor$(BIN_EXT)
 	$(BIN_DIR)test_apogee_predictor$(BIN_EXT)
 
-test: test_kf test_control test_atmosphere test_drag test_dynamics test_apogee_predictor
+test: test_kf test_ekf test_control test_atmosphere test_drag test_dynamics test_apogee_predictor
 
 clean:
 	$(RM_BIN)
+
 .PHONY: clean test_kf test_ekf test_control test_atmosphere test_drag test_dynamics test_apogee_predictor test
