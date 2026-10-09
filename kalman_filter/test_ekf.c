@@ -232,6 +232,8 @@ int main(void) {
 
     fclose(out_file);
 
+    free(ork.time_s);
+
     return 0;
 }
 

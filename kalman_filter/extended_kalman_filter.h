@@ -19,6 +19,8 @@ Hampsey: https://matthewhampsey.github.io/blog/2020/07/18/mekf
 extern "C" {
 #endif
 
+#include <assert.h>
+
 #include "base/base.h"
 
 #define EKF_STATE_DIM 18
