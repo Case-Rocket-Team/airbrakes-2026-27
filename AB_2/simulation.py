@@ -13,26 +13,20 @@
 
 
 from rocketpy import Environment, SolidMotor, Rocket, Flight, TrapezoidalFins, EllipticalFins, RailButtons, NoseCone, Tail, Parachute
+from controller import controller_function;
 import datetime
+import config
 
 
 # ## Environment
 # 
 
 
-env = Environment()
-env.set_location(latitude=28.61, longitude=-80.6)
-env.set_elevation(0.0)
-
-
-# Optionally, you can set the date and atmospheric model
-# 
-
+env = Environment(latitude=config.LATITUDE, longitude=config.LONGITUDE, elevation=config.ELEVATION, )
 
 tomorrow = datetime.date.today() + datetime.timedelta(days=1)
 env.set_date((tomorrow.year, tomorrow.month, tomorrow.day, 12))
 # env.set_atmospheric_model(type='Forecast', file='GFS')
-
 # env.all_info()
 
 
@@ -42,7 +36,7 @@ env.set_date((tomorrow.year, tomorrow.month, tomorrow.day, 12))
 
 
 motor = SolidMotor(
-    thrust_source='thrust_source.csv',
+    thrust_source='./data/thrust_source.csv',
     dry_mass=0,
     center_of_dry_mass_position=0,
     dry_inertia=[0, 0, 0],
@@ -60,10 +54,6 @@ motor = SolidMotor(
     interpolation_method='linear',
     coordinate_system_orientation='nozzle_to_combustion_chamber',
 )
-
-
-# motor.all_info()
-
 
 # ## Rocket
 # Currently, only single stage rockets are supported by Rocket-Serializer
@@ -147,15 +137,29 @@ parachutes[1] = Parachute(
 )
 
 
+
 rocket = Rocket(
     radius=0.0511048,
     mass=7.974,
     inertia=[0.011, 0.011, 2.051],
-    power_off_drag='drag_curve.csv',
-    power_on_drag='drag_curve.csv',
+    power_off_drag='./data/drag_curve.csv',
+    power_on_drag='./data/drag_curve.csv',
     center_of_mass_without_motor=1.321,
     coordinate_system_orientation='nose_to_tail',
 )
+
+air_brakes = rocket.add_air_brakes(
+    drag_coefficient_curve="./data/example_airbrakes_cd.csv",
+    controller_function=controller_function,
+    sampling_rate=config.AIRBRAKES_SAMPLING_RATE,
+    reference_area=config.AIRBRAKES_REFERENCE_AREA,
+    clamp=True,
+    initial_observed_variables=[0, 0, 0],
+    override_rocket_drag=False,
+    name="Air Brakes",
+)
+
+#air_brakes.all_info()
 
 
 # ### Adding surfaces to the rocket
@@ -196,16 +200,15 @@ rocket.draw()
 flight = Flight(
     rocket=rocket,
     environment=env,
-    rail_length=1,
-    inclination=90.0,
-    heading=90.0,
-    terminate_on_apogee=False,
-    max_time=600,
+    rail_length=config.RAIL_LENGTH,
+    inclination=config.RAIL_INCLINATION,
+    heading=config.RAIL_HEADING,
+    terminate_on_apogee=config.TERMINATE_ON_APOGEE,
+    max_time=config.MAX_SIM_TIME,
 )
 
 flight.plots.trajectory_3d()
 
-print(f"out of rail time: {flight.out_of_rail_time}"),
 
 # ## Compare Results
 # We will now compare the results of the simulation with the parameters used to create it. Let's go!
