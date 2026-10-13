@@ -4099,6 +4099,17 @@
 			(embedded_fonts no)
 		)
 	)
+	(text "Transferring data directly to\nSD Card from MCU.\nTransfer to flash memory first?"
+		(exclude_from_sim no)
+		(at 13.208 64.262 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left)
+		)
+		(uuid "0c5160e0-2227-430b-8c8c-93c22cb2a83e")
+	)
 	(text "SD Card"
 		(exclude_from_sim no)
 		(at 28.448 57.15 0)
@@ -4145,13 +4156,23 @@
 	)
 	(text "Motor\nEncoder\n134.4 pulse/rev"
 		(exclude_from_sim no)
-		(at 264.668 119.634 0)
+		(at 266.954 114.554 0)
 		(effects
 			(font
 				(size 1.27 1.27)
 			)
 		)
 		(uuid "38742fa0-ab9c-48fd-9f49-5d608a65c761")
+	)
+	(text "I2C Data for \nMag & GPS"
+		(exclude_from_sim no)
+		(at 202.692 127 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+		)
+		(uuid "456a1048-765e-4e38-bbee-32f892991a82")
 	)
 	(text "Address:\n0x1C or 0x1E"
 		(exclude_from_sim no)
@@ -4173,9 +4194,9 @@
 		)
 		(uuid "5b4b742b-518f-4445-8833-330ae1caafb9")
 	)
-	(text "I2C Pins for \nMag & GPS"
+	(text "I2C CLK for \nMag & GPS"
 		(exclude_from_sim no)
-		(at 202.946 97.028 0)
+		(at 263.398 86.36 0)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -4372,16 +4393,8 @@
 		(uuid "06802a70-6445-4d3c-b843-270fbcd35b05")
 	)
 	(no_connect
-		(at 251.46 121.92)
-		(uuid "0c641a4a-1932-4db2-96a9-7678ec05e38a")
-	)
-	(no_connect
 		(at 251.46 99.06)
 		(uuid "0d66668c-f83b-43ce-a7cf-65de63f3ecb7")
-	)
-	(no_connect
-		(at 214.63 127)
-		(uuid "10bb04ba-2c1d-4fc1-9044-211bb3dcb51e")
 	)
 	(no_connect
 		(at 251.46 116.84)
@@ -4499,7 +4512,7 @@
 	)
 	(wire
 		(pts
-			(xy 209.55 99.06) (xy 214.63 99.06)
+			(xy 256.54 86.36) (xy 251.46 86.36)
 		)
 		(stroke
 			(width 0)
@@ -4539,7 +4552,7 @@
 	)
 	(wire
 		(pts
-			(xy 251.46 86.36) (xy 259.08 86.36)
+			(xy 214.63 99.06) (xy 207.01 99.06)
 		)
 		(stroke
 			(width 0)
@@ -4686,6 +4699,16 @@
 			(type dash)
 		)
 		(uuid "2871f94e-a925-425b-9e05-e5c7af76e0f2")
+	)
+	(wire
+		(pts
+			(xy 251.46 46.99) (xy 264.16 46.99)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "2893dfe6-584e-4aca-a7ae-c089d2bface0")
 	)
 	(wire
 		(pts
@@ -4929,6 +4952,16 @@
 	)
 	(wire
 		(pts
+			(xy 264.16 46.99) (xy 264.16 48.26)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "71dde408-1d0d-4b2c-a54a-b88c19d28a39")
+	)
+	(wire
+		(pts
 			(xy 40.64 162.56) (xy 38.1 162.56)
 		)
 		(stroke
@@ -4946,6 +4979,16 @@
 			(type default)
 		)
 		(uuid "762aae27-0710-407c-991b-5c1ff008b468")
+	)
+	(wire
+		(pts
+			(xy 251.46 121.92) (xy 260.35 121.92)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "76c7617c-21d6-40a3-97d6-194839ef18f2")
 	)
 	(wire
 		(pts
@@ -5239,7 +5282,7 @@
 	)
 	(wire
 		(pts
-			(xy 209.55 96.52) (xy 214.63 96.52)
+			(xy 209.55 127) (xy 214.63 127)
 		)
 		(stroke
 			(width 0)
@@ -5668,7 +5711,7 @@
 		(uuid "19c39609-4244-4344-b73b-cd6166d89b78")
 	)
 	(label "SDA"
-		(at 209.55 96.52 0)
+		(at 209.55 127 0)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -5678,12 +5721,12 @@
 		(uuid "19d06f04-e77a-40aa-a8ef-698147e0f2b3")
 	)
 	(label "SCL"
-		(at 209.55 99.06 0)
+		(at 256.54 86.36 180)
 		(effects
 			(font
 				(size 1.27 1.27)
 			)
-			(justify left bottom)
+			(justify right bottom)
 		)
 		(uuid "1cbdef88-30c6-40bb-a285-a6dcc0a193e5")
 	)
@@ -5768,12 +5811,12 @@
 		(uuid "44880aa8-5e00-4133-b137-aeb950c93beb")
 	)
 	(label "~{CS_SD}"
-		(at 259.08 86.36 180)
+		(at 207.01 99.06 0)
 		(effects
 			(font
 				(size 1.27 1.27)
 			)
-			(justify right bottom)
+			(justify left bottom)
 		)
 		(uuid "56a93ecf-d7ab-4b50-8d27-72d8b0982f1e")
 	)
@@ -5906,6 +5949,16 @@
 			(justify right bottom)
 		)
 		(uuid "d4f03862-2147-4e20-a043-1a177bcdcdc2")
+	)
+	(label "SD_DET"
+		(at 260.35 121.92 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "f6ebf6aa-898c-42d6-8426-982b31a1da11")
 	)
 	(label "SCK"
 		(at 44.45 62.23 0)
@@ -6631,7 +6684,6 @@
 		(on_board yes)
 		(in_pos_files yes)
 		(dnp no)
-		(fields_autoplaced yes)
 		(uuid "62b606b3-0147-466a-80cd-219cef9c40f1")
 		(property "Reference" "#PWR021"
 			(at 270.51 62.23 0)
@@ -6645,7 +6697,7 @@
 			)
 		)
 		(property "Value" "+3.3V"
-			(at 270.51 53.34 0)
+			(at 270.51 54.61 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -7750,7 +7802,6 @@
 		(on_board yes)
 		(in_pos_files yes)
 		(dnp no)
-		(fields_autoplaced yes)
 		(uuid "b17f52f0-8a86-47c3-ae76-84ad185546de")
 		(property "Reference" "#PWR022"
 			(at 276.86 62.23 0)
@@ -7764,7 +7815,7 @@
 			)
 		)
 		(property "Value" "+1V1"
-			(at 276.86 53.34 0)
+			(at 276.86 54.61 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -9100,6 +9151,83 @@
 			(project "airbrakes_1"
 				(path "/4056183e-e49a-49da-b487-53d090193030"
 					(reference "#PWR03")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "power:GND")
+		(at 264.16 48.26 0)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(in_pos_files yes)
+		(dnp no)
+		(uuid "ffe80892-6ac4-4626-a721-eec0002509f4")
+		(property "Reference" "#PWR027"
+			(at 264.16 54.61 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "GND"
+			(at 267.716 50.038 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 264.16 48.26 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 264.16 48.26 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
+			(at 264.16 48.26 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(pin "1"
+			(uuid "f9a56fd1-91ba-409a-b3b4-24c49576e15e")
+		)
+		(instances
+			(project "airbrakes_1"
+				(path "/4056183e-e49a-49da-b487-53d090193030"
+					(reference "#PWR027")
 					(unit 1)
 				)
 			)
