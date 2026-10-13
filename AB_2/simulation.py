@@ -15,14 +15,12 @@
 from rocketpy import Environment, SolidMotor, Rocket, Flight, TrapezoidalFins, EllipticalFins, RailButtons, NoseCone, Tail, Parachute
 from controller import controller_function;
 import datetime
-import config
-
 
 # ## Environment
 # 
 
 
-env = Environment(latitude=config.LATITUDE, longitude=config.LONGITUDE, elevation=config.ELEVATION, )
+env = Environment(latitude=28.61, longitude=-80.6, elevation=0.0)
 
 tomorrow = datetime.date.today() + datetime.timedelta(days=1)
 env.set_date((tomorrow.year, tomorrow.month, tomorrow.day, 12))
@@ -151,8 +149,8 @@ rocket = Rocket(
 air_brakes = rocket.add_air_brakes(
     drag_coefficient_curve="./data/example_airbrakes_cd.csv",
     controller_function=controller_function,
-    sampling_rate=config.AIRBRAKES_SAMPLING_RATE,
-    reference_area=config.AIRBRAKES_REFERENCE_AREA,
+    sampling_rate=20,
+    reference_area=None,
     clamp=True,
     initial_observed_variables=[0, 0, 0],
     override_rocket_drag=False,
@@ -200,11 +198,11 @@ rocket.draw()
 flight = Flight(
     rocket=rocket,
     environment=env,
-    rail_length=config.RAIL_LENGTH,
-    inclination=config.RAIL_INCLINATION,
-    heading=config.RAIL_HEADING,
-    terminate_on_apogee=config.TERMINATE_ON_APOGEE,
-    max_time=config.MAX_SIM_TIME,
+    rail_length=1,
+    inclination=90,
+    heading=90,
+    terminate_on_apogee=False,
+    max_time=600,
 )
 
 flight.plots.trajectory_3d()
