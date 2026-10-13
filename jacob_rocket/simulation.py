@@ -4,10 +4,6 @@
 # Quick start: pip install runcell
 
 # # RocketPy Simulation
-# This notebook was generated using Rocket-Serializer, a RocketPy tool to convert simulation files to RocketPy simulations
-# The notebook was generated using the following parameters file: `/home/jcg/Documents/school/CWRU/26F/rocket/github/AB_2/parameters.json`
-# 
-
 
 # %pip install rocketpy<=2.0
 
@@ -26,7 +22,7 @@ env = Environment(latitude=28.61, longitude=-80.6, elevation=0.0)
 
 tomorrow = datetime.date.today() + datetime.timedelta(days=1)
 env.set_date((tomorrow.year, tomorrow.month, tomorrow.day, 12))
-#env.set_atmospheric_model(type='Forecast', file='GFS')
+env.set_atmospheric_model(type='Forecast', file='GFS')
 # env.all_info()
 
 
@@ -65,7 +61,6 @@ motor = SolidMotor(
 # ### Nosecones
 # 
 
-
 nosecone = NoseCone(
     length=0.7630159999999999,
     kind='Von Karman',
@@ -73,7 +68,6 @@ nosecone = NoseCone(
     rocket_radius=0.0763016,
     name='0.7630159999999999',
 )
-
 
 # ### Fins
 # As rocketpy allows for multiple fins sets, we will create a dictionary with all the fins sets and then add them to the rocket
@@ -214,7 +208,7 @@ flight = Flight(
 
 flight.plots.trajectory_3d()
 
-flight.plots.all()
+#flight.plots.all()
 # ## Compare Results
 # We will now compare the results of the simulation with the parameters used to create it. Let's go!
 # 
@@ -222,7 +216,7 @@ flight.plots.all()
 
 ### OpenRocket vs RocketPy Parameters
 # Values updated from original rocket.ork stored results block
-time_to_apogee_ork = 33.745
+time_to_apogee_ork = 33.75
 time_to_apogee_rpy = flight.apogee_time
 print(f"Time to apogee (OpenRocket): {time_to_apogee_ork:.3f} s")
 print(f"Time to apogee (RocketPy):   {time_to_apogee_rpy:.3f} s")
@@ -231,7 +225,7 @@ error_apogee_time = abs((apogee_time_difference)/time_to_apogee_rpy)*100
 print(f"Time to apogee difference:   {error_apogee_time:.3f} %")
 print()
 
-apogee_ork = 7269.969
+apogee_ork = 7270
 apogee_rpy = flight.apogee
 print(f"Apogee (OpenRocket): {apogee_ork:.3f} m")
 print(f"Apogee (RocketPy):   {apogee_rpy:.3f} m")
@@ -240,7 +234,7 @@ error_apogee = abs((apogee_difference)/apogee_rpy)*100
 print(f"Apogee difference:   {error_apogee:.3f} %")
 print()
 
-flight_time_ork = 319.372
+flight_time_ork = 319.0
 flight_time_rpy = flight.t_final
 print(f"Flight time (OpenRocket): {flight_time_ork:.3f} s")
 print(f"Flight time (RocketPy):   {flight_time_rpy:.3f} s")
@@ -249,7 +243,7 @@ error_flight_time = abs((flight_time_difference)/flight_time_rpy)*100
 print(f"Flight time difference:   {error_flight_time:.3f} %")
 print()
 
-ground_hit_velocity_ork = -7.479
+ground_hit_velocity_ork = -7.5
 ground_hit_velocity_rpy = flight.impact_velocity
 print(f"Ground hit velocity (OpenRocket): {ground_hit_velocity_ork:.3f} m/s")
 print(f"Ground hit velocity (RocketPy):   {ground_hit_velocity_rpy:.3f} m/s")
@@ -268,7 +262,7 @@ error_launch_rod_velocity = abs((launch_rod_velocity_difference)/launch_rod_velo
 print(f"Launch rod velocity difference:   {error_launch_rod_velocity:.3f} %")
 print()
 
-max_acceleration_ork = 154.545
+max_acceleration_ork = 155
 max_acceleration_rpy = flight.max_acceleration
 print(f"Max acceleration (OpenRocket): {max_acceleration_ork:.3f} m/s²")
 print(f"Max acceleration (RocketPy):   {max_acceleration_rpy:.3f} m/s²")
