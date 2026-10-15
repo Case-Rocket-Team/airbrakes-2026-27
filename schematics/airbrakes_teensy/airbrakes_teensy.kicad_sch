@@ -4311,7 +4311,7 @@
 		)
 		(uuid "9cbaf982-7b4e-4659-832a-0639ca14a81a")
 	)
-	(text "Flash on separate\nSPI bus."
+	(text "Flash on separate\nSPI bus from sensors."
 		(exclude_from_sim no)
 		(at 103.632 72.39 0)
 		(effects
@@ -4436,6 +4436,10 @@
 		(uuid "06802a70-6445-4d3c-b843-270fbcd35b05")
 	)
 	(no_connect
+		(at 128.27 162.56)
+		(uuid "137f641d-e28a-495d-a3d3-fe9666c861f6")
+	)
+	(no_connect
 		(at 62.23 123.19)
 		(uuid "13f04511-0ec6-416f-8fde-c8b33ec201b0")
 	)
@@ -4470,6 +4474,10 @@
 	(no_connect
 		(at 142.24 72.39)
 		(uuid "cb3d07e0-7c4e-4b42-8d7d-045246f23707")
+	)
+	(no_connect
+		(at 129.54 110.49)
+		(uuid "cd465926-1453-4f17-a91c-84277f314a5f")
 	)
 	(no_connect
 		(at 129.54 115.57)
@@ -5117,7 +5125,7 @@
 	)
 	(polyline
 		(pts
-			(xy 176.53 12.7) (xy 176.53 95.25)
+			(xy 177.165 12.7) (xy 177.165 95.25)
 		)
 		(stroke
 			(width 0)
@@ -5137,7 +5145,7 @@
 	)
 	(polyline
 		(pts
-			(xy 90.805 57.785) (xy 176.53 57.785)
+			(xy 90.805 57.785) (xy 177.165 57.785)
 		)
 		(stroke
 			(width 0)
@@ -5397,16 +5405,6 @@
 	)
 	(wire
 		(pts
-			(xy 128.27 162.56) (xy 137.16 162.56)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "c2c5d3a3-c22b-4a48-afa3-51b2fea69573")
-	)
-	(wire
-		(pts
 			(xy 142.24 30.48) (xy 154.94 30.48)
 		)
 		(stroke
@@ -5417,7 +5415,7 @@
 	)
 	(polyline
 		(pts
-			(xy 176.53 95.25) (xy 176.53 166.37)
+			(xy 177.165 95.25) (xy 177.165 166.37)
 		)
 		(stroke
 			(width 0)
@@ -5464,16 +5462,6 @@
 			(type default)
 		)
 		(uuid "ce3eba42-852b-46ed-9a5a-0cfae99ffaaf")
-	)
-	(wire
-		(pts
-			(xy 205.74 80.01) (xy 214.63 80.01)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "d02a1ae8-b8a4-4b7b-9729-1bc97b34b811")
 	)
 	(wire
 		(pts
@@ -5865,16 +5853,6 @@
 		)
 		(uuid "32f9c67a-45c4-46e7-b7da-e9fef66a0f37")
 	)
-	(label "INT_GPS"
-		(at 137.16 162.56 180)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify right bottom)
-		)
-		(uuid "384f2556-c138-4319-8181-8151fcf416e6")
-	)
 	(label "MOSI"
 		(at 209.55 95.25 0)
 		(effects
@@ -5964,16 +5942,6 @@
 			(justify left bottom)
 		)
 		(uuid "5d56f063-cda6-4135-8005-a97c0253773c")
-	)
-	(label "INT_GPS"
-		(at 205.74 80.01 0)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left bottom)
-		)
-		(uuid "5e3ddae7-0844-4ad6-8a92-8d8ce346b8a4")
 	)
 	(label "MOSI"
 		(at 72.39 166.37 180)
@@ -6349,10 +6317,9 @@
 		(on_board yes)
 		(in_pos_files yes)
 		(dnp no)
-		(fields_autoplaced yes)
 		(uuid "3360c3bb-896d-4e27-8016-a285cc814fe8")
 		(property "Reference" "U3"
-			(at 114.2353 148.59 0)
+			(at 124.206 150.114 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -7146,10 +7113,9 @@
 		(on_board yes)
 		(in_pos_files yes)
 		(dnp no)
-		(fields_autoplaced yes)
 		(uuid "6ede59e0-2ca7-4a22-a32e-20ee294d8d59")
-		(property "Reference" "U1"
-			(at 115.4872 102.87 0)
+		(property "Reference" "U4"
+			(at 125.73 104.14 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -7246,7 +7212,7 @@
 		(instances
 			(project "airbrakes_teensy"
 				(path "/4056183e-e49a-49da-b487-53d090193030"
-					(reference "U1")
+					(reference "U4")
 					(unit 1)
 				)
 			)
@@ -7360,10 +7326,9 @@
 		(on_board yes)
 		(in_pos_files yes)
 		(dnp no)
-		(fields_autoplaced yes)
 		(uuid "7917de97-fba7-4300-a74f-f93bf4e1dc2e")
 		(property "Reference" "U7"
-			(at 159.512 66.294 0)
+			(at 159.004 66.294 0)
 			(show_name no)
 			(do_not_autoplace yes)
 			(effects
@@ -7692,10 +7657,9 @@
 		(on_board yes)
 		(in_pos_files yes)
 		(dnp no)
-		(fields_autoplaced yes)
 		(uuid "97e3307f-e523-43f1-ba60-666afdd8d83f")
 		(property "Reference" "U5"
-			(at 52.806 113.03 0)
+			(at 58.42 114.3 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -7862,10 +7826,9 @@
 		(on_board yes)
 		(in_pos_files yes)
 		(dnp no)
-		(fields_autoplaced yes)
 		(uuid "9a41ab9f-3659-444d-a0dc-872ed4bd19e3")
 		(property "Reference" "U2"
-			(at 53.2844 157.48 0)
+			(at 61.722 159.004 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -8039,7 +8002,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "9bcc9918-4aab-4717-90cb-3b0c0bc6408b")
-		(property "Reference" "U4"
+		(property "Reference" "U1"
 			(at 232.41 59.69 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -8239,7 +8202,7 @@
 		(instances
 			(project "airbrakes_teensy"
 				(path "/4056183e-e49a-49da-b487-53d090193030"
-					(reference "U4")
+					(reference "U1")
 					(unit 1)
 				)
 			)
@@ -8268,7 +8231,7 @@
 			)
 		)
 		(property "Value" "GND"
-			(at 195.58 71.882 0)
+			(at 195.58 71.374 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
