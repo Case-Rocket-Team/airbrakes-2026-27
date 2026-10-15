@@ -1070,6 +1070,218 @@
 			)
 			(embedded_fonts no)
 		)
+		(symbol "airbrakes_1:Adafruit_5643"
+			(exclude_from_sim no)
+			(in_bom yes)
+			(on_board yes)
+			(in_pos_files yes)
+			(duplicate_pin_numbers_are_jumpers no)
+			(property "Reference" "U"
+				(at 7.112 11.176 0)
+				(show_name no)
+				(do_not_autoplace yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Value" ""
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Footprint" ""
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Datasheet" ""
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Description" ""
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(symbol "Adafruit_5643_0_1"
+				(rectangle
+					(start -7.62 10.16)
+					(end 7.62 -10.16)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type color)
+						(color 255 255 194 1)
+					)
+				)
+			)
+			(symbol "Adafruit_5643_1_1"
+				(text "Adafruit 5643\nSPI Flash"
+					(at -7.62 -12.7 0)
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+						(justify left)
+					)
+				)
+				(pin power_in line
+					(at -10.16 7.62 0)
+					(length 2.54)
+					(name "Vin"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "1"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin power_out line
+					(at -10.16 5.08 0)
+					(length 2.54)
+					(name "3V3"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "2"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin power_in line
+					(at -10.16 2.54 0)
+					(length 2.54)
+					(name "GND"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "3"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin input line
+					(at -10.16 0 0)
+					(length 2.54)
+					(name "SCK"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "4"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin output line
+					(at -10.16 -2.54 0)
+					(length 2.54)
+					(name "MISO"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "5"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin input line
+					(at -10.16 -5.08 0)
+					(length 2.54)
+					(name "MOSI"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "6"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin input line
+					(at -10.16 -7.62 0)
+					(length 2.54)
+					(name "CS"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "7"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+			)
+			(embedded_fonts no)
+		)
 		(symbol "airbrakes_1:BMP388"
 			(exclude_from_sim no)
 			(in_bom yes)
@@ -4099,6 +4311,16 @@
 		)
 		(uuid "9cbaf982-7b4e-4659-832a-0639ca14a81a")
 	)
+	(text "Flash on separate\nSPI bus."
+		(exclude_from_sim no)
+		(at 103.632 72.39 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+		)
+		(uuid "a87d2931-8afd-4d4e-b242-49dbdb84b250")
+	)
 	(text "Power"
 		(exclude_from_sim no)
 		(at 24.892 18.034 0)
@@ -4130,6 +4352,18 @@
 			)
 		)
 		(uuid "d09f9421-7b5c-4f8c-ba07-06b672611731")
+	)
+	(text "Flash"
+		(exclude_from_sim no)
+		(at 103.378 63.754 0)
+		(effects
+			(font
+				(size 5.08 5.08)
+				(thickness 0.635)
+				(italic yes)
+			)
+		)
+		(uuid "d22f6b3d-06d1-4c4e-a615-c4d46257c61a")
 	)
 	(junction
 		(at 132.08 177.8)
@@ -4232,6 +4466,10 @@
 	(no_connect
 		(at 52.07 81.28)
 		(uuid "b45f2ae4-e11d-4fbd-87c6-6af2a2acb36e")
+	)
+	(no_connect
+		(at 142.24 72.39)
+		(uuid "cb3d07e0-7c4e-4b42-8d7d-045246f23707")
 	)
 	(no_connect
 		(at 129.54 115.57)
@@ -4349,6 +4587,16 @@
 	)
 	(wire
 		(pts
+			(xy 133.35 85.09) (xy 142.24 85.09)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "1798f9a3-c264-4025-b352-96e65ec45807")
+	)
+	(wire
+		(pts
 			(xy 128.27 177.8) (xy 132.08 177.8)
 		)
 		(stroke
@@ -4449,6 +4697,16 @@
 	)
 	(wire
 		(pts
+			(xy 142.24 74.93) (xy 129.54 74.93)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "28a3eaac-501b-4932-aa7e-ed1e73f5ab09")
+	)
+	(wire
+		(pts
 			(xy 31.75 27.94) (xy 40.64 27.94)
 		)
 		(stroke
@@ -4466,6 +4724,16 @@
 			(type default)
 		)
 		(uuid "2a3b4e05-a46e-44b6-b3cc-3f874fbac101")
+	)
+	(wire
+		(pts
+			(xy 129.54 74.93) (xy 129.54 76.2)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "2de85523-b81c-4368-bb0d-ce3920173e13")
 	)
 	(wire
 		(pts
@@ -4566,6 +4834,16 @@
 			(type default)
 		)
 		(uuid "4534a50a-2785-4673-a924-bc2aa719a1d6")
+	)
+	(wire
+		(pts
+			(xy 142.24 69.85) (xy 134.62 69.85)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "45afb74c-6b74-4507-8bf4-a7181b40fffe")
 	)
 	(wire
 		(pts
@@ -4699,6 +4977,36 @@
 	)
 	(wire
 		(pts
+			(xy 204.47 67.31) (xy 214.63 67.31)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "6d08a927-341a-4477-b757-92d70a035aa6")
+	)
+	(wire
+		(pts
+			(xy 204.47 69.85) (xy 214.63 69.85)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "6de2553a-b2fb-4783-adc5-a996efa08828")
+	)
+	(wire
+		(pts
+			(xy 135.89 80.01) (xy 142.24 80.01)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "6fa4b9e0-bfa7-4631-84bb-34cc42d32fb5")
+	)
+	(wire
+		(pts
 			(xy 85.09 113.03) (xy 85.09 115.57)
 		)
 		(stroke
@@ -4716,6 +5024,16 @@
 			(type default)
 		)
 		(uuid "74f11c59-54c4-4626-9e9b-80c9c2f689f1")
+	)
+	(wire
+		(pts
+			(xy 250.19 97.79) (xy 256.54 97.79)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "75b8b21f-f1ce-4717-a6c6-f47370b7bae7")
 	)
 	(wire
 		(pts
@@ -4766,6 +5084,16 @@
 			(type default)
 		)
 		(uuid "7eef7fc2-8228-411b-aaf3-ccfd2ebe1e99")
+	)
+	(wire
+		(pts
+			(xy 208.28 111.76) (xy 214.63 111.76)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "80d230f4-8366-4d35-8e81-65ccabd07494")
 	)
 	(wire
 		(pts
@@ -4909,7 +5237,7 @@
 	)
 	(wire
 		(pts
-			(xy 209.55 114.3) (xy 214.63 114.3)
+			(xy 208.28 114.3) (xy 214.63 114.3)
 		)
 		(stroke
 			(width 0)
@@ -4936,6 +5264,16 @@
 			(type default)
 		)
 		(uuid "9aa48453-889d-4068-814f-b67fb9429622")
+	)
+	(wire
+		(pts
+			(xy 135.89 77.47) (xy 142.24 77.47)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "9b6dc07d-acfd-40bb-abdf-9022bdfb0592")
 	)
 	(wire
 		(pts
@@ -5169,6 +5507,16 @@
 	)
 	(wire
 		(pts
+			(xy 134.62 67.31) (xy 134.62 69.85)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "d4410180-05c8-426b-bd6e-03c364af6b13")
+	)
+	(wire
+		(pts
 			(xy 66.04 162.56) (xy 72.39 162.56)
 		)
 		(stroke
@@ -5286,6 +5634,16 @@
 			(type default)
 		)
 		(uuid "f24bd63b-13c9-4a74-9b10-68543933a6b7")
+	)
+	(wire
+		(pts
+			(xy 135.89 82.55) (xy 142.24 82.55)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "f2b9828a-8625-4365-bf95-b87f6a8559b6")
 	)
 	(wire
 		(pts
@@ -5438,12 +5796,12 @@
 		(uuid "1cbdef88-30c6-40bb-a285-a6dcc0a193e5")
 	)
 	(label "SCK"
-		(at 209.55 114.3 0)
+		(at 256.54 97.79 180)
 		(effects
 			(font
 				(size 1.27 1.27)
 			)
-			(justify left bottom)
+			(justify right bottom)
 		)
 		(uuid "21f66116-d20b-4453-9394-2cc24859cbdc")
 	)
@@ -5457,6 +5815,16 @@
 		)
 		(uuid "224ce68e-2ac8-4c09-98bb-23b784b53940")
 	)
+	(label "SCK1"
+		(at 135.89 77.47 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "23eab1c8-3127-4de4-9c45-859cadc052d3")
+	)
 	(label "MOSI"
 		(at 138.43 125.73 180)
 		(effects
@@ -5466,6 +5834,16 @@
 			(justify right bottom)
 		)
 		(uuid "2758674c-c0e8-4e75-a98a-4387ed5a0f6b")
+	)
+	(label "MISO1"
+		(at 204.47 69.85 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "2a8d8698-d999-4a9a-866e-203ee38b1b3d")
 	)
 	(label "~{CS_imu}"
 		(at 138.43 120.65 180)
@@ -5537,6 +5915,16 @@
 		)
 		(uuid "44880aa8-5e00-4133-b137-aeb950c93beb")
 	)
+	(label "~{CS_flash}"
+		(at 204.47 67.31 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "4beb8f5a-b622-4a36-9c76-7a15a7fc1ca3")
+	)
 	(label "~{CS_SD}"
 		(at 257.81 116.84 180)
 		(effects
@@ -5597,6 +5985,26 @@
 		)
 		(uuid "626ccc04-432f-425d-846c-67a194e06329")
 	)
+	(label "SCK1"
+		(at 208.28 114.3 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "634e08a6-d640-4a12-99d9-7124e191a3b2")
+	)
+	(label "MISO1"
+		(at 135.89 80.01 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "6e5f5b7a-76c5-4179-9448-ba84588691c2")
+	)
 	(label "MISO"
 		(at 44.45 66.04 0)
 		(effects
@@ -5606,6 +6014,16 @@
 			(justify left bottom)
 		)
 		(uuid "817431c5-27df-4148-8480-8142ee6545b1")
+	)
+	(label "~{CS_flash}"
+		(at 133.35 85.09 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "88413199-c4db-4409-82f1-4fbea0cc22b4")
 	)
 	(label "MISO"
 		(at 209.55 97.79 0)
@@ -5626,6 +6044,16 @@
 			(justify left bottom)
 		)
 		(uuid "973b14c5-fabb-4f6e-8fdc-d1d4927491df")
+	)
+	(label "MOSI1"
+		(at 135.89 82.55 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "9d3961b2-9e11-4391-9c91-9da62f3d79e5")
 	)
 	(label "INT_MAG"
 		(at 34.29 127 0)
@@ -5666,6 +6094,16 @@
 			(justify left bottom)
 		)
 		(uuid "ac2cc4e8-7f0d-4c9f-a315-ea9011fad0f3")
+	)
+	(label "MOSI1"
+		(at 208.28 111.76 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "b9242bd2-6404-4660-8753-be7cb486f1eb")
 	)
 	(label "SDA"
 		(at 95.25 165.1 0)
@@ -6374,6 +6812,83 @@
 		)
 	)
 	(symbol
+		(lib_id "power:GND")
+		(at 129.54 76.2 0)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(in_pos_files yes)
+		(dnp no)
+		(uuid "53b9f913-24b6-4e22-af50-fcb20473fece")
+		(property "Reference" "#PWR028"
+			(at 129.54 82.55 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "GND"
+			(at 129.54 80.518 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 129.54 76.2 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 129.54 76.2 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
+			(at 129.54 76.2 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(pin "1"
+			(uuid "be12b084-386a-4a97-b420-01568a35c001")
+		)
+		(instances
+			(project "airbrakes_teensy"
+				(path "/4056183e-e49a-49da-b487-53d090193030"
+					(reference "#PWR028")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
 		(lib_id "airbrakes_1:am-3637b")
 		(at 133.35 33.02 0)
 		(unit 1)
@@ -6830,6 +7345,101 @@
 			(project "airbrakes_teensy"
 				(path "/4056183e-e49a-49da-b487-53d090193030"
 					(reference "U6")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "airbrakes_1:Adafruit_5643")
+		(at 152.4 77.47 0)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(in_pos_files yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "7917de97-fba7-4300-a74f-f93bf4e1dc2e")
+		(property "Reference" "U7"
+			(at 159.512 66.294 0)
+			(show_name no)
+			(do_not_autoplace yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" ""
+			(at 152.4 77.47 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 152.4 77.47 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 152.4 77.47 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Description" ""
+			(at 152.4 77.47 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(pin "7"
+			(uuid "33f69019-1f5a-447a-85cb-d37193158740")
+		)
+		(pin "5"
+			(uuid "43206d73-73a3-489a-a9c8-34bfd54443fe")
+		)
+		(pin "6"
+			(uuid "b96dba11-d43e-458e-a358-ed4c8354f61b")
+		)
+		(pin "4"
+			(uuid "7d42c117-2f64-481f-88a8-edfeba3e9d6b")
+		)
+		(pin "2"
+			(uuid "e8ec8b79-6800-412b-b21b-0f183ab4adfa")
+		)
+		(pin "1"
+			(uuid "622db1c1-0abd-4249-8e89-f4bf4c398e21")
+		)
+		(pin "3"
+			(uuid "2e7b61f5-b530-47b3-9468-a4ed6b6d31e3")
+		)
+		(instances
+			(project "airbrakes_teensy"
+				(path "/4056183e-e49a-49da-b487-53d090193030"
+					(reference "U7")
 					(unit 1)
 				)
 			)
@@ -8176,6 +8786,83 @@
 			(project "airbrakes_teensy"
 				(path "/4056183e-e49a-49da-b487-53d090193030"
 					(reference "#PWR01")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "power:+3.3V")
+		(at 134.62 67.31 0)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(in_pos_files yes)
+		(dnp no)
+		(uuid "cb6b6ca8-70d6-471d-a006-4b9ea96fd233")
+		(property "Reference" "#PWR027"
+			(at 134.62 71.12 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "+3.3V"
+			(at 134.62 63.5 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 134.62 67.31 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 134.62 67.31 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Description" "Power symbol creates a global label with name \"+3.3V\""
+			(at 134.62 67.31 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(pin "1"
+			(uuid "28f0223d-7b6f-40df-94da-3c57e22ea4a1")
+		)
+		(instances
+			(project "airbrakes_teensy"
+				(path "/4056183e-e49a-49da-b487-53d090193030"
+					(reference "#PWR027")
 					(unit 1)
 				)
 			)
