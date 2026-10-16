@@ -2,10 +2,12 @@
 #include "control/actuator/actuator_model.hpp"
 #include "control/aero/brake_aero.hpp"
 #include "control/physics/dynamics.hpp"
+#include "control/predictor/apogee_predictor.hpp"
 
 #include <cassert>
 #include <cmath>
 #include <cstdio>
+#include <fstream>
 
 int main() {
     using namespace control;
@@ -48,6 +50,14 @@ int main() {
     f32 elapsed_time = 0.0f;
     constexpr int max_steps = 2000;
 
+    std::ofstream csv("closed_loop_reachable.csv");
+
+    assert(csv.is_open());
+
+    csv << "time_s,altitude_ft,velocity_fps,"
+        "predicted_apogee_ft,target_apogee_ft,"
+        "commanded_extension,actual_extension\n";
+
     for (
         int step = 0;
         step < max_steps && state.vertical_velocity_fps > 0.0f;
@@ -62,6 +72,25 @@ int main() {
             current_extension,
             actuator_parameters
         );
+
+        // Predict apogee using the current state and selected brake command.
+        const f32 predicted_apogee = predictor::predict_apogee(
+            state,
+            rocket_parameters,
+            aero_parameters,
+            current_extension,
+            command.extension,
+            mpc_parameters.prediction_dt,
+            actuator_parameters
+        );
+
+        csv << elapsed_time << ","
+            << state.altitude_ft << ","
+            << state.vertical_velocity_fps << ","
+            << predicted_apogee << ","
+            << mpc_parameters.target_apogee_ft << ","
+            << command.extension << ","
+            << current_extension << "\n";
 
         // Simulate physical actuator movement.
         const f32 next_extension = actuator::next_extension(
@@ -108,11 +137,13 @@ int main() {
         // Print one sample approximately every second.
         if (step % 20 == 0) {
             std::printf(
-                "t=%.2f s | altitude=%.1f ft | velocity=%.1f ft/s | extension=%.2f\n",
+                "t=%.2f s | altitude=%.1f ft | velocity=%.1f ft/s | extension=%.2f | predicted=%.1f ft | command=%.2f\n",
                 elapsed_time,
                 state.altitude_ft,
                 state.vertical_velocity_fps,
-                current_extension
+                current_extension,
+                predicted_apogee,
+                command.extension
             );
         }
     }
