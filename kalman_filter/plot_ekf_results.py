@@ -10,6 +10,7 @@ def main():
     t = df["time_us"] * 1e-6
 
     axs[0][0].plot(t, df["att_similarity"], label="Attitude Similarity")
+    axs[0][0].axhline(y=0, ls="--")
     axs[0][0].legend()
     axs[0][0].set_ylabel("Attitude Similarity (degrees)")
     axs[0][0].set_xlabel("Time (s)")
@@ -19,7 +20,7 @@ def main():
     axs[1][0].plot(t, df["pos_err_z"], label="Position Error (z)")
     axs[1][0].axhline(y=0, ls="--")
     axs[1][0].legend()
-    axs[1][0].set_ylabel("Error (ft)")
+    axs[1][0].set_ylabel("Position Error (ft)")
     axs[1][0].set_xlabel("Time (s)")
 
     axs[0][1].plot(t, df["vel_err_x"], label="Velocity Error (x)")
@@ -27,7 +28,7 @@ def main():
     axs[0][1].plot(t, df["vel_err_z"], label="Velocity Error (z)")
     axs[0][1].axhline(y=0, ls="--")
     axs[0][1].legend()
-    axs[0][1].set_ylabel("Error (ft/s)")
+    axs[0][1].set_ylabel("Velocity Error (ft/s)")
     axs[0][1].set_xlabel("Time (s)")
 
     axs[1][1].plot(t, df["accel_bias_err_x"], label="Accel Bias Error (x)")

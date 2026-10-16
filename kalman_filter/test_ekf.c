@@ -62,7 +62,6 @@ int main(void) {
 
         .baro_var_ft2 = 100.0f,
 
-        .world_magn_north_guass = world_north,
         .magn_covar_gauss2 = {
             3.2e-3f * 3.2e-3f, 0.0f, 0.0f,
             0.0f, 3.2e-3f * 3.2e-3f, 0.0f,
@@ -90,7 +89,12 @@ int main(void) {
     );
 
     extended_kalman_filter ekf;
-    ekf_init(&ekf, &settings, 0);
+    ekf_init(
+        &ekf, &settings, 
+        quatf_rot_vec3f(quatf_conj(ork.attitude[0]), (vec3f){ 0.0f, 0.0f, -1.0f }),
+        quatf_rot_vec3f(quatf_conj(ork.attitude[0]), world_north),
+        0
+    );
 
     vec3f accel_bias_fps2 = {
         prng_rand_f32(&rng),
@@ -113,6 +117,8 @@ int main(void) {
     for (u32 i = 0; i < ork.len; i++) {
         u32 ts = (u32)(ork.time_s[i] * 1e6f);
 
+        quatf world_to_body = quatf_conj(ork.attitude[i]);
+
         vec3f accel_fps2 = vec3f_add(
             vec3f_perturb(
                 &rng, accel_bias_fps2, settings.accel_bias_var_f2ps4
@@ -131,19 +137,14 @@ int main(void) {
             )
         );
 
-        ekf_inject_imu(&ekf, accel_fps2, gyro_radps, ts);
+        ekf_inject_imu(
+            &ekf, accel_fps2, gyro_radps, ts
+        );
 
         f32 baro_altitude_ft = ork.pos_ft[i].z +
             prng_std_norm(&rng) * sqrtf(settings.baro_var_ft2);
 
         ekf_inject_baro(&ekf, baro_altitude_ft, ts);
-
-        quatf world_to_body = (quatf){
-            .w = ork.attitude[i].w,
-            .x = -ork.attitude[i].x,
-            .y = -ork.attitude[i].y,
-            .z = -ork.attitude[i].z,
-        };
 
         vec3f magn_gauss = vec3f_add(
             vec3f_perturb(
