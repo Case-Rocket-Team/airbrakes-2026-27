@@ -97,21 +97,24 @@ int main(void) {
     );
 
     vec3f accel_bias_fps2 = {
-        prng_rand_f32(&rng),
-        prng_rand_f32(&rng),
-        prng_rand_f32(&rng),
+        0
+        //prng_rand_f32(&rng),
+        //prng_rand_f32(&rng),
+        //prng_rand_f32(&rng),
     };
 
     vec3f gyro_bias_radps = {
-        0.2f * prng_rand_f32(&rng),
-        0.2f * prng_rand_f32(&rng),
-        0.2f * prng_rand_f32(&rng),
+        0
+        //0.2f * prng_rand_f32(&rng),
+        //0.2f * prng_rand_f32(&rng),
+        //0.2f * prng_rand_f32(&rng),
     };
 
     vec3f magn_bias_gauss = {
-        prng_rand_f32(&rng),
-        prng_rand_f32(&rng),
-        prng_rand_f32(&rng),
+        0
+        //prng_rand_f32(&rng),
+        //prng_rand_f32(&rng),
+        //prng_rand_f32(&rng),
     };
 
     for (u32 i = 0; i < ork.len; i++) {
@@ -173,7 +176,7 @@ int main(void) {
         }
 
         f32 att_dot = quatf_dot(ork.attitude[i], ekf.nominal_state.attitude);
-        f32 att_similarity = acosf(
+        f32 att_similarity = 2.0f * acosf(
             CLAMP(att_dot, -1.0f, 1.0f)
         ) * 180.0f / 3.1415926535f;
 
