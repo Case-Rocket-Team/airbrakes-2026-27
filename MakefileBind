@@ -1,0 +1,36 @@
+CXX = g++
+C = gcc
+
+BASE = -O2
+CFLAGS = -std=c11 $(BASE)
+CXXFLAGS = -std=c++17 $(BASE)
+LFLAGS =  -shared -fPIC
+
+INCLUDE= -I/usr/include/python3.14/ -I.
+LIBS = -lairbrakes
+LIBFLAGS = -L. $(LIBS) -Wl,-rpath,'.'
+
+$(VERBOSE).SILENT:
+
+
+default_target: all
+.PHONY : default_target
+
+all: libso buildc run
+.PHONY : all
+
+libso:
+	$(C) $(CFLAGS) $(LFLAGS) $(INCLUDE) base/base.c base/base.h kalman_filter/extended_kalman_filter.c kalman_filter/extended_kalman_filter.h -o libairbrakes.so
+.PHONY : lib
+
+buildc:
+	 $(CXX) $(CXXFLAGS) $(LFLAGS) $(INCLUDE) $(LIBFLAGS) PyBind.cpp -o PyBind$(shell python3-config --extension-suffix)
+.PHONY : buildc
+
+run:
+	python3 test.py
+.PHONY : run
+
+clean:
+	rm -f libairbrakes.so PyBind$(shell python3-config --extension-suffix)
+.PHONY : clean
