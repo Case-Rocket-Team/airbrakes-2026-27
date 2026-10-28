@@ -22,31 +22,60 @@ typedef struct {
     vec3f* accel_fps2;
 } ork_data_6dof;
 
-typedef struct {
-    f32 mean;
-    f32 min;
-    f32 median;
-    f32 max;
-} arr_stats;
-
 f32 err_fn(f32 a, f32 b);
-
-// Note: this modifies the array
-arr_stats calc_stats(f32* nums, u32 n);
-void print_stats(arr_stats stats);
 
 void read_ork_6dof(const char* path, ork_data_6dof* ork);
 
 vec3f vec3f_perturb(prng* rng, vec3f v, f32 var);
 
-int main(void) {
+void run_ekf_step(
+    extended_kalman_filter* ekf, FILE* out_file, prng* rng,
+    u32 ts, quatf attitude, vec3f local_accel_fps2,
+    vec3f ref_gyro_radps, vec3f pos_ft, vec3f vel_fps,
+    vec3f accel_bias_fps2, vec3f gyro_bias_radps, 
+    vec3f magn_bias_gauss, b32 include_gnss
+);
+
+f32 get_arg_f32(i32 argc, char** argv, const char* arg_name, f32 def) {
+    for (i32 i = 0; i < argc; i++) {
+        if (strcmp(argv[i], arg_name) == 0 && i + 1 < argc) {
+            return strtof(argv[i+1], NULL);
+        }
+    }
+
+    return def;
+}
+
+const char* get_arg_cstr(
+    i32 argc, char** argv,
+    const char* arg_name, const char* def
+) {
+    for (i32 i = 0; i < argc; i++) {
+        if (strcmp(argv[i], arg_name) == 0 && i + 1 < argc) {
+            return argv[i+1];
+        }
+    }
+
+    return def;
+}
+
+int main(int argc, char** argv) {
+    printf(
+        "Test EKF Usage\n\n"
+        "test_ekf "
+        "--rng-seed [seed] "
+        "--pad-time [seconds (defaults to 20)] "
+        "--sensor-bias [zero|fixed] "
+        "\n\n"
+    );
+
     ork_data_6dof ork = { 0 };
 
     // This file is created by utils/ork_process.py
     read_ork_6dof("ork_processed_6dof.bin", &ork);
 
     prng rng = { 0 };
-    prng_seed(&rng, 1, 1);
+    prng_seed(&rng, (u32)get_arg_f32(argc, argv, "--rng-seed", 1.0f), 1);
 
     vec3f world_north = { 0.0f, 1.0f, 0.0f };
 
@@ -96,143 +125,62 @@ int main(void) {
         0
     );
 
-    vec3f accel_bias_fps2 = {
-        0
-        //prng_rand_f32(&rng),
-        //prng_rand_f32(&rng),
-        //prng_rand_f32(&rng),
-    };
+    const char* bias_setting = get_arg_cstr(argc, argv, "--sensor-bias", "fixed");
 
-    vec3f gyro_bias_radps = {
-        0
-        //0.2f * prng_rand_f32(&rng),
-        //0.2f * prng_rand_f32(&rng),
-        //0.2f * prng_rand_f32(&rng),
-    };
+    printf("bias setting: %s\n", bias_setting);
 
-    vec3f magn_bias_gauss = {
-        0
-        //prng_rand_f32(&rng),
-        //prng_rand_f32(&rng),
-        //prng_rand_f32(&rng),
-    };
+    vec3f accel_bias_fps2 = { 0 };
+    vec3f gyro_bias_radps = { 0 };
+    vec3f magn_bias_gauss = { 0 };
 
-    for (u32 i = 0; i < ork.len; i++) {
-        u32 ts = (u32)(ork.time_s[i] * 1e6f);
+    if (strcmp(bias_setting, "fixed") == 0) {
+        accel_bias_fps2 = (vec3f){
+            0.1f * prng_rand_f32(&rng),
+            0.1f * prng_rand_f32(&rng),
+            0.1f * prng_rand_f32(&rng),
+        };
 
-        quatf world_to_body = quatf_conj(ork.attitude[i]);
+        gyro_bias_radps = (vec3f){
+            0.1f * prng_rand_f32(&rng),
+            0.1f * prng_rand_f32(&rng),
+            0.1f * prng_rand_f32(&rng),
+        };
 
-        vec3f accel_fps2 = vec3f_add(
-            vec3f_perturb(
-                &rng, accel_bias_fps2, settings.accel_bias_var_f2ps4
-            ),
-            vec3f_perturb(
-                &rng, ork.accel_fps2[i], settings.accel_var_f2ps4
-            )
-        );
+        magn_bias_gauss = (vec3f){
+            0.1f * prng_rand_f32(&rng),
+            0.1f * prng_rand_f32(&rng),
+            0.1f * prng_rand_f32(&rng),
+        };
+    }
 
-        vec3f gyro_radps = vec3f_add(
-            vec3f_perturb(
-                &rng, gyro_bias_radps, settings.gyro_bias_var_rad2ps2
-            ),
-            vec3f_perturb(
-                &rng, ork.gyro_radps[i], settings.gyro_var_rad2ps2
-            )
-        );
+    f32 onpad_time_s = get_arg_f32(argc, argv, "--pad-time", 20.0f);
+    u32 onpad_steps = (u32)(onpad_time_s / 0.01f);
+    for (u32 i = 0; i < onpad_steps; i++) {
+        u32 ts = (u32)((f32)i * 0.01f * 1e6f);
 
-        ekf_inject_imu(
-            &ekf, accel_fps2, gyro_radps, ts
-        );
+        quatf world_to_body = quatf_conj(ork.attitude[0]);
 
-        f32 baro_altitude_ft = ork.pos_ft[i].z +
-            prng_std_norm(&rng) * sqrtf(settings.baro_var_ft2);
-
-        ekf_inject_baro(&ekf, baro_altitude_ft, ts);
-
-        vec3f magn_gauss = vec3f_add(
-            vec3f_perturb(
-                &rng, magn_bias_gauss, settings.magn_bias_var_gauss2
-            ),
-            vec3f_perturb(
-                &rng,
-                quatf_rot_vec3f(world_to_body, world_north),
-                5e-3f * 5e-3f
-            )
-        );
-
-        ekf_inject_magn(&ekf, magn_gauss, ts);
-
-        if ((i % 20) == 0) {
-            vec3f gnss_ft = vec3f_add(
-                ork.pos_ft[i],
-                (vec3f){
-                    sqrtf(ekf.settings.gnss_covar_ft2[0 * 3 + 0]) * prng_std_norm(&rng),
-                    sqrtf(ekf.settings.gnss_covar_ft2[1 * 3 + 1]) * prng_std_norm(&rng),
-                    sqrtf(ekf.settings.gnss_covar_ft2[2 * 3 + 2]) * prng_std_norm(&rng),
-                }
-            );
-
-            ekf_inject_gnss(&ekf, gnss_ft, ts);
-        }
-
-        f32 att_dot = quatf_dot(ork.attitude[i], ekf.nominal_state.attitude);
-        f32 att_similarity = 2.0f * acosf(
-            CLAMP(att_dot, -1.0f, 1.0f)
-        ) * 180.0f / 3.1415926535f;
-
-        f32 pos_err_x = err_fn(ork.pos_ft[i].x, ekf.nominal_state.pos_ft.x);
-        f32 pos_err_y = err_fn(ork.pos_ft[i].y, ekf.nominal_state.pos_ft.y);
-        f32 pos_err_z = err_fn(ork.pos_ft[i].z, ekf.nominal_state.pos_ft.z);
-        f32 vel_err_x = err_fn(ork.vel_fps[i].x, ekf.nominal_state.vel_fps.x);
-        f32 vel_err_y = err_fn(ork.vel_fps[i].y, ekf.nominal_state.vel_fps.y);
-        f32 vel_err_z = err_fn(ork.vel_fps[i].z, ekf.nominal_state.vel_fps.z);
-
-        f32 accel_bias_err_x = err_fn(accel_bias_fps2.x, ekf.nominal_state.accel_bias_fps2.x);
-        f32 accel_bias_err_y = err_fn(accel_bias_fps2.y, ekf.nominal_state.accel_bias_fps2.y);
-        f32 accel_bias_err_z = err_fn(accel_bias_fps2.z, ekf.nominal_state.accel_bias_fps2.z);
-
-        f32 gyro_bias_err_x = err_fn(gyro_bias_radps.x, ekf.nominal_state.gyro_bias_radps.x);
-        f32 gyro_bias_err_y = err_fn(gyro_bias_radps.y, ekf.nominal_state.gyro_bias_radps.y);
-        f32 gyro_bias_err_z = err_fn(gyro_bias_radps.z, ekf.nominal_state.gyro_bias_radps.z);
-
-        f32 magn_bias_err_x = err_fn(magn_bias_gauss.x, ekf.nominal_state.magn_bias_gauss.x);
-        f32 magn_bias_err_y = err_fn(magn_bias_gauss.y, ekf.nominal_state.magn_bias_gauss.y);
-        f32 magn_bias_err_z = err_fn(magn_bias_gauss.z, ekf.nominal_state.magn_bias_gauss.z);
-
-        fprintf(
-            out_file,
-            "%u,%.10g,"
-            "%.10g,%.10g,%.10g,"
-            "%.10g,%.10g,%.10g,"
-            "%.10g,%.10g,%.10g,"
-            "%.10g,%.10g,%.10g,"
-            "%.10g,%.10g,%.10g"
-            "\n",
-            ts, att_similarity,
-            pos_err_x, pos_err_y, pos_err_z,
-            vel_err_x, vel_err_y, vel_err_z,
-            accel_bias_err_x, accel_bias_err_y, accel_bias_err_z,
-            gyro_bias_err_x, gyro_bias_err_y, gyro_bias_err_z,
-            magn_bias_err_x, magn_bias_err_y, magn_bias_err_z
+        run_ekf_step(
+            &ekf, out_file, &rng, ts,
+            ork.attitude[0], quatf_rot_vec3f(
+                world_to_body, (vec3f){ 0, 0, 32.174f }
+            ), (vec3f){ 0 }, ork.pos_ft[0], (vec3f){ 0 },
+            accel_bias_fps2, gyro_bias_radps, magn_bias_gauss,
+            (i % 20) == 0
         );
     }
 
-    /*printf("Attitude Stats - ");
-    print_stats(calc_stats(att_similarity, ork.len));
+    for (u32 i = 0; i < ork.len; i++) {
+        u32 ts = (u32)((ork.time_s[i] + onpad_time_s) * 1e6f);
 
-    printf("Position Err x - ");
-    print_stats(calc_stats(pos_err_x, ork.len));
-    printf("Position Err y - ");
-    print_stats(calc_stats(pos_err_y, ork.len));
-    printf("Position Err z - ");
-    print_stats(calc_stats(pos_err_z, ork.len));
-
-    printf("Velocity Err x - ");
-    print_stats(calc_stats(vel_err_x, ork.len));
-    printf("Velocity Err y - ");
-    print_stats(calc_stats(vel_err_y, ork.len));
-    printf("Velocity Err z - ");
-    print_stats(calc_stats(vel_err_z, ork.len));*/
+        run_ekf_step(
+            &ekf, out_file, &rng, ts,
+            ork.attitude[i], ork.accel_fps2[i],
+            ork.gyro_radps[i], ork.pos_ft[i], ork.vel_fps[i],
+            accel_bias_fps2, gyro_bias_radps, magn_bias_gauss,
+            (i % 20) == 0
+        );
+    }
 
     fclose(out_file);
 
@@ -241,40 +189,112 @@ int main(void) {
     return 0;
 }
 
+void run_ekf_step(
+    extended_kalman_filter* ekf, FILE* out_file, prng* rng,
+    u32 ts, quatf attitude, vec3f local_accel_fps2,
+    vec3f ref_gyro_radps, vec3f pos_ft, vec3f vel_fps,
+    vec3f accel_bias_fps2, vec3f gyro_bias_radps, 
+    vec3f magn_bias_gauss, b32 include_gnss
+) {
+    quatf world_to_body = quatf_conj(attitude);
+
+    vec3f accel_fps2 = vec3f_add(
+        vec3f_perturb(
+            rng, accel_bias_fps2, ekf->settings.accel_bias_var_f2ps4
+        ),
+        vec3f_perturb(
+            rng, local_accel_fps2, ekf->settings.accel_var_f2ps4
+        )
+    );
+
+    vec3f gyro_radps = vec3f_add(
+        vec3f_perturb(
+            rng, gyro_bias_radps, ekf->settings.gyro_bias_var_rad2ps2
+        ),
+        vec3f_perturb(
+            rng, ref_gyro_radps, ekf->settings.gyro_var_rad2ps2
+        )
+    );
+
+    ekf_inject_imu(
+        ekf, accel_fps2, gyro_radps, ts
+    );
+
+    f32 baro_altitude_ft = pos_ft.z +
+        prng_std_norm(rng) * sqrtf(ekf->settings.baro_var_ft2);
+
+    ekf_inject_baro(ekf, baro_altitude_ft, ts);
+
+    vec3f magn_gauss = vec3f_add(
+        vec3f_perturb(
+            rng, magn_bias_gauss, ekf->settings.magn_bias_var_gauss2
+        ),
+        vec3f_perturb(
+            rng,
+            quatf_rot_vec3f(world_to_body, ekf->world_magn_north_guass),
+            5e-3f * 5e-3f
+        )
+    );
+
+    ekf_inject_magn(ekf, magn_gauss, ts);
+
+    if (include_gnss) {
+        vec3f gnss_ft = vec3f_add(
+            pos_ft,
+            (vec3f){
+                sqrtf(ekf->settings.gnss_covar_ft2[0 * 3 + 0]) * prng_std_norm(rng),
+                sqrtf(ekf->settings.gnss_covar_ft2[1 * 3 + 1]) * prng_std_norm(rng),
+                sqrtf(ekf->settings.gnss_covar_ft2[2 * 3 + 2]) * prng_std_norm(rng),
+            }
+        );
+
+        ekf_inject_gnss(ekf, gnss_ft, ts);
+    }
+
+    f32 att_dot = quatf_dot(attitude, ekf->nominal_state.attitude);
+    f32 att_similarity = 2.0f * acosf(
+        CLAMP(att_dot, -1.0f, 1.0f)
+    ) * 180.0f / 3.1415926535f;
+
+    f32 pos_err_x = err_fn(pos_ft.x, ekf->nominal_state.pos_ft.x);
+    f32 pos_err_y = err_fn(pos_ft.y, ekf->nominal_state.pos_ft.y);
+    f32 pos_err_z = err_fn(pos_ft.z, ekf->nominal_state.pos_ft.z);
+    f32 vel_err_x = err_fn(vel_fps.x, ekf->nominal_state.vel_fps.x);
+    f32 vel_err_y = err_fn(vel_fps.y, ekf->nominal_state.vel_fps.y);
+    f32 vel_err_z = err_fn(vel_fps.z, ekf->nominal_state.vel_fps.z);
+
+    f32 accel_bias_err_x = err_fn(accel_bias_fps2.x, ekf->nominal_state.accel_bias_fps2.x);
+    f32 accel_bias_err_y = err_fn(accel_bias_fps2.y, ekf->nominal_state.accel_bias_fps2.y);
+    f32 accel_bias_err_z = err_fn(accel_bias_fps2.z, ekf->nominal_state.accel_bias_fps2.z);
+
+    f32 gyro_bias_err_x = err_fn(gyro_bias_radps.x, ekf->nominal_state.gyro_bias_radps.x);
+    f32 gyro_bias_err_y = err_fn(gyro_bias_radps.y, ekf->nominal_state.gyro_bias_radps.y);
+    f32 gyro_bias_err_z = err_fn(gyro_bias_radps.z, ekf->nominal_state.gyro_bias_radps.z);
+
+    f32 magn_bias_err_x = err_fn(magn_bias_gauss.x, ekf->nominal_state.magn_bias_gauss.x);
+    f32 magn_bias_err_y = err_fn(magn_bias_gauss.y, ekf->nominal_state.magn_bias_gauss.y);
+    f32 magn_bias_err_z = err_fn(magn_bias_gauss.z, ekf->nominal_state.magn_bias_gauss.z);
+
+    fprintf(
+        out_file,
+        "%u,%.10g,"
+        "%.10g,%.10g,%.10g,"
+        "%.10g,%.10g,%.10g,"
+        "%.10g,%.10g,%.10g,"
+        "%.10g,%.10g,%.10g,"
+        "%.10g,%.10g,%.10g"
+        "\n",
+        ts, att_similarity,
+        pos_err_x, pos_err_y, pos_err_z,
+        vel_err_x, vel_err_y, vel_err_z,
+        accel_bias_err_x, accel_bias_err_y, accel_bias_err_z,
+        gyro_bias_err_x, gyro_bias_err_y, gyro_bias_err_z,
+        magn_bias_err_x, magn_bias_err_y, magn_bias_err_z
+    );
+}
+
 f32 err_fn(f32 a, f32 b) {
     return a - b;
-}
-
-arr_stats calc_stats(f32* nums, u32 n) {
-    arr_stats stats = { 0 };
-
-    f32 sum = 0.0f;
-    for (u32 i = 0; i < n; i++) {
-        sum += nums[i];
-    }
-
-    stats.mean = sum / (f32)n;
-
-    for (u32 i = 1; i < n; i++) {
-        for (u32 j = i; j >= 1 && nums[j] < nums[j-1]; j--) {
-            f32 tmp = nums[j];
-            nums[j] = nums[j-1];
-            nums[j-1] = tmp;
-        }
-    }
-
-    stats.min = nums[0];
-    stats.median = n % 2 == 0 ? 0.5f * (nums[n/2 - 1] + nums[n/2]) : nums[n/2];
-    stats.max = nums[n-1];
-
-    return stats;
-}
-
-void print_stats(arr_stats stats) {
-    printf(
-        "{ Mean: %f, Min: %f, Median: %f, Max: %f }\n",
-        stats.mean, stats.min, stats.median, stats.max
-    );
 }
 
 void read_ork_6dof(const char* path, ork_data_6dof* ork) {
