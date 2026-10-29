@@ -85,12 +85,26 @@ f32 predict_apogee(
         );
 
         // Propagate rocket dynamics using existing physics.
+        const physics::VerticalState previous_state = state;
+
         state = physics::propagate_vertical(
             state,
             parameters,
             cd,
             dt
         );
+
+        if (state.vertical_velocity_fps <= 0.0f) {
+            const f32 fraction =
+                previous_state.vertical_velocity_fps /
+                (previous_state.vertical_velocity_fps - state.vertical_velocity_fps);
+
+            return previous_state.altitude_ft +
+                previous_state.vertical_velocity_fps * dt * fraction +
+                0.5f *
+                ((state.vertical_velocity_fps - previous_state.vertical_velocity_fps) / dt) *
+                (dt * fraction) * (dt * fraction);
+        }
 
         extension = next_position;
     }
