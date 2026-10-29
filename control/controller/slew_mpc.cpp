@@ -42,9 +42,12 @@ BrakeCommand slew_mpc(
             actuator_parameters
         );
 
-        const f32 error = std::fabs(
+        const f32 apogee_error = std::fabs(
             predicted_apogee - mpc_parameters.target_apogee_ft
         );
+
+        const f32 error = apogee_error +
+            0.1f * std::fabs(extension - current_extension);
 
         if (error < best_error) {
             best_error = error;
@@ -65,7 +68,7 @@ BrakeCommand slew_mpc(
 
     const f32 full_extension_error = std::fabs(
         full_extension_apogee - mpc_parameters.target_apogee_ft
-    );
+    ) + 0.1f * std::fabs(1.0f - current_extension);
 
     if (full_extension_error < best_error) {
         best_extension = 1.0f;
