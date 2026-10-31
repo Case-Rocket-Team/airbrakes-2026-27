@@ -70,7 +70,7 @@ test_dynamics:
 
 test_apogee_predictor:
 	@$(MKDIR_BIN)
-	$(CXX) control/tests/test_apogee_predictor.cpp control/predictor/apogee_predictor.cpp control/aero/brake_aero.cpp control/physics/dynamics.cpp control/physics/atmosphere.cpp control/physics/drag.cpp $(CXXFLAGS) $(LFLAGS) -o $(BIN_DIR)test_apogee_predictor$(BIN_EXT)
+	$(CXX) control/tests/test_apogee_predictor.cpp control/predictor/apogee_predictor.cpp control/actuator/actuator_model.cpp control/aero/brake_aero.cpp control/physics/dynamics.cpp control/physics/atmosphere.cpp control/physics/drag.cpp $(CXXFLAGS) $(LFLAGS) -o $(BIN_DIR)test_apogee_predictor$(BIN_EXT)
 	$(BIN_DIR)test_apogee_predictor$(BIN_EXT)
 
 test_brake_aero:
@@ -80,12 +80,42 @@ test_brake_aero:
 
 test_ideal_mpc:
 	@$(MKDIR_BIN)
-	$(CXX) control/tests/test_ideal_mpc.cpp control/controller/ideal_mpc.cpp control/predictor/apogee_predictor.cpp control/aero/brake_aero.cpp control/physics/dynamics.cpp control/physics/atmosphere.cpp control/physics/drag.cpp $(CXXFLAGS) $(LFLAGS) -o $(BIN_DIR)test_ideal_mpc$(BIN_EXT)
+	$(CXX) control/tests/test_ideal_mpc.cpp control/controller/ideal_mpc.cpp control/predictor/apogee_predictor.cpp control/actuator/actuator_model.cpp control/aero/brake_aero.cpp control/physics/dynamics.cpp control/physics/atmosphere.cpp control/physics/drag.cpp $(CXXFLAGS) $(LFLAGS) -o $(BIN_DIR)test_ideal_mpc$(BIN_EXT)
 	$(BIN_DIR)test_ideal_mpc$(BIN_EXT)
 
-test: test_kf test_ekf test_control test_atmosphere test_drag test_dynamics test_apogee_predictor test_brake_aero test_ideal_mpc
+test_actuator_model:
+	@$(MKDIR_BIN)
+	$(CXX) control/tests/test_actuator_model.cpp control/actuator/actuator_model.cpp $(CXXFLAGS) $(LFLAGS) -o $(BIN_DIR)test_actuator_model$(BIN_EXT)
+	$(BIN_DIR)test_actuator_model$(BIN_EXT)
+
+test_slew_apogee_predictor:
+	@$(MKDIR_BIN)
+	$(CXX) control/tests/test_slew_apogee_predictor.cpp control/predictor/apogee_predictor.cpp control/actuator/actuator_model.cpp control/aero/brake_aero.cpp control/physics/dynamics.cpp control/physics/atmosphere.cpp control/physics/drag.cpp $(CXXFLAGS) $(LFLAGS) -o $(BIN_DIR)test_slew_apogee_predictor$(BIN_EXT)
+	$(BIN_DIR)test_slew_apogee_predictor$(BIN_EXT)
+
+test_slew_mpc:
+	@$(MKDIR_BIN)
+	$(CXX) control/tests/test_slew_mpc.cpp control/controller/slew_mpc.cpp control/predictor/apogee_predictor.cpp control/actuator/actuator_model.cpp control/aero/brake_aero.cpp control/physics/dynamics.cpp control/physics/atmosphere.cpp control/physics/drag.cpp $(CXXFLAGS) $(LFLAGS) -o $(BIN_DIR)test_slew_mpc$(BIN_EXT)
+	$(BIN_DIR)test_slew_mpc$(BIN_EXT)
+
+test_closed_loop:
+	@$(MKDIR_BIN)
+	$(CXX) control/tests/test_closed_loop.cpp control/controller/slew_mpc.cpp control/predictor/apogee_predictor.cpp control/actuator/actuator_model.cpp control/aero/brake_aero.cpp control/physics/dynamics.cpp control/physics/atmosphere.cpp control/physics/drag.cpp $(CXXFLAGS) $(LFLAGS) -o $(BIN_DIR)test_closed_loop$(BIN_EXT)
+	$(BIN_DIR)test_closed_loop$(BIN_EXT)
+
+test_closed_loop_unreachable:
+	@$(MKDIR_BIN)
+	$(CXX) control/tests/test_closed_loop_unreachable.cpp control/controller/slew_mpc.cpp control/predictor/apogee_predictor.cpp control/actuator/actuator_model.cpp control/aero/brake_aero.cpp control/physics/dynamics.cpp control/physics/atmosphere.cpp control/physics/drag.cpp $(CXXFLAGS) $(LFLAGS) -o $(BIN_DIR)test_closed_loop_unreachable$(BIN_EXT)
+	$(BIN_DIR)test_closed_loop_unreachable$(BIN_EXT)
+
+test_closed_loop_unreachable_low:
+	@$(MKDIR_BIN)
+	$(CXX) control/tests/test_closed_loop_unreachable_low.cpp control/controller/slew_mpc.cpp control/predictor/apogee_predictor.cpp control/actuator/actuator_model.cpp control/aero/brake_aero.cpp control/physics/dynamics.cpp control/physics/atmosphere.cpp control/physics/drag.cpp $(CXXFLAGS) $(LFLAGS) -o $(BIN_DIR)test_closed_loop_unreachable_low$(BIN_EXT)
+	$(BIN_DIR)test_closed_loop_unreachable_low$(BIN_EXT)
+
+test: test_kf test_ekf test_control test_atmosphere test_drag test_dynamics test_apogee_predictor test_brake_aero test_ideal_mpc test_actuator_model test_slew_apogee_predictor test_slew_mpc test_closed_loop test_closed_loop_unreachable test_closed_loop_unreachable_low
 
 clean:
 	$(RM_BIN)
 
-.PHONY: clean test_kf test_ekf test_control test_atmosphere test_drag test_dynamics test_apogee_predictor test_brake_aero test_ideal_mpc test
+.PHONY: clean test_kf test_ekf test_control test_atmosphere test_drag test_dynamics test_apogee_predictor test_brake_aero test_ideal_mpc test_actuator_model test_slew_apogee_predictor test_slew_mpc test_closed_loop test_closed_loop_unreachable test_closed_loop_unreachable_low test
