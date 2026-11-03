@@ -42,6 +42,11 @@ BrakeCommand slew_mpc(
             actuator_parameters
         );
 
+        // Skip candidates whose apogee prediction failed.
+        if (!std::isfinite(predicted_apogee)) {
+            continue;
+        }
+
         const f32 apogee_error = std::fabs(
             predicted_apogee - mpc_parameters.target_apogee_ft
         );
@@ -70,8 +75,16 @@ BrakeCommand slew_mpc(
         full_extension_apogee - mpc_parameters.target_apogee_ft
     ) + 0.1f * std::fabs(1.0f - current_extension);
 
-    if (full_extension_error < best_error) {
+    if (std::isfinite(full_extension_error) &&
+        full_extension_error < best_error) {
+        best_error = full_extension_error;
         best_extension = 1.0f;
+    }
+
+    // No valid apogee prediction was available.
+    // Temporary fallback; flight-safety behavior must be validated.
+    if (!std::isfinite(best_error)) {
+        return BrakeCommand{0.0f};
     }
 
     return BrakeCommand{best_extension};
