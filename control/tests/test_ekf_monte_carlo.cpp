@@ -13,7 +13,8 @@ int main() {
             true,
             static_cast<unsigned int>(42 + i),
             nullptr,
-            false
+            false,
+            0.45f
         };
 
         const auto result =
