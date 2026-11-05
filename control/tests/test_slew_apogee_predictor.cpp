@@ -74,6 +74,38 @@ int main() {
     assert(retracting > instant);
     assert(retracting < retracted);
 
+    // Non-finite velocity must produce an invalid prediction.
+    const physics::VerticalState invalid_state{
+        5000.0f,
+        INFINITY
+    };
+
+    const f32 invalid_prediction = predictor::predict_apogee(
+        invalid_state, rocket, aero,
+        0.0f, 1.0f, dt,
+        actuator::ActuatorParameters{0.1f}
+    );
+
+    assert(std::isnan(invalid_prediction));
+
+    // A very small timestep should hit the prediction iteration limit.
+    const f32 limited_prediction = predictor::predict_apogee(
+        state, rocket, aero,
+        0.0f, 1.0f, 0.000001f,
+        actuator::ActuatorParameters{0.1f}
+    );
+
+    assert(std::isnan(limited_prediction));
+
+    // Invalid prediction timestep must return NAN.
+    const f32 invalid_dt_prediction = predictor::predict_apogee(
+        state, rocket, aero,
+        0.0f, 1.0f, 0.0f,
+        actuator::ActuatorParameters{0.1f}
+    );
+
+    assert(std::isnan(invalid_dt_prediction));
+
     std::cout << "All slew predictor tests passed.\n";
     return 0;
 }

@@ -13,13 +13,34 @@ int main() {
             true,
             static_cast<unsigned int>(42 + i),
             nullptr,
-            false
+            false,
+            0.45f
         };
 
         const auto result =
             control::tests::run_ekf_simulation(config);
 
         const float error = result.apogee_error;
+
+        std::printf("Maximum brake extension: %.2f\n",
+                    result.maximum_extension);
+        std::printf("Command changes: %d\n",
+                    result.command_changes);
+        std::printf("Total command change: %.2f\n",
+                    result.total_command_change);
+        std::printf("Total actuator travel: %.2f\n",
+                    result.total_actuator_travel);
+        std::printf("Command reversals: %d\n",
+                    result.command_reversals);
+        std::printf("Large command reversals: %d\n",
+                    result.large_command_reversals);
+        std::printf(
+            "Integrated brake extension: %.3f extension-seconds\n",
+            result.total_extension_time
+        );
+        std::printf("Signed error: %+.2f ft\n",
+                    result.signed_apogee_error);
+
         total_error += error;
 
         if (error > worst_error) {
