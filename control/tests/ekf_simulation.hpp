@@ -19,6 +19,7 @@ struct EkfSimulationConfig {
     unsigned int seed = 42;
     const char* csv_filename = nullptr;
     bool print_progress = false;
+    f32 rocket_mass_slug = 0.5f;
 };
 
 struct EkfSimulationResult {
@@ -41,7 +42,7 @@ inline EkfSimulationResult run_ekf_simulation(
     const EkfSimulationConfig& config
 ) {
     // Illustrative parameters, not flight-validated.
-    const physics::RocketParameters rocket{0.5f, 0.1f};
+    const physics::RocketParameters rocket{config.rocket_mass_slug, 0.1f};
     const aero::AeroParameters aero{0.4f, 0.8f};
     const actuator::ActuatorParameters actuator{0.5f};
     const MpcParameters mpc{8500.0f, 0.05f, 0.1f};
@@ -111,6 +112,11 @@ inline EkfSimulationResult run_ekf_simulation(
             estimated, rocket, aero, mpc, extension, actuator
         );
 
+
+        assert(std::isfinite(command.extension));
+        assert(command.extension >= 0.0f);
+        assert(command.extension <= 1.0f);
+
         const f32 signed_command_change =
             command.extension - previous_command;
         const f32 command_change =
@@ -137,9 +143,6 @@ inline EkfSimulationResult run_ekf_simulation(
         total_command_change += command_change;
         previous_command = command.extension;
 
-        assert(std::isfinite(command.extension));
-        assert(command.extension >= 0.0f);
-        assert(command.extension <= 1.0f);
 
         if (csv.is_open()) {
             csv << elapsed << ","
