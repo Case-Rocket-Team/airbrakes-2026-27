@@ -1,0 +1,30 @@
+name: C and C++ Tests
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: Build and Test
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Check compiler versions
+        run: |
+          clang --version
+          clang++ --version
+          make --version
+
+      - name: Run test suite
+        run: make test
