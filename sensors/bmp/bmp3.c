@@ -469,20 +469,18 @@ int8_t bmp3_init(struct bmp3_dev *dev)
     /* Proceed if null check is fine */
     if (rslt == BMP3_OK)
     {
-        // /* Read mechanism according to selected interface */
-        // if (dev->intf != BMP3_I2C_INTF)
-        // {
-        //     /* If SPI interface is selected, read extra byte */
-        //     dev->dummy_byte = 1;
-        // }
-        // else
-        // {
-        //     /* If I2C interface is selected, no need to read
-        //      * extra byte */
-        //     dev->dummy_byte = 0;
-        // }
-        // Since we're just using SPI Here:
-        dev->dummy_byte = 1;
+        /* Read mechanism according to selected interface */
+        if (dev->intf != BMP3_I2C_INTF)
+        {
+            /* If SPI interface is selected, read extra byte */
+            dev->dummy_byte = 1;
+        }
+        else
+        {
+            /* If I2C interface is selected, no need to read
+             * extra byte */
+            dev->dummy_byte = 0;
+        }
 
         /* Read the chip-id of bmp3 sensor */
         rslt = bmp3_get_regs(BMP3_REG_CHIP_ID, &chip_id, 1, dev);
