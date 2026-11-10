@@ -54,7 +54,7 @@ inline EkfSimulationResult run_ekf_simulation(
     settings.baro_var_ft2 = config.noisy ? 9.0f : 1.0f;
 
     extended_kalman_filter ekf{};
-    ekf_init(&ekf, &settings, 0);
+    ekf_init(&ekf, &settings, vec3f{0.0f, 0.0f, -1.0f}, vec3f{1.0f, 0.0f, 0.0f}, 0);
 
     ekf.nominal_state.pos_ft.z = truth.altitude_ft;
     ekf.nominal_state.vel_fps.z = truth.vertical_velocity_fps;

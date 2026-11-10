@@ -15,7 +15,7 @@ int main() {
 
     // Test 1: Barometer correction.
     extended_kalman_filter baro_ekf{};
-    ekf_init(&baro_ekf, &settings, 0);
+    ekf_init(&baro_ekf, &settings, vec3f{0.0f, 0.0f, -1.0f}, vec3f{1.0f, 0.0f, 0.0f}, 0);
 
     baro_ekf.nominal_state.pos_ft.z = 3000.0f;
 
@@ -31,7 +31,7 @@ int main() {
 
     // Test 2: GNSS correction.
     extended_kalman_filter gnss_ekf{};
-    ekf_init(&gnss_ekf, &settings, 0);
+    ekf_init(&gnss_ekf, &settings, vec3f{0.0f, 0.0f, -1.0f}, vec3f{1.0f, 0.0f, 0.0f}, 0);
 
     gnss_ekf.nominal_state.pos_ft.z = 3000.0f;
 

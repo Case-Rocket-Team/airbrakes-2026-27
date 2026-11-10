@@ -10,7 +10,7 @@ int main() {
     settings.gyro_var_rad2ps2 = 1e-6f;
 
     extended_kalman_filter ekf{};
-    ekf_init(&ekf, &settings, 0);
+    ekf_init(&ekf, &settings, vec3f{0.0f, 0.0f, -1.0f}, vec3f{1.0f, 0.0f, 0.0f}, 0);
 
     // Known initial vertical state.
     ekf.nominal_state.pos_ft.z = 3000.0f;
