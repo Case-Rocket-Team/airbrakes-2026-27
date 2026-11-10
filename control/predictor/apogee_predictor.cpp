@@ -59,12 +59,24 @@ f32 predict_apogee(
     physics::VerticalState state = initial_state;
     f32 extension = current_extension;
 
-    // Invalid timestep: return current altitude.
-    if (!std::isfinite(dt) || dt <= 0.0f) {
-        return state.altitude_ft;
+    // Reject non-finite flight states.
+    if (!std::isfinite(state.altitude_ft) ||
+        !std::isfinite(state.vertical_velocity_fps)) {
+        return NAN;
     }
 
-    while (state.vertical_velocity_fps > 0.0f) {
+    // Invalid timestep: prediction cannot be trusted.
+    if (!std::isfinite(dt) || dt <= 0.0f) {
+        return NAN;
+    }
+
+    // Prevent an unbounded prediction loop.
+    constexpr int MAX_PREDICTION_STEPS = 100000;
+    int prediction_steps = 0;
+
+    while (state.vertical_velocity_fps > 0.0f &&
+        prediction_steps < MAX_PREDICTION_STEPS) {
+        ++prediction_steps;
 
         // Update actuator position based on slew rate.
         const f32 next_position = actuator::next_extension(
@@ -85,6 +97,8 @@ f32 predict_apogee(
         );
 
         // Propagate rocket dynamics using existing physics.
+        const physics::VerticalState previous_state = state;
+
         state = physics::propagate_vertical(
             state,
             parameters,
@@ -92,10 +106,33 @@ f32 predict_apogee(
             dt
         );
 
-        extension = next_position;
-    }
+        // Reject invalid physics results.
+        if (!std::isfinite(state.altitude_ft) ||
+            !std::isfinite(state.vertical_velocity_fps)) {
+            return NAN;
+        }
 
-    return state.altitude_ft;
-}
+        if (state.vertical_velocity_fps <= 0.0f) {
+            const f32 fraction =
+                previous_state.vertical_velocity_fps /
+                (previous_state.vertical_velocity_fps - state.vertical_velocity_fps);
+
+            return previous_state.altitude_ft +
+                previous_state.vertical_velocity_fps * dt * fraction +
+                0.5f *
+                ((state.vertical_velocity_fps - previous_state.vertical_velocity_fps) / dt) *
+                (dt * fraction) * (dt * fraction);
+        }
+
+            extension = next_position;
+        }
+
+        // Prediction stopped before apogee: report failure.
+        if (state.vertical_velocity_fps > 0.0f) {
+            return NAN;
+        }
+
+        return state.altitude_ft;
+    }
 
 }  // namespace control::predictor
