@@ -24,9 +24,38 @@ std::tuple<float, int> Test::getTuple() const {
     return {data.version, data.version};
 }
 
+EKF::EKF() {
+    ekf= new extended_kalman_filter{};
+}
+
+void EKF::init(const ekf_settings *settings, vec3f local_down, vec3f local_magn_gauss,
+               u32 timestamp_us) {
+    ekf_init(ekf, settings, local_down, local_magn_gauss, timestamp_us);
+}
+
+void EKF::inject_imu(vec3f accel_fps2, vec3f gyro_radps, u32 timestamp_us) {
+    ekf_inject_imu(ekf, accel_fps2, gyro_radps, timestamp_us);
+}
+
+void EKF::inject_baro(f32 altitude_ft, u32 timestamp_us) {
+    ekf_inject_baro(ekf, altitude_ft, timestamp_us);
+}
+
+void EKF::inject_magn(vec3f magn_north_gauss, u32 timestamp_us) {
+    ekf_inject_magn(ekf, magn_north_gauss, timestamp_us);
+}
+
+void EKF::inject_gnss(vec3f pos_ft, u32 timestamp_us) {
+    ekf_inject_gnss(ekf, pos_ft, timestamp_us);
+}
+
+ekf_nominal_state EKF::getNominalState() {
+    return ekf->nominal_state;
+}
+
 static ekf_settings setSettings(f32 accel_var_f2ps4, f32 accel_bias_var_f2ps4, f32 gyro_var_rad2ps2, f32 gyro_bias_var_rad2ps2,
-                               f32 baro_var_ft2, std::array<f32, 3> &world_magn_north_guass, std::array<f32, 9> &magn_covar_gauss2, f32 magn_bias_var_gauss2,
-                               std::array<f32, 9> &gnss_covar_ft2) {
+                                f32 baro_var_ft2, std::array<f32, 9> &magn_covar_gauss2, f32 magn_bias_var_gauss2,
+                                std::array<f32, 9> &gnss_covar_ft2) {
 
     //setup
     printf("hello from C++\n");
@@ -51,9 +80,11 @@ vec3f loadvec3f(float x, float y, float z) {
     return  {x, y, z};
 }
 
+quatf loadquatf(float w, float x, float y, float z) {
+    return {w, x, y, z};
+}
 
 PYBIND11_MODULE(PyBind, m) {
-    m.def("ekf_init", &ekf_init);
     py::class_<me2>(m, "Me2")
        .def(py::init<>())
        .def_readwrite("dat", &me2::dat)
@@ -63,7 +94,6 @@ PYBIND11_MODULE(PyBind, m) {
         .def(py::init<float, int>())
         .def("get",&Test::getVar)
         .def("getTuple",&Test::getTuple);
-        // .def("setSettings",&Test::setSettings);
 
     py::class_<ekf_nominal_state>(m, "ekf_nominal_state")
       .def(py::init<>())
@@ -78,7 +108,7 @@ PYBIND11_MODULE(PyBind, m) {
         .def(py::init<>())
         .def(py::init(&setSettings), py::arg("accel_var_f2ps4"), py::arg("accel_bias_var_f2ps4"),
              py::arg("gyro_var_rad2ps2"), py::arg("gyro_bias_var_rad2ps2"),
-             py::arg("baro_var_ft2"), py::arg("world_magn_north_guass"),
+             py::arg("baro_var_ft2"),
              py::arg("magn_covar_gauss2"), py::arg("magn_bias_var_gauss2"),
              py::arg("gnss_covar_ft2"))
         .def_readwrite("accel_var_f2ps4", &ekf_settings::accel_var_f2ps4)
@@ -147,4 +177,23 @@ PYBIND11_MODULE(PyBind, m) {
         .def_readwrite("x", &vec3f::x)
         .def_readwrite("y", &vec3f::y)
         .def_readwrite("z", &vec3f::z);
+    py::class_<quatf>(m, "quatf")
+        .def(py::init(&loadquatf))
+        .def_readwrite("x", &quatf::x)
+        .def_readwrite("y", &quatf::y)
+        .def_readwrite("z", &quatf::z)
+        .def_readwrite("w", &quatf::w);
+    m.def("ekf_init", &ekf_init);
+
+    py::class_<EKF>(m, "EKF")
+        .def(py::init<>())
+        .def("init", &EKF::init)
+        .def("inject_baro", &EKF::inject_baro)
+        .def("inject_gnss", &EKF::inject_gnss)
+        .def("inject_imu", &EKF::inject_imu)
+        .def("inject_magn", &EKF::inject_magn)
+        .def("get_nominal_state", &EKF::getNominalState);
+
+    m.def("quatf_conj", &quatf_conj);
+    m.def("quatf_rot_vec3f", &quatf_rot_vec3f);
 }
