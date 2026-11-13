@@ -2,7 +2,7 @@
 
 #include <pybind11/pybind11.h>
 #include "PyBind.h"
-#include "kalman_filter/extended_kalman_filter.h"
+#include "../kalman_filter/extended_kalman_filter.h"
 #include <pybind11/stl.h>
 #include <pybind11/numpy.h>
 

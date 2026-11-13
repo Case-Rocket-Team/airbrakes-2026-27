@@ -6,7 +6,7 @@
 #define BINDINGS_TEST_H
 #include <tuple>
 
-#include "kalman_filter/extended_kalman_filter.h"
+#include "../kalman_filter/extended_kalman_filter.h"
 
 struct me2 {
     float dat;
