@@ -3,6 +3,7 @@
 #include "bmp388.h"
 
 static uint8_t cs;
+static uint8_t irq_pin = BMP388_NO_INT;
 static const SPISettings spi_settings(8000000, MSBFIRST, SPI_MODE0);
 
 // Calibration 
@@ -66,14 +67,17 @@ bool bmp388_init(uint8_t cs_pin, uint8_t int_pin, uint8_t odr_sel) {
     load_calibration();
 
     if (int_pin != BMP388_NO_INT) {
-        // INT_CTRL: push-pull, active high, non-latched, data-ready enabled
-        write_reg(0x19, 0x42);
+        // INT_CTRL: push-pull, active high, LATCHED, data-ready enabled.
+        // Latched: INT stays high until INT_STATUS is read, so a real
+        // interrupt can be told apart from a ns-long SPI-induced glitch.
+        write_reg(0x19, 0x46);
 
         uint8_t status;
         read_reg(0x11, &status, 1); // INT_STATUS: clear any stale flag
 
+        irq_pin = int_pin;
         drdy = false;
-        pinMode(int_pin, INPUT);
+        pinMode(int_pin, INPUT_PULLDOWN);
         attachInterrupt(digitalPinToInterrupt(int_pin), bmp388_isr, RISING);
     }
 
@@ -86,7 +90,9 @@ bool bmp388_data_ready(void) {
     bool r = drdy;
     drdy = false;
     interrupts();
-    return r;
+
+    // Reject glitches: a real (latched) interrupt is still holding INT high.
+    return r && digitalReadFast(irq_pin);
 }
 
 // Temperature compensation (9.2).
@@ -106,6 +112,11 @@ static double bmp388_compensate_pressure(double up, double t) {
 void bmp388_read(float *temp_c, float *press_pa) {
     uint8_t d[6];
     read_reg(0x04, d, 6); // pressure (3 bytes), temperature (3 bytes)
+
+    if (irq_pin != BMP388_NO_INT) {
+        uint8_t status;
+        read_reg(0x11, &status, 1); // INT_STATUS: release the latched INT pin
+    }
 
     double up = d[0] | d[1] << 8 | (uint32_t)d[2] << 16;
     double ut = d[3] | d[4] << 8 | (uint32_t)d[5] << 16;

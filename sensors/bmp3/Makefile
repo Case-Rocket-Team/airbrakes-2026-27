@@ -15,7 +15,7 @@ DEFINES   := -DF_CPU=600000000 -DUSB_SERIAL -DLAYOUT_US_ENGLISH \
 CPPFLAGS  := -Wall -g -O2 -MMD -ffunction-sections -fdata-sections -I$(CORE) -I. $(MCU_FLAGS) $(DEFINES)
 CXXFLAGS  := -std=gnu++17 -felide-constructors -fno-exceptions -fpermissive -fno-rtti -Wno-error=narrowing
 LDFLAGS   := -Os -Wl,--gc-sections,--relax $(MCU_FLAGS) -T$(CORE)/imxrt1062_t41.ld
-LIBS      := -larm_cortexM7lfsp_math -lm -lstdc++
+LIBS      := -lm -lstdc++
 
 SRCS := $(wildcard $(CORE)/*.c) \
         $(wildcard $(CORE)/*.cpp) \
