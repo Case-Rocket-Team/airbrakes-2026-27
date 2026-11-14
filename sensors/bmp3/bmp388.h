@@ -22,7 +22,6 @@ bool bmp388_data_ready(void);
 // Read the raw STATUS register.
 uint8_t bmp388_get_status(void);
 
-// Read compensated temperature (deg C) and pressure (Pa).
 void bmp388_read(float *temp_c, float *press_pa);
 
 // Set output data rate: 0 = 200 Hz, 1 = 100 Hz, ... each step halves (max 0x11).
