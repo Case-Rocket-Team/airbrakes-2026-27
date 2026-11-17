@@ -168,7 +168,7 @@ def process_6dof(full_data):
 
 
 
-    # init for run
+    # init variables run
     world_north = PyBind.vec3f(0.0, 1.0, 0.0)
     settings = PyBind.ekf_settings(
             0.011196358441216, 0.0001, 1.09662e-06, 1e-05, 100.0,
@@ -181,6 +181,7 @@ def process_6dof(full_data):
     pos_z = []
     acu_pos_z = []
 
+    #init
     ekf = PyBind.EKF()
     ekf.init(settings, PyBind.vec3f(0.0, 0.0, -1.0), world_north, 0)
     n = min(len(times), len(accelerometer_fps2), len(gyros_radps))
@@ -188,9 +189,7 @@ def process_6dof(full_data):
 
     for j in range(n):
             ts = int(times[j] * 1e6)
-            # print("times:", len(times))
-            # print("accelerometer:", len(accelerometer_fps2))
-            # print("gyros:", len(gyros_radps))
+
             print("time: ", ts)
             ekf.inject_imu(to_vec3f(accelerometer_fps2[j]), to_vec3f(gyros_radps[j]), ts)
             ekf.inject_baro(pos_ft[j][2], ts)
