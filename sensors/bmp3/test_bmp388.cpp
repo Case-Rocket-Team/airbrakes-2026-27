@@ -7,56 +7,51 @@
 #include <Arduino.h>
 #include "bmp388.h"
 
-// ODR = 200 Hz / 2^odr_sel. 10 = one sample every 5.12 s.
-#define SLOW_ODR 10
-
-#define READ_ON_IRQ 1
-
-static uint32_t last_irq_ms;
-static uint32_t last_tick_ms;
-static uint32_t irq_count;
+static uint32_t last_ms;
+static uint32_t count;
+static uint32_t first_ms; // time of first sample, for the running average
 
 void setup() {
     Serial.begin(115200);
     while (!Serial) {}
 
-    if (!bmp388_init(10, 9)) {
+    if (!bmp388_init(10, 9, 2)) {
         Serial.println("BMP388 init failed");
         while (1) {}
     }
-    bmp388_set_odr(SLOW_ODR);
 
-    Serial.println("Waiting for interrupts (expect one every ~5.12 s)...");
-    last_irq_ms = last_tick_ms = millis();
+    Serial.println("Waiting for interrupts");
+    last_ms = millis();
 }
 
 void loop() {
+    if (!bmp388_data_ready()) {
+        return;
+    }
+
+    float t, p;
+    bmp388_read(&t, &p); // also clears the data-ready flag
+
     uint32_t now = millis();
-
-    if (bmp388_data_ready()) {
-        float t = 0, p = 0;
-#if READ_ON_IRQ
-        bmp388_read(&t, &p);
-#endif
-        irq_count++;
-
-        Serial.print(">>> INTERRUPT #");
-        Serial.print(irq_count);
-        Serial.print("  dt ");
-        Serial.print(now - last_irq_ms);
-        Serial.print(" ms  ");
-        Serial.print(t);
-        Serial.print(" C  ");
-        Serial.print(p);
-        Serial.println(" Pa");
-
-        last_irq_ms = last_tick_ms = now;
+    count++;
+    if (count == 1) {
+        first_ms = now;
     }
 
-    if (now - last_tick_ms >= 1000) {
-        last_tick_ms += 1000;
-        Serial.print(" Doing soooo many other things ");
-        Serial.print((now - last_irq_ms) / 1000);
-        Serial.println(" s");
-    }
+    // Average interval since the first sample 
+    float avg_ms = (count > 1) ? (float)(now - first_ms) / (count - 1) : 0.0f;
+
+    Serial.print("IRQ #");
+    Serial.print(count);
+    Serial.print("  dt ");
+    Serial.print(now - last_ms);
+    Serial.print(" ms  avg ");
+    Serial.print(avg_ms, 3);
+    Serial.print(" ms  ");
+    Serial.print(t);
+    Serial.print(" C  ");
+    Serial.print(p);
+    Serial.println(" Pa");
+
+    last_ms = now;
 }
