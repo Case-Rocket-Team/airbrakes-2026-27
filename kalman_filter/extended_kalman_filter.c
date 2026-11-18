@@ -199,17 +199,36 @@ static void _ekf_build_process_covariance(
     #undef _EKF_FILLD
 }
 
+static void _ekf_force_diagonalize_covar(extended_kalman_filter* ekf) {
+    // Force diagonalize the covariance matrix
+    for (u32 row = 0; row < EKF_STATE_DIM; row++) {
+        for (u32 col = row; col < EKF_STATE_DIM; col++) {
+            u32 upper_index = col + row * EKF_STATE_DIM;
+            u32 lower_index = col + row * EKF_STATE_DIM;
+
+            f32 avg = 0.5f * (
+                ekf->state_covar[upper_index] + ekf->state_covar[lower_index]
+            );
+
+            ekf->state_covar[upper_index] = avg;
+            ekf->state_covar[lower_index] = avg;
+        }
+    }
+}
+
 static void _ekf_predict_to(
     extended_kalman_filter* ekf,
     ekf_control_input* control,
     u32 timestamp_us
 ) {
-    if (timestamp_us == ekf->state_time_us) { return; }
-
     // Note(Ian) This has to be a subtract that can over and underflow for 
     // it to work correctly
     u32 dt_us = timestamp_us - ekf->state_time_us;
     f32 dt = (f32)dt_us * 1e-6f;
+
+    // Avoid very small `dt` values to avoid floating point rounding issues
+    if (dt < 1e-8f || dt > 10.0f) { return; }
+
     ekf->state_time_us = timestamp_us;
 
     vec3f gyro_radps = vec3f_sub(
@@ -299,6 +318,8 @@ static void _ekf_predict_to(
     ekf->nominal_state.attitude = new_attitude;
     ekf->nominal_state.vel_fps = new_vel_fps;
     ekf->nominal_state.pos_ft = new_pos_ft;
+
+    _ekf_force_diagonalize_covar(ekf);
 }
 
 static void _ekf_update(
@@ -482,6 +503,8 @@ static void _ekf_update(
             ),
         };
     }
+
+    _ekf_force_diagonalize_covar(ekf);
 }
 
 void ekf_inject_imu(
@@ -491,6 +514,14 @@ void ekf_inject_imu(
     u32 timestamp_us
 ) {
     if (!vec3f_finite(accel_fps2) || !vec3f_finite(gyro_radps)) {
+        // This control input corresponds to no movement
+        ekf->control_input = (ekf_control_input){
+            .accel_fps2 = quatf_rot_vec3f(
+                quatf_conj(ekf->nominal_state.attitude),
+                (vec3f){ 0.0f, 0.0f, _EKF_G_FPS2 }
+             )
+        };
+
         return;
     }
 
