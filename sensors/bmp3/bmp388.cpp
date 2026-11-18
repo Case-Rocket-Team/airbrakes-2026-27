@@ -12,10 +12,20 @@ static double p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11;
 
 static void load_calibration(void);
 
-// Set by the data-ready ISR, cleared by bmp388_data_ready().
+static void read_reg(uint8_t reg, uint8_t *buf, int len);
+
+static volatile uint8_t raw[6];
 static volatile bool drdy = false;
 
 static void bmp388_isr(void) {
+    uint8_t status;
+    read_reg(0x11, &status, 1); // releases the latched INT pin
+
+    uint8_t d[6];
+    read_reg(0x04, d, 6); // pressure (3 bytes), temperature (3 bytes)
+    for (int i = 0; i < 6; i++) {
+        raw[i] = d[i];
+    }
     drdy = true;
 }
 
@@ -68,31 +78,30 @@ bool bmp388_init(uint8_t cs_pin, uint8_t int_pin, uint8_t odr_sel) {
 
     if (int_pin != BMP388_NO_INT) {
         // INT_CTRL: push-pull, active high, LATCHED, data-ready enabled.
-        // Latched: INT stays high until INT_STATUS is read, so a real
-        // interrupt can be told apart from a ns-long SPI-induced glitch.
         write_reg(0x19, 0x46);
 
         uint8_t status;
-        read_reg(0x11, &status, 1); // INT_STATUS: clear any stale flag
+        read_reg(0x11, &status, 1); // clear any stale flag on INT_STATUS
 
         irq_pin = int_pin;
         drdy = false;
         pinMode(int_pin, INPUT_PULLDOWN);
+
+        SPI.usingInterrupt(digitalPinToInterrupt(int_pin));
         attachInterrupt(digitalPinToInterrupt(int_pin), bmp388_isr, RISING);
     }
 
+    bmp388_set_odr(odr_sel); // must be set before entering normal mode
     write_reg(0x1B, 0x33); // press_en | temp_en | normal mode
     return true;
 }
 
+// True when a new sample is waiting for bmp388_read().
 bool bmp388_data_ready(void) {
-    noInterrupts();
-    bool r = drdy;
-    drdy = false;
-    interrupts();
-
-    // Reject glitches: a real (latched) interrupt is still holding INT high.
-    return r && digitalReadFast(irq_pin);
+    if (irq_pin == BMP388_NO_INT) {
+        return bmp388_get_status() & BMP388_STATUS_DRDY_PRESS;
+    }
+    return drdy;
 }
 
 // Temperature compensation (9.2).
@@ -111,11 +120,17 @@ static double bmp388_compensate_pressure(double up, double t) {
 
 void bmp388_read(float *temp_c, float *press_pa) {
     uint8_t d[6];
-    read_reg(0x04, d, 6); // pressure (3 bytes), temperature (3 bytes)
 
     if (irq_pin != BMP388_NO_INT) {
-        uint8_t status;
-        read_reg(0x11, &status, 1); // INT_STATUS: release the latched INT pin
+        // Copy the ISR's latest sample atomically so it can't change mid-copy.
+        noInterrupts();
+        for (int i = 0; i < 6; i++) {
+            d[i] = raw[i];
+        }
+        drdy = false;
+        interrupts();
+    } else {
+        read_reg(0x04, d, 6); // pressure (3 bytes), temperature (3 bytes)
     }
 
     double up = d[0] | d[1] << 8 | (uint32_t)d[2] << 16;
