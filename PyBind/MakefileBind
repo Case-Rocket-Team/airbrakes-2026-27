@@ -23,7 +23,7 @@ all: libso buildc run
 
 libso:
 	cd .. && $(C) $(CFLAGS) $(LFLAGS) $(INCLUDE) base/base.c base/base.h kalman_filter/extended_kalman_filter.c kalman_filter/extended_kalman_filter.h -o libairbrakes.so
-	cd .. && mv libairbrakes.so PyBind/libairbrakes.so
+	mv ../libairbrakes.so libairbrakes.so
 
 buildc:
 	 $(CXX) $(CXXFLAGS) $(LFLAGS) $(INCLUDEXE) $(LIBFLAGS) PyBind.cpp -o PyBind$(shell python3-config --extension-suffix)
