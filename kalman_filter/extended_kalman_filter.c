@@ -199,7 +199,7 @@ static void _ekf_build_process_covariance(
     #undef _EKF_FILLD
 }
 
-static void _ekf_force_diagonalize_covar(extended_kalman_filter* ekf) {
+static void _ekf_fix_covar(extended_kalman_filter* ekf) {
     // Force diagonalize the covariance matrix
     for (u32 row = 0; row < EKF_STATE_DIM; row++) {
         for (u32 col = row; col < EKF_STATE_DIM; col++) {
@@ -209,6 +209,12 @@ static void _ekf_force_diagonalize_covar(extended_kalman_filter* ekf) {
             f32 avg = 0.5f * (
                 ekf->state_covar[upper_index] + ekf->state_covar[lower_index]
             );
+
+            if (row == col) {
+                // Enforce positives along the diagonal to keep the covariance
+                // positive semidefinite
+                avg = MAX(0.0f, avg);
+            }
 
             ekf->state_covar[upper_index] = avg;
             ekf->state_covar[lower_index] = avg;
@@ -331,7 +337,7 @@ static void _ekf_predict_to(
         ekf->nominal_state.pos_ft = new_pos_ft;
 
         memcpy(ekf->state_covar, new_state_covar, sizeof(new_state_covar));
-        _ekf_force_diagonalize_covar(ekf);
+        _ekf_fix_covar(ekf);
 
         ekf->state_time_us = timestamp_us;
     }
@@ -527,7 +533,7 @@ static void _ekf_update(
         memcpy(&ekf->nominal_state, &new_state, sizeof(ekf_nominal_state));
         memcpy(ekf->state_covar, new_state_cov, sizeof(new_state_cov));
 
-        _ekf_force_diagonalize_covar(ekf);
+        _ekf_fix_covar(ekf);
     }
 }
 
