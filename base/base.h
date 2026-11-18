@@ -101,6 +101,7 @@ quatf quatf_mul(quatf a, quatf b);
 f32 quatf_dot(quatf a, quatf b);
 quatf quatf_norm(quatf q);
 quatf quatf_conj(quatf q);
+b8 quatf_finite(quatf q);
 
 // Calcualtes the rotation required to get from `u` to `v`
 quatf quatf_rot_between(vec3f u, vec3f v);
