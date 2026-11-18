@@ -216,6 +216,16 @@ static void _ekf_force_diagonalize_covar(extended_kalman_filter* ekf) {
     }
 }
 
+static b32 _ekf_all_finite(f32* nums, u32 size) {
+    for (u32 i = 0; i < size; i++) {
+        if (!isfinite(nums[i])) {
+            return false;
+        }
+    }
+
+    return true;
+} 
+
 static void _ekf_predict_to(
     extended_kalman_filter* ekf,
     ekf_control_input* control,
@@ -226,10 +236,8 @@ static void _ekf_predict_to(
     u32 dt_us = timestamp_us - ekf->state_time_us;
     f32 dt = (f32)dt_us * 1e-6f;
 
-    // Avoid very small `dt` values to avoid floating point rounding issues
-    if (dt < 1e-8f || dt > 10.0f) { return; }
-
-    ekf->state_time_us = timestamp_us;
+    // Reject very small `dt` values to avoid floating point rounding issues
+    if (dt < 1e-8f) { return; }
 
     vec3f gyro_radps = vec3f_sub(
         control->gyro_radps,
@@ -285,6 +293,7 @@ static void _ekf_predict_to(
     // Next, update the state's covariance given a linearization of the state
     // transition, control model, and process covariance
     // P_n+1|n = F * P_n|n * F^T + Q
+    f32 new_state_covar[EKF_STATE_DIM * EKF_STATE_DIM] = { 0 };
     {
         // Also called F
         f32 state_transition[EKF_STATE_DIM * EKF_STATE_DIM];
@@ -302,24 +311,30 @@ static void _ekf_predict_to(
             0.0f, FP
         );
 
-        // Building process covariance directly into the state covariance to 
-        // avoid an additional temporary variable. Also, P has already been 
-        // consumed by the previous operation
-        _ekf_build_process_covariance(ekf, ekf->state_covar, dt);
+        _ekf_build_process_covariance(ekf, new_state_covar, dt);
 
         matmul(
             false, true,
             EKF_STATE_DIM, EKF_STATE_DIM, EKF_STATE_DIM,
             1.0f, FP, state_transition,
-            1.0f, ekf->state_covar
+            1.0f, new_state_covar
         );
     }
 
-    ekf->nominal_state.attitude = new_attitude;
-    ekf->nominal_state.vel_fps = new_vel_fps;
-    ekf->nominal_state.pos_ft = new_pos_ft;
+    if (
+        _ekf_all_finite(new_state_covar, EKF_STATE_DIM * EKF_STATE_DIM) &&
+        quatf_finite(new_attitude) && vec3f_finite(new_vel_fps) &&
+        vec3f_finite(new_pos_ft)
+    ) {
+        ekf->nominal_state.attitude = new_attitude;
+        ekf->nominal_state.vel_fps = new_vel_fps;
+        ekf->nominal_state.pos_ft = new_pos_ft;
 
-    _ekf_force_diagonalize_covar(ekf);
+        memcpy(ekf->state_covar, new_state_covar, sizeof(new_state_covar));
+        _ekf_force_diagonalize_covar(ekf);
+
+        ekf->state_time_us = timestamp_us;
+    }
 }
 
 static void _ekf_update(
@@ -399,6 +414,7 @@ static void _ekf_update(
 
     // Updating covariance according to
     // P_n|n = (I - KH) * P_n|n-1 * (I - KH)^T + KRK^T
+    f32 new_state_cov[EKF_STATE_DIM * EKF_STATE_DIM] = { 0 };
     {
         // Stores (I - KH)
         f32 cov_factor[EKF_STATE_DIM * EKF_STATE_DIM] = { 0 };
@@ -435,7 +451,7 @@ static void _ekf_update(
             false, true,
             EKF_STATE_DIM, EKF_STATE_DIM, EKF_STATE_DIM,
             1.0f, leftmul, cov_factor,
-            0.0f, ekf->state_covar
+            0.0f, new_state_cov
         );
 
         // K*R
@@ -451,11 +467,12 @@ static void _ekf_update(
             false, true,
             EKF_STATE_DIM, EKF_STATE_DIM, measure_dim,
             1.0f, leftmul, kalman_gain,
-            1.0f, ekf->state_covar
+            1.0f, new_state_cov
         );
     }
 
     // Updating nominal state
+    ekf_nominal_state new_state = { 0 };
     {
         // y = (z - h(x))
         // Really sized (measure_dim x 1)
@@ -483,8 +500,7 @@ static void _ekf_update(
         };
 
         ekf_nominal_state nominal = ekf->nominal_state;
-
-        ekf->nominal_state = (ekf_nominal_state){
+        new_state = (ekf_nominal_state){
             .attitude = quatf_norm(quatf_mul(nominal.attitude, rot_err)),
 
             .pos_ft = vec3f_add(nominal.pos_ft, err.pos_ft),
@@ -504,7 +520,15 @@ static void _ekf_update(
         };
     }
 
-    _ekf_force_diagonalize_covar(ekf);
+    if (
+        _ekf_all_finite(new_state_cov, EKF_STATE_DIM * EKF_STATE_DIM) &&
+        _ekf_all_finite(new_state.v, EKF_NOMINAL_STATE_DIM)
+    ) {
+        memcpy(&ekf->nominal_state, &new_state, sizeof(ekf_nominal_state));
+        memcpy(ekf->state_covar, new_state_cov, sizeof(new_state_cov));
+
+        _ekf_force_diagonalize_covar(ekf);
+    }
 }
 
 void ekf_inject_imu(

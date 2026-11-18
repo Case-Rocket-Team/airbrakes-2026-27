@@ -201,6 +201,10 @@ quatf quatf_conj(quatf q) {
     };
 }
 
+b8 quatf_finite(quatf q) {
+    return isfinite(q.w) && isfinite(q.x) && isfinite(q.y) && isfinite(q.z);
+}
+
 // https://stackoverflow.com/questions/1171849/finding-quaternion-representing-the-rotation-from-one-vector-to-another
 quatf quatf_rot_between(vec3f u, vec3f v) {
     f32 dot = vec3f_dot(u, v);
