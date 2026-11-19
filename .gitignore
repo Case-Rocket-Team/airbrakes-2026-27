@@ -6,3 +6,4 @@ ekf_results.csv
 /.vscode
 /teensy4/
 sensors/bmp3/build/
+sensors/samm10q/build/

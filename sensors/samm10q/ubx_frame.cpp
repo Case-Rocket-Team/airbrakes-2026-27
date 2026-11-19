@@ -12,33 +12,32 @@
     N Payload Bytes
     2 Checksum Bytes (ckA, ckB)
 */
-size_t ubx_encode(const UbxFrame& f, uint8_t* out, size_t outSize) {
-    if (f.len > UBX_MAX_PAYLOAD || f.len + 8 > outSize) return 0; // Invalid 
-
+size_t ubx_encode(const UbxFrame* f, uint8_t* out, size_t outSize) {
+    if (f->len > UBX_MAX_PAYLOAD || f->len + 8 > outSize) return 0; // Invalid 
 
     // Magic preamble bytes
     out[0] = 0xb5;          
     out[1] = 0x62;     
 
-    out[2] = f.cls;         
-    out[3] = f.id;      
+    out[2] = f->cls;         
+    out[3] = f->id;      
     
     // UBX protocol defines every multi-byte field as little-endian
 
-    out[4] = f.len & 0xFF; // Low byte
-    out[5] = (f.len >> 8);  // High byte
+    out[4] = f->len & 0xFF; // Low byte
+    out[5] = (f->len >> 8);  // High byte
 
-    memcpy(out + 6, f.payload, f.len); // Copy payload
+    memcpy(out + 6, f->payload, f->len); // Copy payload
 
     // Checksum bytes ckA and ckB
     uint8_t ckA, ckB;
 
-    ubx_checksum(out + 2, 4 + f.len, ckA, ckB);
+    ubx_checksum(out + 2, 4 + f->len, ckA, ckB);
 
-    out[f.len + 6] = ckA;
-    out[f.len + 7] = ckB;
+    out[f->len + 6] = ckA;
+    out[f->len + 7] = ckB;
 
-    return 8 + f.len;
+    return 8 + f->len;
 
 }
 

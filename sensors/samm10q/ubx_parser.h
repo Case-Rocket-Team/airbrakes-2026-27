@@ -24,3 +24,6 @@ struct UbxParser {
     uint8_t  ckB = 0; // Checksum B
 };
 
+void ubx_parser_init(UbxParser* p);
+bool ubx_parser_feed(UbxParser* p, uint8_t b);
+
