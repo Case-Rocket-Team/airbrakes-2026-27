@@ -98,19 +98,19 @@ static void handle_frame(const UbxFrame* f) {
 
 bool gps_init() {
     ubx_parser_init(&parser);
-    GPS_SERIAL.begin(9600);
-    delay(500);                         // let the module boot
+    GPS_SERIAL.begin(9600); // might be 38400?
+    delay(500); // let the module boot
 
     if (!poll_mon_ver(1000)) {
-        return false;                   // module not responding
+        return false; // module not responding
     }
 
     UbxFrame tx;
     ubx_valset_begin(&tx, UBX_LAYER_RAM);
-    ubx_valset_add_u8 (&tx, CFG_UART1OUTPROT_UBX, 1);          // make sure UBX is on
-    ubx_valset_add_u8 (&tx, CFG_MSGOUT_UBX_NAV_PVT_UART1, 1);  // NAV-PVT every solution
-    ubx_valset_add_u8 (&tx, CFG_UART1OUTPROT_NMEA, 0);         // NMEA off
-    ubx_valset_add_u16(&tx, CFG_RATE_MEAS, 200);               // 5 Hz
+    ubx_valset_add_u8 (&tx, CFG_UART1OUTPROT_UBX, 1); // make sure UBX is on
+    ubx_valset_add_u8 (&tx, CFG_MSGOUT_UBX_NAV_PVT_UART1, 1); // NAV-PVT every solution
+    ubx_valset_add_u8 (&tx, CFG_UART1OUTPROT_NMEA, 0); // NMEA off
+    ubx_valset_add_u16(&tx, CFG_RATE_MEAS, 200); // 5 Hz
     ubx_valset_add_u8 (&tx, CFG_NAVSPG_DYNMODEL, DYNMODEL_AIR4);
 
     return send_and_ack(&tx);
@@ -133,7 +133,7 @@ const NavPvt* gps_latest() {
 
 uint32_t gps_fix_age_ms() {
     if (!has_fix) {
-        return UINT32_MAX;   // no fix received yet: treat as infinitely old
+        return UINT32_MAX; // no fix received yet: treat as infinitely old
     }
 
 	return millis() - last_fix_time_ms;
