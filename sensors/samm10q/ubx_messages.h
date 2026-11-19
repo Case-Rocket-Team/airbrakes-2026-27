@@ -25,6 +25,16 @@
 // CFG-VALSET layers (3.10.5.1)
 #define UBX_LAYER_RAM      0x01
 
+// Config keys (chapter 4)
+#define CFG_MSGOUT_UBX_NAV_PVT_UART1  0x20910007  // U1: Output rate (1 = every solution)
+#define CFG_UART1OUTPROT_UBX          0x10740001  // L: UBX output on UART1
+#define CFG_UART1OUTPROT_NMEA         0x10740002  // L: MEA output on UART1
+#define CFG_RATE_MEAS                 0x30210001  // U2: Measurement period, ms
+#define CFG_NAVSPG_DYNMODEL           0x20110021  // E1: Dynamic platform model
+#define CFG_UART1_BAUDRATE            0x40520001  // U4: Baud rate
+
+#define DYNMODEL_AIR4                 8           // airborne, <4g acceleration
+
 // Builders
 void ubx_build_poll(UbxFrame* f, uint8_t cls, uint8_t id);
 
