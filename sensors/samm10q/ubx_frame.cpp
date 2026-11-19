@@ -12,7 +12,7 @@
     N Payload Bytes
     2 Checksum Bytes (ckA, ckB)
 */
-size_t ubxEncode(const UbxFrame& f, uint8_t* out, size_t outSize) {
+size_t ubx_encode(const UbxFrame& f, uint8_t* out, size_t outSize) {
     if (f.len > UBX_MAX_PAYLOAD || f.len + 8 > outSize) return 0; // Invalid 
 
 
@@ -33,7 +33,7 @@ size_t ubxEncode(const UbxFrame& f, uint8_t* out, size_t outSize) {
     // Checksum bytes ckA and ckB
     uint8_t ckA, ckB;
 
-    ubxChecksum(out + 2, 4 + f.len, ckA, ckB);
+    ubx_checksum(out + 2, 4 + f.len, ckA, ckB);
 
     out[f.len + 6] = ckA;
     out[f.len + 7] = ckB;
@@ -43,7 +43,7 @@ size_t ubxEncode(const UbxFrame& f, uint8_t* out, size_t outSize) {
 }
 
 // Fletcher Checksum Algorithm
-void ubxChecksum(const uint8_t* buffer, const size_t len, uint8_t& ckA, uint8_t& ckB) {
+void ubx_checksum(const uint8_t* buffer, const size_t len, uint8_t& ckA, uint8_t& ckB) {
     ckA = 0;
     ckB = 0;
 
