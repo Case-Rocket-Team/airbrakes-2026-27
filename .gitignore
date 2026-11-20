@@ -4,5 +4,4 @@ compile_flags.txt
 kf_results.csv
 ekf_results.csv
 /.vscode
-/teensy4/
 sensors/bmp3/build/

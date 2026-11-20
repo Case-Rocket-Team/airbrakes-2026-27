@@ -1,14 +1,8 @@
-
-
-
-
 #include <Arduino.h>
 #include "bmp388.h"
 
 #define N 1000
-#define pressureLoop 300
-
-static float alt[N];
+#define pressureSamples 300
 
 void setup() {
     Serial.begin(115200);
@@ -19,46 +13,23 @@ void setup() {
         while (1) {}
     }
 
+    // Ground reference: average pressure and temperature while stationary.
     double meanPressure = 0;
-    for (int i = 0; i < pressureLoop; i++) {
+    double meanTemp = 0;
+    for (int i = 0; i < pressureSamples; i++) {
         while (!bmp388_data_ready()) {}
-        float t, p;
-        bmp388_read(&t, &p);
-        meanPressure += p;
+        bmp388_data data = bmp388_read();
+        meanPressure += data.press_pa;
+        meanTemp += data.temp_c;
     }
 
-    meanPressure /= pressureLoop;
-    
-    // for (int i = 0; i < N; i++) {
-    //     while (!bmp388_data_ready()) {}
-    //     float t, p;
-    //     bmp388_read(&t, &p);
-    //     alt[i] = bmp388_altitude(p); // ISA altitude above sea level (m)
-    // }
-
-    // double mean = 0;
-    // for (int i = 0; i < N; i++) {
-    //     mean += alt[i];
-    // }
-    // mean /= N;
-
-    // double var = 0;
-    // for (int i = 0; i < N; i++) {
-    //     var += (alt[i] - mean) * (alt[i] - mean);
-    // }
-    // double std = sqrt(var / (N - 1));
-
-    // Serial.print("mean: ");
-    // Serial.print(mean, 3);
-    // Serial.print(" m  std: ");
-    // Serial.print(std, 4);
-    // Serial.println(" m");
+    meanPressure /= pressureSamples;
+    meanTemp /= pressureSamples;
 
     for (int i = 0; i < N; i++) {
         while (!bmp388_data_ready()) {}
-        float t, p;
-        bmp388_read(&t, &p);
-        Serial.printf("%.9g\n", bmp388_altitude(p, meanPressure, t)); // 9 sig. digits = full float precision
+        bmp388_data data = bmp388_read();
+        Serial.printf("%.9g\n", bmp388_altitude(data.press_pa, meanPressure, meanTemp));
     }
 
     

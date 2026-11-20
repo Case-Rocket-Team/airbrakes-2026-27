@@ -16,6 +16,7 @@
 #define BMP388_100HZ_ODR   1
 #define BMP388_50HZ_ODR    2
 #define BMP388_25HZ_ODR    3
+#define BMP388_12_5HZ_ODR  4
 
 bool bmp388_init(uint8_t cs_pin, uint8_t int_pin = BMP388_NO_INT,
                  uint8_t odr_sel = BMP388_200HZ_ODR);
@@ -30,13 +31,19 @@ bool bmp388_data_ready(void);
 // Read the raw STATUS register.
 uint8_t bmp388_get_status(void);
 
-void bmp388_read(float *temp_c, float *press_pa);
+struct bmp388_data {
+    float temp_c;    // temperature, °C
+    float press_pa;  // pressure, Pa
+};
+
+// Read and compensate the latest sample.
+bmp388_data bmp388_read(void);
 
 // Set output data rate: 0 = 200 Hz, 1 = 100 Hz, ... each step halves (max 0x11).
-void bmp388_set_odr(uint8_t odr_sel);
+// Also applies the max oversampling for that rate (table above). 
+bool bmp388_set_odr(uint8_t odr_sel);
 
 // ISA troposphere (valid 0–11 km). Returns geopotential altitude in metres
-// above the level where pressure = ref_pa and temperature = temp_c
-// (defaults: ISA sea level, 101325 Pa / 15 °C).
-float bmp388_altitude(float press_pa, float ref_pa = 101325.0f, float temp_c = 15.0f);
+// above a reference level with pressure ref_pa and air temperature ref_c.
+float bmp388_altitude(float press_pa, float ref_pa = 101325.0f, float ref_c = 15.0f);
 
