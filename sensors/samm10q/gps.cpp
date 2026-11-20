@@ -1,7 +1,6 @@
 #include "gps.h"
 #include "ubx_parser.h"
 #include <Arduino.h>
-#include <SPI.h>
 
 
 #define GPS_SERIAL Serial1
@@ -10,9 +9,9 @@
 
 static UbxParser parser;
 static NavPvt latest;
-static bool has_fix = false;
+static bool has_fix = false;            // most recent NAV-PVT had a valid 3D fix
 
-static uint32_t last_fix_time_ms = 0;   // last NAV-PVT with a valid fix
+static uint32_t last_fix_time_ms = 0;   // last NAV-PVT with a valid fix (0 = never)
 static uint32_t last_pvt_time_ms = 0;   // last NAV-PVT of any kind
 
 // Encodes a UBX frame and writes it to the GPS serial port.
@@ -89,16 +88,22 @@ static void handle_frame(const UbxFrame* f) {
 
     last_pvt_time_ms = millis();        // GPS is still talking
 
-    if (pvt.gnss_fix_ok && pvt.fix_type == 3) {   // only keep trustworthy 3D fixes
+    has_fix = pvt.gnss_fix_ok && pvt.fix_type == 3; // only trust 3D fixes
+
+    if (has_fix) {
         latest = pvt;
-        has_fix = true;
         last_fix_time_ms = millis();
     }
 }
 
 bool gps_init() {
     ubx_parser_init(&parser);
-    GPS_SERIAL.begin(9600); // might be 38400?
+    GPS_SERIAL.begin(9600); // SAM-M10Q default baud
+
+    // Default RX buffer is 64 bytes, smaller than one 100-byte NAV-PVT frame.
+    // 512 extra bytes should guard against serial overflow :)
+    static uint8_t rx_extra[512];
+    GPS_SERIAL.addMemoryForRead(rx_extra, sizeof rx_extra);
     delay(500); // let the module boot
 
     if (!poll_mon_ver(1000)) {
@@ -123,8 +128,10 @@ void gps_update() {
         }
     }
 }
+// True if the latest solution is a 3D fix. The timeout covers the GPS going
+// silent, since then no new frame arrives to clear has_fix.
 bool gps_has_fix() {
-	return gps_fix_age_ms() < GPS_FIX_TIMEOUT_MS;
+    return has_fix && gps_fix_age_ms() < GPS_FIX_TIMEOUT_MS;
 }
 
 const NavPvt* gps_latest() {
@@ -132,9 +139,9 @@ const NavPvt* gps_latest() {
 }
 
 uint32_t gps_fix_age_ms() {
-    if (!has_fix) {
+    if (last_fix_time_ms == 0) {
         return UINT32_MAX; // no fix received yet: treat as infinitely old
     }
 
-	return millis() - last_fix_time_ms;
+    return millis() - last_fix_time_ms;
 }
