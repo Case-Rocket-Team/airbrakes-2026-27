@@ -182,8 +182,7 @@ def process_6dof(full_data):
     acu_pos_z = []
 
     #init
-    ekf = PyBind.EKF()
-    ekf.init(settings, PyBind.vec3f(0.0, 0.0, -1.0), world_north, 0)
+    ekf = PyBind.EKF(settings, PyBind.vec3f(0.0, 0.0, -1.0), world_north, 0)
     n = min(len(times), len(accelerometer_fps2), len(gyros_radps))
 
 

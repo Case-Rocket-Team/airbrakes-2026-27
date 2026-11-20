@@ -12,8 +12,7 @@ class EKF {
 private:
         extended_kalman_filter* ekf;
 public:
-    EKF();
-    void init(
+    EKF(
         const ekf_settings* settings,
         vec3f local_down,
         vec3f local_magn_gauss,

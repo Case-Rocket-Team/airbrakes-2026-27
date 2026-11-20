@@ -25,9 +25,7 @@ if __name__ == '__main__':
     settings2.gnss_covar_ft2 = [18.0, 0.0, 0.0, 0.0, 18.0, 0.0, 0.0, 0.0, 200.0]
 
     #init
-    ekf = PyBind.EKF()
-    print(ekf.get_nominal_state().attitude.w)
-    ekf.init(settings, PyBind.vec3f(0.0, 0.0, -1.0), PyBind.vec3f(0.0, 1.0, 0.0), 0)
+    ekf = PyBind.EKF(settings, PyBind.vec3f(0.0, 0.0, -1.0), PyBind.vec3f(0.0, 1.0, 0.0), 0)
     #just to check that init works
     print(ekf.get_nominal_state().attitude.w)
 

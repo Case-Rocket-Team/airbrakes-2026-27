@@ -8,11 +8,14 @@
 
 namespace py = pybind11;
 
-EKF::EKF() { ekf = new extended_kalman_filter{}; }
+EKF::EKF(const ekf_settings* settings,
+        vec3f local_down,
+        vec3f local_magn_gauss,
+        u32 timestamp_us) {
 
-void EKF::init(const ekf_settings *settings, vec3f local_down,
-               vec3f local_magn_gauss, u32 timestamp_us) {
+  ekf = new extended_kalman_filter{};
   ekf_init(ekf, settings, local_down, local_magn_gauss, timestamp_us);
+
 }
 
 void EKF::inject_imu(vec3f accel_fps2, vec3f gyro_radps, u32 timestamp_us) {
@@ -167,8 +170,8 @@ PYBIND11_MODULE(PyBind, m) {
   m.def("ekf_init", &ekf_init);
 
   py::class_<EKF>(m, "EKF")
-      .def(py::init<>())
-      .def("init", &EKF::init)
+  .def(py::init<const ekf_settings* , vec3f, vec3f, u32>(), py::arg("settings"), py::arg("local_down"),
+         py::arg("local_magn_gauss"), py::arg("timestamp_us"))
       .def("inject_baro", &EKF::inject_baro)
       .def("inject_gnss", &EKF::inject_gnss)
       .def("inject_imu", &EKF::inject_imu)
