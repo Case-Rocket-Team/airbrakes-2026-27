@@ -1,6 +1,12 @@
 #include <Arduino.h>
 #include <SPI.h>
+#include <math.h>
 #include "bmp388.h"
+
+
+#define ISA_T0      288.15f     // K
+#define ISA_L       0.0065f     // K/m
+#define ISA_EXP     0.190263f   // R*L / (g0*M)
 
 static uint8_t cs;
 static uint8_t irq_pin = BMP388_NO_INT;
@@ -92,6 +98,11 @@ bool bmp388_init(uint8_t cs_pin, uint8_t int_pin, uint8_t odr_sel) {
     }
 
     bmp388_set_odr(odr_sel); // must be set before entering normal mode
+
+    write_reg(0x1C, 0x00);
+
+    write_reg(0x1F, 0x02); // IIR = coeff 1
+
     write_reg(0x1B, 0x33); // press_en | temp_en | normal mode
     return true;
 }
@@ -193,4 +204,10 @@ static void load_calibration(void) {
     p9  = P9 / 281474976710656.0;            
     p10 = P10 / 281474976710656.0;           
     p11 = P11 / 36893488147419103232.0;      
+}
+
+// ISA barometric formula, troposphere (0-11 km):
+//   h = (T0 / L) * (1 - (p / p_ref)^(R*L / (g0*M)))
+float bmp388_altitude(float press_pa, float ref_pa, float temp_c) {
+    return ((temp_c + 273.15f) / ISA_L) * (1.0f - powf(press_pa / ref_pa, ISA_EXP));
 }
