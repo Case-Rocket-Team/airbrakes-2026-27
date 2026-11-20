@@ -14,4 +14,4 @@ Once initalized, temperature (C) and pressure (Pa) can be retrieved using `bmp_3
 
 Altitude can be calculated using the helper `bmp388_altitude(press_pa, ref_pa, ref_c)` which uses the ISA troposphere equation to approximate altitude.
 
-The status register of the BMP388 can be queried using `bmp388_get_status()`, refer to the datasheet for more information.
+The status register of the BMP388 can be queried using `bmp388_get_status()`, refer to the [datasheet](https://www.bosch-sensortec.com/media/boschsensortec/downloads/datasheets/bst-bmp388-ds001.pdf) for more information.
