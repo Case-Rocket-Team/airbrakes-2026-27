@@ -206,8 +206,6 @@ bmp388_data bmp388_read(void) {
 
 // Set output data rate (4.3.19) and the matching oversampling.
 // odr_sel: 0 = 200 Hz, 1 = 100 Hz, 2 = 50 Hz, 3 = 25 Hz, ...
-// Config registers must be written in sleep mode, so this drops to sleep,
-// reconfigures, and returns to normal mode. Safe to call after bmp388_init().
 bool bmp388_set_odr(uint8_t odr_sel) {
     if (odr_sel > 0x11) {
         odr_sel = 0x11;
