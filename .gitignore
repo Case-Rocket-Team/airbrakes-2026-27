@@ -3,3 +3,5 @@ compile_flags.txt
 **.bin
 kf_results.csv
 ekf_results.csv
+/.vscode
+sensors/bmp3/build/
