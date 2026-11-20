@@ -169,12 +169,10 @@ static double bmp388_compensate_temperature(double ut) {
 
 // Pressure compensation (9.3).
 static double bmp388_compensate_pressure(double up, double t) {
-    // clang-format off
     return (p5 + p6 * t + p7 * t * t + p8 * t * t * t)
          + up * (p1 + p2 * t + p3 * t * t + p4 * t * t * t)
          + up * up * (p9 + p10 * t)
          + up * up * up * p11;
-    // clang-format on
 }
 
 bmp388_data bmp388_read(void) {
