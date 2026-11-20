@@ -84,12 +84,12 @@ static bool poll_mon_ver(uint32_t timeout_ms) {
 static void handle_frame(const UbxFrame* f) {
     NavPvt pvt;
     if (!ubx_decode_nav_pvt(f, &pvt)) {
-        return; // not a NAV-PVT frame
+        return;                         // not a NAV-PVT frame
     }
 
-    last_pvt_time_ms = millis(); // GPS is still talking
+    last_pvt_time_ms = millis();        // GPS is still talking
 
-    if (pvt.gnss_fix_ok) { // only keep trustworthy fixes
+    if (pvt.gnss_fix_ok && pvt.fix_type == 3) {   // only keep trustworthy 3D fixes
         latest = pvt;
         has_fix = true;
         last_fix_time_ms = millis();
