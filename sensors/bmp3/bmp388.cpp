@@ -10,7 +10,7 @@ static uint8_t           cs;
 static uint8_t           irq_pin = BMP388_NO_INT;
 static const SPISettings spi_settings(8000000, MSBFIRST, SPI_MODE0);
 
-// Calibration
+// Calibration Values
 static double t1, t2, t3;
 static double p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11;
 
@@ -37,8 +37,8 @@ static void read_reg(uint8_t reg, uint8_t *buf, int len) {
     SPI.beginTransaction(spi_settings);
     digitalWrite(cs, LOW);
 
-    SPI.transfer(reg | 0x80); // top bit set = read
-    SPI.transfer(0x00);       // junk byte first
+    SPI.transfer(reg | 0x80); // top bit set == read
+    SPI.transfer(0x00);       // first byte is a junk byte
 
     for (int i = 0; i < len; i++) {
         buf[i] = SPI.transfer(0x00);
@@ -52,7 +52,7 @@ static void write_reg(uint8_t reg, uint8_t val) {
     SPI.beginTransaction(spi_settings);
     digitalWrite(cs, LOW);
 
-    SPI.transfer(reg & 0x7F); // top bit clear = write
+    SPI.transfer(reg & 0x7F); // top bit clear == write
     SPI.transfer(val);
 
     digitalWrite(cs, HIGH);
@@ -144,7 +144,7 @@ bmp388_data bmp388_read(void) {
     uint8_t d[6];
 
     if (irq_pin != BMP388_NO_INT) {
-        // Copy the ISR's latest sample atomically so it can't change mid-copy.
+        // Copy the ISR's latest sample
         noInterrupts();
         for (int i = 0; i < 6; i++) {
             d[i] = raw[i];
