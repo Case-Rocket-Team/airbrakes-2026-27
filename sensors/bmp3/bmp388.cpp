@@ -6,6 +6,42 @@
 #define ISA_LAPSE_RATE          0.0065f   // K/m
 #define ISA_BAROMETRIC_EXPONENT 0.190263f // R*L / (g0*M)
 
+// Register map (datasheet section 5)
+#define BMP388_REG_CHIP_ID    0x00
+#define BMP388_REG_ERR        0x02
+#define BMP388_REG_STATUS     0x03
+#define BMP388_REG_DATA       0x04 // pressure (3 bytes), temperature (3 bytes)
+#define BMP388_REG_INT_STATUS 0x11
+#define BMP388_REG_INT_CTRL   0x19
+#define BMP388_REG_PWR_CTRL   0x1B
+#define BMP388_REG_OSR        0x1C
+#define BMP388_REG_ODR        0x1D
+#define BMP388_REG_CONFIG     0x1F
+#define BMP388_REG_CALIB      0x31 // 21 bytes of trim coefficients
+#define BMP388_REG_CMD        0x7E
+
+#define BMP388_CHIP_ID        0x50
+#define BMP388_CMD_SOFTRESET  0xB6
+
+#define BMP388_SPI_READ       0x80 // top bit set == read
+
+// ERR_REG bits
+#define BMP388_ERR_CONF       (1 << 2)
+
+// PWR_CTRL bits
+#define BMP388_PWR_PRESS_EN   (1 << 0)
+#define BMP388_PWR_TEMP_EN    (1 << 1)
+#define BMP388_PWR_MODE_SLEEP  (0x0 << 4)
+#define BMP388_PWR_MODE_NORMAL (0x3 << 4)
+
+// INT_CTRL bits
+#define BMP388_INT_LEVEL_HIGH (1 << 1)
+#define BMP388_INT_LATCH      (1 << 2)
+#define BMP388_INT_DRDY_EN    (1 << 6)
+
+// CONFIG: IIR filter coefficient select, bits 3:1
+#define BMP388_IIR_COEFF_1    (0x1 << 1)
+
 static uint8_t           cs;
 static uint8_t           irq_pin = BMP388_NO_INT;
 static const SPISettings spi_settings(8000000, MSBFIRST, SPI_MODE0);
@@ -23,10 +59,10 @@ static volatile bool    drdy = false;
 
 static void bmp388_isr(void) {
     uint8_t status;
-    read_reg(0x11, &status, 1); // releases the latched INT pin
+    read_reg(BMP388_REG_INT_STATUS, &status, 1); // releases the latched INT pin
 
     uint8_t d[6];
-    read_reg(0x04, d, 6); // pressure (3 bytes), temperature (3 bytes)
+    read_reg(BMP388_REG_DATA, d, 6);
     for (int i = 0; i < 6; i++) {
         raw[i] = d[i];
     }
@@ -37,7 +73,7 @@ static void read_reg(uint8_t reg, uint8_t *buf, int len) {
     SPI.beginTransaction(spi_settings);
     digitalWrite(cs, LOW);
 
-    SPI.transfer(reg | 0x80); // top bit set == read
+    SPI.transfer(reg | BMP388_SPI_READ);
     SPI.transfer(0x00);       // first byte is a junk byte
 
     for (int i = 0; i < len; i++) {
@@ -52,7 +88,7 @@ static void write_reg(uint8_t reg, uint8_t val) {
     SPI.beginTransaction(spi_settings);
     digitalWrite(cs, LOW);
 
-    SPI.transfer(reg & 0x7F); // top bit clear == write
+    SPI.transfer(reg & ~BMP388_SPI_READ); // top bit clear == write
     SPI.transfer(val);
 
     digitalWrite(cs, HIGH);
@@ -68,13 +104,13 @@ bool bmp388_init(uint8_t cs_pin, uint8_t int_pin, uint8_t odr_sel) {
 
     // Dummy read
     uint8_t id;
-    read_reg(0x00, &id, 1);
+    read_reg(BMP388_REG_CHIP_ID, &id, 1);
 
-    write_reg(0x7E, 0xB6); // soft reset
+    write_reg(BMP388_REG_CMD, BMP388_CMD_SOFTRESET);
     delay(10);
 
-    read_reg(0x00, &id, 1);
-    if (id != 0x50) {
+    read_reg(BMP388_REG_CHIP_ID, &id, 1);
+    if (id != BMP388_CHIP_ID) {
         return false;
     }
 
@@ -82,10 +118,11 @@ bool bmp388_init(uint8_t cs_pin, uint8_t int_pin, uint8_t odr_sel) {
 
     if (int_pin != BMP388_NO_INT) {
         // INT_CTRL: push-pull, active high, LATCHED, data-ready enabled.
-        write_reg(0x19, 0x46);
+        write_reg(BMP388_REG_INT_CTRL,
+                  BMP388_INT_LEVEL_HIGH | BMP388_INT_LATCH | BMP388_INT_DRDY_EN);
 
         uint8_t status;
-        read_reg(0x11, &status, 1); // clear any stale flag on INT_STATUS
+        read_reg(BMP388_REG_INT_STATUS, &status, 1); // clear any stale flag
 
         irq_pin = int_pin;
         drdy    = false;
@@ -95,7 +132,7 @@ bool bmp388_init(uint8_t cs_pin, uint8_t int_pin, uint8_t odr_sel) {
         attachInterrupt(digitalPinToInterrupt(int_pin), bmp388_isr, RISING);
     }
 
-    write_reg(0x1F, 0x02); // IIR = coeff 1
+    write_reg(BMP388_REG_CONFIG, BMP388_IIR_COEFF_1);
 
     // Sets ODR + matching OSR, enters normal mode, checks for config errors.
     return bmp388_set_odr(odr_sel);
@@ -152,7 +189,7 @@ bmp388_data bmp388_read(void) {
         drdy = false;
         interrupts();
     } else {
-        read_reg(0x04, d, 6); // pressure (3 bytes), temperature (3 bytes)
+        read_reg(BMP388_REG_DATA, d, 6);
     }
 
     double up = d[0] | d[1] << 8 | (uint32_t)d[2] << 16;
@@ -176,29 +213,31 @@ bool bmp388_set_odr(uint8_t odr_sel) {
         odr_sel = 0x11;
     }
 
-    write_reg(0x1B, 0x03); // press_en | temp_en | sleep mode
-    write_reg(0x1C, osr_for_odr(odr_sel));
-    write_reg(0x1D, odr_sel);
-    write_reg(0x1B, 0x33); // press_en | temp_en | normal mode
+    write_reg(BMP388_REG_PWR_CTRL,
+              BMP388_PWR_PRESS_EN | BMP388_PWR_TEMP_EN | BMP388_PWR_MODE_SLEEP);
+    write_reg(BMP388_REG_OSR, osr_for_odr(odr_sel));
+    write_reg(BMP388_REG_ODR, odr_sel);
+    write_reg(BMP388_REG_PWR_CTRL,
+              BMP388_PWR_PRESS_EN | BMP388_PWR_TEMP_EN | BMP388_PWR_MODE_NORMAL);
 
     // ERR_REG (0x02): bit 2 = conf_err, set if ODR/OSR settings are invalid
     // (e.g. Tconv doesn't fit in 1/ODR). The sensor won't produce data then.
     uint8_t err;
-    read_reg(0x02, &err, 1);
-    return !(err & (1 << 2));
+    read_reg(BMP388_REG_ERR, &err, 1);
+    return !(err & BMP388_ERR_CONF);
 }
 
 // Read the STATUS register (0x03).
 uint8_t bmp388_get_status(void) {
     uint8_t status;
-    read_reg(0x03, &status, 1);
+    read_reg(BMP388_REG_STATUS, &status, 1);
     return status;
 }
 
 // Load trim coefficients and apply datasheet scaling.
 static void load_calibration(void) {
     uint8_t c[21];
-    read_reg(0x31, c, 21);
+    read_reg(BMP388_REG_CALIB, c, 21);
 
     uint16_t T1  = (uint16_t)(c[0] | c[1] << 8);
     uint16_t T2  = (uint16_t)(c[2] | c[3] << 8);
