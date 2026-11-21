@@ -4,7 +4,7 @@ This folder contains a UART driver for the SAM-M10Q GPS. It talks to the module 
 
 ## How it's set up :D
 
-| File | What it does |
+| File | Purpose |
 | --- | --- |
 | `gps.h` / `gps.cpp` | The public API. |
 | `ubx_messages.h` / `ubx_messages.cpp` | Builds the messages we send (config, polls) and decodes the ones we receive (NAV-PVT, ACK/NAK). |
@@ -25,7 +25,7 @@ All multi-byte values are little-endian.
 Initialize the module once in `setup()` using `gps_init()`. It configures the module to:
 - output UBX only.
 - send a NAV-PVT (position/velocity/time) message at 5 Hz
-- use the airborne (<4g) dynamic model
+- use the airborne (<4g) model
 
 It returns `false` if the module doesn't respond or rejects the config. 
 
