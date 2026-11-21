@@ -54,18 +54,14 @@ static void load_calibration(void);
 
 static void read_reg(uint8_t reg, uint8_t *buf, int len);
 
-static volatile uint8_t raw[6];
-static volatile bool    drdy = false;
+static uint8_t        isr_sample[6];
+static volatile bool  drdy = false;
 
 static void bmp388_isr(void) {
     uint8_t status;
     read_reg(BMP388_REG_INT_STATUS, &status, 1); // releases the latched INT pin
 
-    uint8_t d[6];
-    read_reg(BMP388_REG_DATA, d, 6);
-    for (int i = 0; i < 6; i++) {
-        raw[i] = d[i];
-    }
+    read_reg(BMP388_REG_DATA, isr_sample, sizeof(isr_sample));
     drdy = true;
 }
 
@@ -181,9 +177,7 @@ bmp388_data bmp388_read(void) {
     if (irq_pin != BMP388_NO_INT) {
         // Copy the ISR's latest sample
         noInterrupts();
-        for (int i = 0; i < 6; i++) {
-            d[i] = raw[i];
-        }
+        memcpy(d, isr_sample, sizeof(d));
         drdy = false;
         interrupts();
     } else {

@@ -29,7 +29,7 @@ void setup() {
     for (int i = 0; i < N; i++) {
         while (!bmp388_data_ready()) {}
         bmp388_data data = bmp388_read();
-        Serial.printf("%.9g\n", bmp388_altitude(data.press_pa, meanPressure, meanTemp));
+        Serial.printf("%.9g\n", bmp388_altitude_m(data.press_pa, meanPressure, meanTemp));
     }
 
     
