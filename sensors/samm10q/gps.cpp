@@ -7,6 +7,10 @@
 #define GPS_ACK_TIMEOUT_MS 500
 #define GPS_FIX_TIMEOUT_MS 1000
 
+#define EARTH_RADIUS_FT 20902231.0 // 6,371 km
+#define DEG_E7_TO_RAD (1e-7 * PI / 180.0)
+#define MM_TO_FT (1.0 / 304.8)
+
 static UbxParser parser;
 static NavPvt latest;
 static bool has_fix = false;            // most recent NAV-PVT had a valid 3D fix
@@ -58,7 +62,7 @@ static bool send_and_ack(const UbxFrame* f)	{
 static bool poll_mon_ver(uint32_t timeout_ms) {
     UbxFrame tx;
     ubx_build_poll(&tx, UBX_CLASS_MON, UBX_ID_MON_VER);
-    if (!send_frame(&tx)) { // couldnt send
+    if (!send_frame(&tx)) { // couldn't send
         return false;
     }
 
@@ -144,4 +148,20 @@ uint32_t gps_fix_age_ms() {
     }
 
     return millis() - last_fix_time_ms;
+}
+
+
+GpsDelta gps_delta(NavPvt origin, NavPvt now) {
+    int32_t d_lat_e7 = now.lat_deg_e7 - origin.lat_deg_e7;
+    int32_t d_lon_e7 = now.lon_deg_e7 - origin.lon_deg_e7;
+    int32_t d_h_mm = now.h_msl_mm - origin.h_msl_mm;
+
+    // A degree of longitude gets shorter away from the equator
+    double cos_lat = cos(origin.lat_deg_e7 * DEG_E7_TO_RAD);
+
+    GpsDelta d;
+    d.north_ft = (float)(d_lat_e7 * DEG_E7_TO_RAD * EARTH_RADIUS_FT);
+    d.east_ft = (float)(d_lon_e7 * DEG_E7_TO_RAD * EARTH_RADIUS_FT * cos_lat);
+    d.up_ft = (float)(d_h_mm * MM_TO_FT);
+    return d;
 }

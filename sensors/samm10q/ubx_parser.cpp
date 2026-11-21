@@ -1,15 +1,15 @@
 #include "ubx_parser.h"
 
 static void ck_update(UbxParser* p, uint8_t b) {
-    p->ckA += b;
-    p->ckB += p->ckA;
+    p->ck_a += b;
+    p->ck_b += p->ck_a;
 }
 
 void ubx_parser_init(UbxParser* p) {
     p->state = UBX_STATE_SYNC1;
     p->idx = 0;
-    p->ckA = 0;
-    p->ckB = 0;
+    p->ck_a = 0;
+    p->ck_b = 0;
 }
 
 bool ubx_parser_feed(UbxParser* p, uint8_t b) {
@@ -31,8 +31,8 @@ bool ubx_parser_feed(UbxParser* p, uint8_t b) {
             break;
 
         case UBX_STATE_CLASS: // checksum accumulation starts at class byte
-            p->ckA = 0;
-            p->ckB = 0;
+            p->ck_a = 0;
+            p->ck_b = 0;
             ck_update(p, b);
             p->frame.cls = b;
             p->state = UBX_STATE_ID;
@@ -78,12 +78,12 @@ bool ubx_parser_feed(UbxParser* p, uint8_t b) {
             break;
 
         case UBX_STATE_CKA: // if checksum matches, go to CKB, otherwise SYNC1
-            p->state = (b == p->ckA) ? UBX_STATE_CKB : UBX_STATE_SYNC1;
+            p->state = (b == p->ck_a) ? UBX_STATE_CKB : UBX_STATE_SYNC1;
             break;
 
         case UBX_STATE_CKB: // frame complete if checksum matches
             p->state = UBX_STATE_SYNC1;
-            return b == p->ckB;
+            return b == p->ck_b;
     }
     return false;
 }
