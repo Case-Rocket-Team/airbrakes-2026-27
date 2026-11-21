@@ -28,5 +28,6 @@ if __name__ == '__main__':
     ekf = PyBind.EKF(settings, PyBind.vec3f(0.0, 0.0, -1.0), PyBind.vec3f(0.0, 1.0, 0.0), 0)
     #just to check that init works
     print(ekf.get_nominal_state().attitude.w)
+    assert ekf.get_nominal_state().attitude.w == 0.0
 
 
