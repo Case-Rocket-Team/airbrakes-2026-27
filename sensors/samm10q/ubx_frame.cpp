@@ -10,7 +10,7 @@
     1 Message ID Byte
     2 Length Bytes (Little Endian)
     N Payload Bytes
-    2 Checksum Bytes (ckA, ckB)
+    2 Checksum Bytes (ck_a, ck_b)
 */
 size_t ubx_encode(const UbxFrame* f, uint8_t* out, size_t outSize) {
     if (f->len > UBX_MAX_PAYLOAD || f->len + 8 > outSize) return 0; // Invalid 
@@ -29,26 +29,26 @@ size_t ubx_encode(const UbxFrame* f, uint8_t* out, size_t outSize) {
 
     memcpy(out + 6, f->payload, f->len); // Copy payload
 
-    // Checksum bytes ckA and ckB
-    uint8_t ckA, ckB;
+    // Checksum bytes ck_a and ck_b
+    uint8_t ck_a, ck_b;
 
-    ubx_checksum(out + 2, 4 + f->len, ckA, ckB);
+    ubx_checksum(out + 2, 4 + f->len, ck_a, ck_b);
 
-    out[f->len + 6] = ckA;
-    out[f->len + 7] = ckB;
+    out[f->len + 6] = ck_a;
+    out[f->len + 7] = ck_b;
 
     return 8 + f->len;
 
 }
 
 // Fletcher Checksum Algorithm
-void ubx_checksum(const uint8_t* buffer, const size_t len, uint8_t& ckA, uint8_t& ckB) {
-    ckA = 0;
-    ckB = 0;
+void ubx_checksum(const uint8_t* buffer, const size_t len, uint8_t& ck_a, uint8_t& ck_b) {
+    ck_a = 0;
+    ck_b = 0;
 
     for (size_t i = 0; i < len; i++) {
-        ckA = ckA + buffer[i];
-        ckB += ckA;
+        ck_a = ck_a + buffer[i];
+        ck_b += ck_a;
     }
 
 }

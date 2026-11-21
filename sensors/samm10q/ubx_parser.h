@@ -19,9 +19,9 @@ enum UbxState {
 struct UbxParser {
     UbxState state = UBX_STATE_SYNC1; // Current frame location
     UbxFrame frame; // Current frame
-    size_t   idx = 0; // # payload bytes recieved
-    uint8_t  ckA = 0; // Checksum A
-    uint8_t  ckB = 0; // Checksum B
+    size_t   idx = 0; // # payload bytes received
+    uint8_t  ck_a = 0; // Checksum A
+    uint8_t  ck_b = 0; // Checksum B
 };
 
 void ubx_parser_init(UbxParser* p);
