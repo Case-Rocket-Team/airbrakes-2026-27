@@ -130,8 +130,9 @@ bool bmp388_init(uint8_t cs_pin, uint8_t int_pin, uint8_t odr_sel) {
 
     write_reg(BMP388_REG_CONFIG, BMP388_IIR_COEFF_1);
 
-    // Sets ODR + matching OSR, enters normal mode, checks for config errors.
-    return bmp388_set_odr(odr_sel);
+    // Sets ODR + matching OSR and enters normal mode.
+    bmp388_set_odr(odr_sel);
+    return true;
 }
 
 // Highest oversampling (OSR register 0x1C value) whose conversion time fits
@@ -198,9 +199,9 @@ bmp388_data bmp388_read(void) {
 
 // Set output data rate (4.3.19) and the matching oversampling.
 // odr_sel: 0 = 200 Hz, 1 = 100 Hz, 2 = 50 Hz, 3 = 25 Hz, ...
-bool bmp388_set_odr(uint8_t odr_sel) {
-    if (odr_sel > 0x11) {
-        odr_sel = 0x11;
+void bmp388_set_odr(uint8_t odr_sel) {
+    if (odr_sel > BMP388_ODR_SLOWEST) {
+        odr_sel = BMP388_ODR_SLOWEST;
     }
 
     write_reg(BMP388_REG_PWR_CTRL,
@@ -211,10 +212,15 @@ bool bmp388_set_odr(uint8_t odr_sel) {
               BMP388_PWR_PRESS_EN | BMP388_PWR_TEMP_EN | BMP388_PWR_MODE_NORMAL);
 
     // ERR_REG (0x02): bit 2 = conf_err, set if ODR/OSR settings are invalid
-    // (e.g. Tconv doesn't fit in 1/ODR). The sensor won't produce data then.
+    // (e.g. Tconv doesn't fit in 1/ODR).
     uint8_t err;
     read_reg(BMP388_REG_ERR, &err, 1);
-    return !(err & BMP388_ERR_CONF);
+
+    // Fall back to the slowest rate, where every OSR fits in 1/ODR.
+    // The odr_sel check stops it recursing more than once.
+    if ((err & BMP388_ERR_CONF) && odr_sel != BMP388_ODR_SLOWEST) {
+        bmp388_set_odr(BMP388_ODR_SLOWEST);
+    }
 }
 
 // Read the STATUS register (0x03).
