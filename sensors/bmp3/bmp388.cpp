@@ -42,23 +42,27 @@
 // CONFIG: IIR filter coefficient select, bits 3:1
 #define BMP388_IIR_COEFF_1    (0x1 << 1)
 
-static uint8_t           cs;
+static uint8_t           cs = 0;
 static uint8_t           irq_pin = BMP388_NO_INT;
 static const SPISettings spi_settings(8000000, MSBFIRST, SPI_MODE0);
 
 // Calibration Values
-static double t1, t2, t3;
-static double p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11;
+static double t1 = 0.0, t2 = 0.0, t3 = 0.0;
+static double p1 = 0.0, p2 = 0.0, p3 = 0.0, p4 = 0.0, p5 = 0.0, p6 = 0.0,
+              p7 = 0.0, p8 = 0.0, p9 = 0.0, p10 = 0.0, p11 = 0.0;
 
 static void load_calibration(void);
 
 static void read_reg(uint8_t reg, uint8_t *buf, int len);
 
-static uint8_t        isr_sample[6];
+static uint8_t        isr_sample[6] = {0};
+static uint32_t       isr_sample_time_us = 0;
 static volatile bool  drdy = false;
 
 static void bmp388_isr(void) {
-    uint8_t status;
+    isr_sample_time_us = micros();
+
+    uint8_t status = 0;
     read_reg(BMP388_REG_INT_STATUS, &status, 1); // releases the latched INT pin
 
     read_reg(BMP388_REG_DATA, isr_sample, sizeof(isr_sample));
@@ -99,7 +103,7 @@ bool bmp388_init(uint8_t cs_pin, uint8_t int_pin, uint8_t odr_sel) {
     SPI.begin();
 
     // Dummy read
-    uint8_t id;
+    uint8_t id = 0;
     read_reg(BMP388_REG_CHIP_ID, &id, 1);
 
     write_reg(BMP388_REG_CMD, BMP388_CMD_SOFTRESET);
@@ -117,7 +121,7 @@ bool bmp388_init(uint8_t cs_pin, uint8_t int_pin, uint8_t odr_sel) {
         write_reg(BMP388_REG_INT_CTRL,
                   BMP388_INT_LEVEL_HIGH | BMP388_INT_LATCH | BMP388_INT_DRDY_EN);
 
-        uint8_t status;
+        uint8_t status = 0;
         read_reg(BMP388_REG_INT_STATUS, &status, 1); // clear any stale flag
 
         irq_pin = int_pin;
@@ -173,15 +177,18 @@ static double bmp388_compensate_pressure(double up, double t) {
 }
 
 bmp388_data bmp388_read(void) {
-    uint8_t d[6];
+    uint8_t  d[6] = {0};
+    uint32_t time_us = 0;
 
     if (irq_pin != BMP388_NO_INT) {
         // Copy the ISR's latest sample
         noInterrupts();
         memcpy(d, isr_sample, sizeof(d));
+        time_us = isr_sample_time_us;
         drdy = false;
         interrupts();
     } else {
+        time_us = micros();
         read_reg(BMP388_REG_DATA, d, 6);
     }
 
@@ -191,19 +198,13 @@ bmp388_data bmp388_read(void) {
     double t = bmp388_compensate_temperature(ut);
     double p = bmp388_compensate_pressure(up, t);
 
-    bmp388_data data;
-    data.temp_c   = (float)t;
-    data.press_pa = (float)p;
+    bmp388_data data {(float)t, (float)p, time_us};
     return data;
 }
 
-// Set output data rate (4.3.19) and the matching oversampling.
-// odr_sel: 0 = 200 Hz, 1 = 100 Hz, 2 = 50 Hz, 3 = 25 Hz, ...
-void bmp388_set_odr(uint8_t odr_sel) {
-    if (odr_sel > BMP388_ODR_SLOWEST) {
-        odr_sel = BMP388_ODR_SLOWEST;
-    }
-
+// Write ODR + its matching OSR from sleep, then enter normal mode.
+// Returns true if the sensor accepted the combination.
+static bool apply_odr(uint8_t odr_sel) {
     write_reg(BMP388_REG_PWR_CTRL,
               BMP388_PWR_PRESS_EN | BMP388_PWR_TEMP_EN | BMP388_PWR_MODE_SLEEP);
     write_reg(BMP388_REG_OSR, osr_for_odr(odr_sel));
@@ -213,26 +214,34 @@ void bmp388_set_odr(uint8_t odr_sel) {
 
     // ERR_REG (0x02): bit 2 = conf_err, set if ODR/OSR settings are invalid
     // (e.g. Tconv doesn't fit in 1/ODR).
-    uint8_t err;
+    uint8_t err = 0;
     read_reg(BMP388_REG_ERR, &err, 1);
+    return !(err & BMP388_ERR_CONF);
+}
 
-    // Fall back to the slowest rate, where every OSR fits in 1/ODR.
-    // The odr_sel check stops it recursing more than once.
-    if ((err & BMP388_ERR_CONF) && odr_sel != BMP388_ODR_SLOWEST) {
-        bmp388_set_odr(BMP388_ODR_SLOWEST);
+// Set output data rate (4.3.19) and the matching oversampling.
+// odr_sel: 0 = 200 Hz, 1 = 100 Hz, 2 = 50 Hz, 3 = 25 Hz, ...
+void bmp388_set_odr(uint8_t odr_sel) {
+    if (odr_sel > BMP388_ODR_SLOWEST) {
+        odr_sel = BMP388_ODR_SLOWEST;
+    }
+
+    if (!apply_odr(odr_sel)) {
+        // Fall back to the slowest rate, where every OSR fits in 1/ODR.
+        apply_odr(BMP388_ODR_SLOWEST);
     }
 }
 
 // Read the STATUS register (0x03).
 uint8_t bmp388_get_status(void) {
-    uint8_t status;
+    uint8_t status = 0;
     read_reg(BMP388_REG_STATUS, &status, 1);
     return status;
 }
 
 // Load trim coefficients and apply datasheet scaling.
 static void load_calibration(void) {
-    uint8_t c[21];
+    uint8_t c[21] = {0};
     read_reg(BMP388_REG_CALIB, c, 21);
 
     uint16_t T1  = (uint16_t)(c[0] | c[1] << 8);
@@ -250,20 +259,20 @@ static void load_calibration(void) {
     int8_t   P10 = (int8_t)c[19];
     int8_t   P11 = (int8_t)c[20];
 
-    t1  = T1 * 256.0;
-    t2  = T2 / 1073741824.0;
-    t3  = T3 / 281474976710656.0;
-    p1  = (P1 - 16384.0) / 1048576.0;
-    p2  = (P2 - 16384.0) / 536870912.0;
-    p3  = P3 / 4294967296.0;
-    p4  = P4 / 137438953472.0;
-    p5  = P5 * 8.0;
-    p6  = P6 / 64.0;
-    p7  = P7 / 256.0;
-    p8  = P8 / 32768.0;
-    p9  = P9 / 281474976710656.0;
-    p10 = P10 / 281474976710656.0;
-    p11 = P11 / 36893488147419103232.0;
+    t1  = (double) T1 * 256.0;
+    t2  = (double) T2 / 1073741824.0;
+    t3  = (double) T3 / 281474976710656.0;
+    p1  = ((double) P1 - 16384.0) / 1048576.0;
+    p2  = ((double) P2 - 16384.0) / 536870912.0;
+    p3  = (double) P3 / 4294967296.0;
+    p4  = (double) P4 / 137438953472.0;
+    p5  = (double) P5 * 8.0;
+    p6  = (double) P6 / 64.0;
+    p7  = (double) P7 / 256.0;
+    p8  = (double) P8 / 32768.0;
+    p9  = (double) P9 / 281474976710656.0;
+    p10 = (double) P10 / 281474976710656.0;
+    p11 = (double) P11 / 36893488147419103232.0;
 }
 
 // ISA barometric formula, troposphere (0-11 km):
