@@ -17,6 +17,7 @@
 #define BMP388_50HZ_ODR    2
 #define BMP388_25HZ_ODR    3
 #define BMP388_12_5HZ_ODR  4
+#define BMP388_ODR_SLOWEST 0x11 // 200 / 2^17 Hz, ~655 s per sample
 
 bool bmp388_init(uint8_t cs_pin, uint8_t int_pin = BMP388_NO_INT,
                  uint8_t odr_sel = BMP388_200HZ_ODR);
@@ -40,8 +41,9 @@ struct bmp388_data {
 bmp388_data bmp388_read(void);
 
 // Set output data rate: 0 = 200 Hz, 1 = 100 Hz, ... each step halves (max 0x11).
-// Also applies the max oversampling for that rate (table above). 
-bool bmp388_set_odr(uint8_t odr_sel);
+// Also applies the max oversampling for that rate (table above). If the sensor
+// rejects the config, falls back to BMP388_ODR_SLOWEST.
+void bmp388_set_odr(uint8_t odr_sel);
 
 // ISA troposphere (valid 0–11 km). Returns geopotential altitude in metres
 // above a reference level with pressure ref_pressure_pa and air temperature ref_temp_c
