@@ -33,8 +33,9 @@ bool bmp388_data_ready(void);
 uint8_t bmp388_get_status(void);
 
 struct bmp388_data {
-    float temp_c;    // temperature, °C
-    float press_pa;  // pressure, Pa
+    float    temp_c   = 0.0f; // temperature, °C
+    float    press_pa = 0.0f; // pressure, Pa
+    uint32_t time_us  = 0;    // micros() when the sample was taken (wraps every ~71.6 min)
 };
 
 // Read and compensate the latest sample.
