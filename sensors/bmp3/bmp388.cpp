@@ -268,7 +268,7 @@ static void load_calibration(void) {
 
 // ISA barometric formula, troposphere (0-11 km):
 //   h = (T_ref / L) * (1 - (p / p_ref)^(R*L / (g0*M)))
-float bmp388_altitude(float press_pa, float ref_pa, float ref_c) {
-    return ((ref_c + 273.15f) / ISA_LAPSE_RATE)
-           * (1.0f - powf(press_pa / ref_pa, ISA_BAROMETRIC_EXPONENT));
+float bmp388_altitude_m(float press_pa, float ref_press_pa, float ref_temp_c) {
+    return ((ref_temp_c + 273.15f) / ISA_LAPSE_RATE)
+           * (1.0f - powf(press_pa / ref_press_pa, ISA_BAROMETRIC_EXPONENT));
 }
