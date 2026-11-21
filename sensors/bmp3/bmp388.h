@@ -44,6 +44,6 @@ bmp388_data bmp388_read(void);
 bool bmp388_set_odr(uint8_t odr_sel);
 
 // ISA troposphere (valid 0–11 km). Returns geopotential altitude in metres
-// above a reference level with pressure ref_pa and air temperature ref_c.
-float bmp388_altitude(float press_pa, float ref_pa = 101325.0f, float ref_c = 15.0f);
+// above a reference level with pressure ref_pressure_pa and air temperature ref_temp_c
+float bmp388_altitude_m(float press_pa, float ref_pressure_pa = 101325.0f, float ref_temp_c = 15.0f);
 
