@@ -4,6 +4,7 @@
 
 
 #define GPS_SERIAL Serial1
+#define GPS_BAUD 115200 
 #define GPS_ACK_TIMEOUT_MS 500
 #define GPS_FIX_TIMEOUT_MS 1000
 
@@ -115,6 +116,16 @@ bool gps_init() {
     if (!poll_mon_ver(1000)) {
         return false; // module not responding
     }
+
+    // Switch the module to GPS_BAUD, then follow it. No ACK wait: the module
+    // changes baud as soon as it applies this, so the ACK would be garbled.
+    UbxFrame baud;
+    ubx_valset_begin(&baud, UBX_LAYER_RAM);
+    ubx_valset_add_u32(&baud, CFG_UART1_BAUDRATE, GPS_BAUD);
+    send_frame(&baud);
+    GPS_SERIAL.flush(); // wait until the last byte has been sent
+    delay(100); // give the module time to switch
+    GPS_SERIAL.begin(GPS_BAUD); // clear the RX buffer
 
     UbxFrame tx;
     ubx_valset_begin(&tx, UBX_LAYER_RAM);

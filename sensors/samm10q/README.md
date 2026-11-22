@@ -23,6 +23,7 @@ All multi-byte values are little-endian.
 ## Usage
 
 Initialize the module once in `setup()` using `gps_init()`. It configures the module to:
+- run UART1 at 115200 baud
 - output UBX only.
 - send a NAV-PVT (position/velocity/time) message at 5 Hz
 - use the airborne (<4g) model
