@@ -36,35 +36,34 @@
 #define DYNMODEL_AIR4                 8           // airborne, <4g acceleration
 
 // Builders
-void ubx_build_poll(UbxFrame* f, uint8_t cls, uint8_t id);
+UbxFrame ubx_build_poll(UbxFrame* f, uint8_t cls, uint8_t id);
 
 void ubx_valset_begin(UbxFrame* f, uint8_t layers);
 bool ubx_valset_add_u8(UbxFrame* f, uint32_t key, uint8_t value);
 bool ubx_valset_add_u16(UbxFrame* f, uint32_t key, uint16_t value);
 bool ubx_valset_add_u32(UbxFrame* f, uint32_t key, uint32_t value);
 
-
 int ubx_check_ack(const UbxFrame* f, uint8_t cls, uint8_t id);
 
 // UBX-NAV-PVT (3.15.11.1)
 struct NavPvt {
-    bool     valid;         // false if the frame was not a well-formed NAV-PVT
-    uint32_t frame_read_us; // micros() when the frame finished parsing (set by gps.cpp)
-    uint32_t i_tow_ms;      // GPS time of week
-    uint8_t  fix_type;      // 0 = no fix, 2 = 2D, 3 = 3D
-    bool     gnss_fix_ok;   // bit 0 of flags: fix is valid
-    uint8_t  num_sv;        // satellites used in the solution
+    bool     valid = false;         // false if the frame was not a well-formed NAV-PVT
+    uint32_t frame_read_us = 0;     // micros() when the frame finished parsing (set by gps.cpp)
+    uint32_t i_tow_ms = 0;          // GPS time of week
+    uint8_t  fix_type = 0;          // 0 = no fix, 2 = 2D, 3 = 3D
+    bool     gnss_fix_ok = false;   // bit 0 of flags: fix is valid
+    uint8_t  num_sv = 0;            // satellites used in the solution
 
-    int32_t  lon_deg_e7;    // longitude, degrees * 1e7
-    int32_t  lat_deg_e7;    // latitude, degrees * 1e7
-    int32_t  h_msl_mm;      // height above mean sea level
+    int32_t  lon_deg_e7 = 0;        // longitude, degrees * 1e7
+    int32_t  lat_deg_e7 = 0;        // latitude, degrees * 1e7
+    int32_t  h_msl_mm = 0;          // height above mean sea level
 
-    int32_t  vel_n_mm_s;    // north velocity
-    int32_t  vel_e_mm_s;    // east velocity
-    int32_t  vel_d_mm_s;    // down velocity (positive = descending)
+    int32_t  vel_n_mm_s = 0;        // north velocity
+    int32_t  vel_e_mm_s = 0;        // east velocity
+    int32_t  vel_d_mm_s = 0;        // down velocity (positive = descending)
 
-    uint32_t h_acc_mm;      // horizontal accuracy estimate
-    uint32_t v_acc_mm;      // vertical accuracy estimate
+    uint32_t h_acc_mm = 0;          // horizontal accuracy estimate
+    uint32_t v_acc_mm = 0;          // vertical accuracy estimate
 };
 // Returns a zeroed NavPvt with valid = false if `f` is not a well-formed NAV-PVT frame.
 NavPvt ubx_decode_nav_pvt(const UbxFrame* f);

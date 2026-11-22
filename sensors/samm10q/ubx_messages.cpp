@@ -32,10 +32,12 @@ static void wr_u32(uint8_t* p, uint32_t v) {
     p[3] = (v >> 24) & 0xFF;
 }
 
-void ubx_build_poll(UbxFrame* f, uint8_t cls, uint8_t id) {
-    f->cls = cls;
-    f->id = id;
-    f->len = 0; // Poll frame, so no payload
+UbxFrame ubx_build_poll(uint8_t cls, uint8_t id) {
+    UbxFrame f;
+    f.cls = cls;
+    f.id = id;
+    f.len = 0; // No payload
+    return f;
 }
 
 // 3.9
@@ -107,14 +109,14 @@ bool ubx_valset_add_u16(UbxFrame* f, uint32_t key, uint16_t value) {
 
 // Appends a key with a 4 byte value
 bool ubx_valset_add_u32(UbxFrame* f, uint32_t key, uint32_t value) {
-    if (f->len + 4 + 4 > UBX_MAX_PAYLOAD) {
+    if (f->len + 8 > UBX_MAX_PAYLOAD) {
         return false; // Exceeded max frame length
     }
 
     wr_u32(&f->payload[f->len], key);
     wr_u32(&f->payload[f->len + 4], value);
 
-    f->len += 4 + 4; // 4 byte key, 4 byte value (u32)
+    f->len += 8; // 4 byte key, 4 byte value (u32)
     
     return true;
 }

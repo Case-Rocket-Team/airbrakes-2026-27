@@ -2,9 +2,9 @@
 #include "ubx_parser.h"
 #include <Arduino.h>
 
-
 #define GPS_SERIAL Serial1
 #define GPS_BAUD 115200 
+#define GPS_SERIAL_BUFFER_PAGE_LENGTH 512 
 #define GPS_ACK_TIMEOUT_MS 500
 #define GPS_FIX_TIMEOUT_MS 1000
 
@@ -12,8 +12,8 @@
 #define DEG_E7_TO_RAD (1e-7 * PI / 180.0)
 #define MM_TO_M 0.001
 
-static UbxParser parser;
-static NavPvt latest;
+static UbxParser parser = {};
+static NavPvt latest = {};
 static bool has_fix = false;            // most recent NAV-PVT had a valid 3D fix
 
 static uint32_t last_fix_time_ms = 0;   // last NAV-PVT with a valid fix (0 = never)
@@ -51,7 +51,6 @@ static int wait_for_ack(uint8_t cls, uint8_t id, uint32_t timeout_ms) {
 }	
 
 static bool send_and_ack(const UbxFrame* f)	{
-
     if (!send_frame(f)) { // send frame
         return false;
     }
@@ -71,7 +70,7 @@ static bool poll_mon_ver(uint32_t timeout_ms) {
     while (millis() - start < timeout_ms) {
         while (GPS_SERIAL.available()) {
             if (ubx_parser_feed(&parser, GPS_SERIAL.read())) {
-                // valid frame!
+                // valid frame! :D
                 const UbxFrame* f = &parser.frame;
                 if (f->cls == UBX_CLASS_MON && f->id == UBX_ID_MON_VER) {
                     // we're in business
@@ -108,8 +107,7 @@ bool gps_init() {
     GPS_SERIAL.begin(9600); // SAM-M10Q default baud
 
     // Default RX buffer is 64 bytes, smaller than one 100-byte NAV-PVT frame.
-    // 512 extra bytes should guard against serial overflow :)
-    static uint8_t rx_extra[512];
+    static uint8_t rx_extra[GPS_SERIAL_BUFFER_PAGE_LENGTH];
     GPS_SERIAL.addMemoryForRead(rx_extra, sizeof rx_extra);
     delay(500); // let the module boot
 
@@ -117,8 +115,7 @@ bool gps_init() {
         return false; // module not responding
     }
 
-    // Switch the module to GPS_BAUD, then follow it. No ACK wait: the module
-    // changes baud as soon as it applies this, so the ACK would be garbled.
+    // Switch the module to GPS_BAUD, then follow it.
     UbxFrame baud;
     ubx_valset_begin(&baud, UBX_LAYER_RAM);
     ubx_valset_add_u32(&baud, CFG_UART1_BAUDRATE, GPS_BAUD);
@@ -145,8 +142,7 @@ void gps_update() {
         }
     }
 }
-// True if the latest solution is a 3D fix. The timeout covers the GPS going
-// silent, since then no new frame arrives to clear has_fix.
+// True if the latest solution is a 3D fix.
 bool gps_has_fix() {
     return has_fix && gps_fix_age_ms() < GPS_FIX_TIMEOUT_MS;
 }

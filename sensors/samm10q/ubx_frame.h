@@ -14,8 +14,8 @@ struct UbxFrame {
 
 size_t ubx_encode(const UbxFrame* f, uint8_t* out, size_t outSize);
 struct UbxChecksum {
-    uint8_t ck_a;
-    uint8_t ck_b;
+    uint8_t ck_a = 0;
+    uint8_t ck_b = 0;
 };
 
 UbxChecksum ubx_checksum(const uint8_t* buffer, size_t len);
