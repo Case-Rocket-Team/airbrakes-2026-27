@@ -121,31 +121,34 @@ bool ubx_valset_add_u32(UbxFrame* f, uint32_t key, uint32_t value) {
 
 
 // I HIGHLY advise refering to 3.15.11.1 if you want this to make any sense.
-bool ubx_decode_nav_pvt(const UbxFrame* f, NavPvt* out) {
+NavPvt ubx_decode_nav_pvt(const UbxFrame* f) {
+    NavPvt out = {};
+
     if (f->cls != UBX_CLASS_NAV || f->id != UBX_ID_NAV_PVT) { // not a nav_pvt response
-        return false;
+        return out;
     }
 
     if (f->len != UBX_NAV_PVT_LEN) { // malformed request
-        return false;
+        return out;
     }
 
-    out->i_tow_ms = rd_u32(&f->payload[0]);
-    out->fix_type = f->payload[20];
-    out->gnss_fix_ok = (f->payload[21] & 0x01) != 0;
-    out->num_sv = f->payload[23];
+    out.i_tow_ms = rd_u32(&f->payload[0]);
+    out.fix_type = f->payload[20];
+    out.gnss_fix_ok = (f->payload[21] & 0x01) != 0;
+    out.num_sv = f->payload[23];
 
-    out->lon_deg_e7 = rd_i32(&f->payload[24]);
-    out->lat_deg_e7 = rd_i32(&f->payload[28]);
-    out->h_msl_mm = rd_i32(&f->payload[36]);
+    out.lon_deg_e7 = rd_i32(&f->payload[24]);
+    out.lat_deg_e7 = rd_i32(&f->payload[28]);
+    out.h_msl_mm = rd_i32(&f->payload[36]);
 
 
-    out->vel_n_mm_s = rd_i32(&f->payload[48]);
-    out->vel_e_mm_s = rd_i32(&f->payload[52]);
-    out->vel_d_mm_s = rd_i32(&f->payload[56]);
+    out.vel_n_mm_s = rd_i32(&f->payload[48]);
+    out.vel_e_mm_s = rd_i32(&f->payload[52]);
+    out.vel_d_mm_s = rd_i32(&f->payload[56]);
 
-    out->h_acc_mm = rd_u32(&f->payload[40]);
-    out->v_acc_mm = rd_u32(&f->payload[44]);
+    out.h_acc_mm = rd_u32(&f->payload[40]);
+    out.v_acc_mm = rd_u32(&f->payload[44]);
 
-    return true;
+    out.valid = true;
+    return out;
 }

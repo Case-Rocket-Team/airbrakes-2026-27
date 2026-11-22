@@ -7,9 +7,9 @@
 #define GPS_ACK_TIMEOUT_MS 500
 #define GPS_FIX_TIMEOUT_MS 1000
 
-#define EARTH_RADIUS_FT 20902231.0 // 6,371 km
+#define EARTH_RADIUS_M 6371000.0
 #define DEG_E7_TO_RAD (1e-7 * PI / 180.0)
-#define MM_TO_FT (1.0 / 304.8)
+#define MM_TO_M 0.001
 
 static UbxParser parser;
 static NavPvt latest;
@@ -85,12 +85,14 @@ static bool poll_mon_ver(uint32_t timeout_ms) {
 }
 
 static void handle_frame(const UbxFrame* f) {
-    NavPvt pvt;
-    if (!ubx_decode_nav_pvt(f, &pvt)) {
-        return;                         // not a NAV-PVT frame
+    NavPvt pvt = ubx_decode_nav_pvt(f);
+    if (!pvt.valid) {
+        return; // not a NAV-PVT frame
     }
 
-    last_pvt_time_ms = millis();        // GPS is still talking
+    pvt.frame_read_us = micros(); // frame's last byte was just parsed
+
+    last_pvt_time_ms = millis(); // GPS is still talking
 
     has_fix = pvt.gnss_fix_ok && pvt.fix_type == 3; // only trust 3D fixes
 
@@ -116,11 +118,11 @@ bool gps_init() {
 
     UbxFrame tx;
     ubx_valset_begin(&tx, UBX_LAYER_RAM);
-    ubx_valset_add_u8 (&tx, CFG_UART1OUTPROT_UBX, 1); // make sure UBX is on
-    ubx_valset_add_u8 (&tx, CFG_MSGOUT_UBX_NAV_PVT_UART1, 1); // NAV-PVT every solution
-    ubx_valset_add_u8 (&tx, CFG_UART1OUTPROT_NMEA, 0); // NMEA off
+    ubx_valset_add_u8(&tx, CFG_UART1OUTPROT_UBX, 1); // make sure UBX is on
+    ubx_valset_add_u8(&tx, CFG_MSGOUT_UBX_NAV_PVT_UART1, 1); // NAV-PVT every solution
+    ubx_valset_add_u8(&tx, CFG_UART1OUTPROT_NMEA, 0); // NMEA off
     ubx_valset_add_u16(&tx, CFG_RATE_MEAS, 200); // 5 Hz
-    ubx_valset_add_u8 (&tx, CFG_NAVSPG_DYNMODEL, DYNMODEL_AIR4);
+    ubx_valset_add_u8(&tx, CFG_NAVSPG_DYNMODEL, DYNMODEL_AIR4);
 
     return send_and_ack(&tx);
 }
@@ -159,9 +161,10 @@ GpsDelta gps_delta(NavPvt origin, NavPvt now) {
     // A degree of longitude gets shorter away from the equator
     double cos_lat = cos(origin.lat_deg_e7 * DEG_E7_TO_RAD);
 
-    GpsDelta d;
-    d.north_ft = (float)(d_lat_e7 * DEG_E7_TO_RAD * EARTH_RADIUS_FT);
-    d.east_ft = (float)(d_lon_e7 * DEG_E7_TO_RAD * EARTH_RADIUS_FT * cos_lat);
-    d.up_ft = (float)(d_h_mm * MM_TO_FT);
+    GpsDelta d = {
+        (float)(d_lat_e7 * DEG_E7_TO_RAD * EARTH_RADIUS_M),
+        (float)(d_lon_e7 * DEG_E7_TO_RAD * EARTH_RADIUS_M * cos_lat),
+        (float)(d_h_mm * MM_TO_M),
+    };
     return d;
 }

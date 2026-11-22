@@ -48,6 +48,8 @@ int ubx_check_ack(const UbxFrame* f, uint8_t cls, uint8_t id);
 
 // UBX-NAV-PVT (3.15.11.1)
 struct NavPvt {
+    bool     valid;         // false if the frame was not a well-formed NAV-PVT
+    uint32_t frame_read_us; // micros() when the frame finished parsing (set by gps.cpp)
     uint32_t i_tow_ms;      // GPS time of week
     uint8_t  fix_type;      // 0 = no fix, 2 = 2D, 3 = 3D
     bool     gnss_fix_ok;   // bit 0 of flags: fix is valid
@@ -64,4 +66,5 @@ struct NavPvt {
     uint32_t h_acc_mm;      // horizontal accuracy estimate
     uint32_t v_acc_mm;      // vertical accuracy estimate
 };
-bool ubx_decode_nav_pvt(const UbxFrame* f, NavPvt* out);
+// Returns a zeroed NavPvt with valid = false if `f` is not a well-formed NAV-PVT frame.
+NavPvt ubx_decode_nav_pvt(const UbxFrame* f);

@@ -8,11 +8,11 @@ bool gps_has_fix();
 const NavPvt* gps_latest();
 uint32_t gps_fix_age_ms();
 
-// Offset of `now` from `origin`, in feet (up = higher than origin).
+// Offset of `now` from `origin`, in meters (up = higher than origin).
 struct GpsDelta {
-    float north_ft;
-    float east_ft;
-    float up_ft;
+    float north_m;
+    float east_m;
+    float up_m;
 };
 
 GpsDelta gps_delta(NavPvt origin, NavPvt now);
