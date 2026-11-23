@@ -4,6 +4,7 @@
 #include "base/base.h"
 #include "control/physics/dynamics.hpp"
 #include "control/aero/brake_aero.hpp"
+#include "control/actuator/actuator_model.hpp"
 
 namespace control::predictor {
 
@@ -43,6 +44,26 @@ f32 predict_apogee(
     f32 brake_extension,
     f32 dt
 );
+
+
+/*
+ * Predicts apogee while accounting for actuator slew rate.
+ *
+ * The actuator gradually moves from current_extension toward
+ * commanded_extension during the predicted coast.
+ *
+ * All extensions are normalized to [0, 1].
+ */
+f32 predict_apogee(
+    const physics::VerticalState& initial_state,
+    const physics::RocketParameters& parameters,
+    const aero::AeroParameters& aero_parameters,
+    f32 current_extension,
+    f32 commanded_extension,
+    f32 dt,
+    const actuator::ActuatorParameters& actuator_parameters
+);
+
 
 }  // namespace control::predictor
 
