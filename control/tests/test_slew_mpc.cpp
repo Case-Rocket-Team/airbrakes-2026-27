@@ -61,6 +61,19 @@ int main() {
     assert(selected_error <= retracted_error + 0.01f);
     assert(selected_error <= extended_error + 0.01f);
 
+    // Test 4: Invalid flight state triggers the fallback command.
+    const physics::VerticalState invalid_state{
+        5000.0f,
+        INFINITY
+    };
+
+    const BrakeCommand fallback_command = slew_mpc(
+        invalid_state, rocket, aero, mpc, 0.5f, actuator
+    );
+
+    assert(std::isfinite(fallback_command.extension));
+    assert(fallback_command.extension == 0.0f);
+
     std::cout << "All slew MPC tests passed.\n";
     return 0;
 }

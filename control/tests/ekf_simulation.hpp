@@ -19,6 +19,7 @@ struct EkfSimulationConfig {
     unsigned int seed = 42;
     const char* csv_filename = nullptr;
     bool print_progress = false;
+    f32 rocket_mass_slug = 0.5f;
 };
 
 struct EkfSimulationResult {
@@ -26,6 +27,14 @@ struct EkfSimulationResult {
     f32 maximum_extension;
     f32 elapsed_time;
     f32 apogee_error;
+
+    f32 signed_apogee_error = 0.0f;
+    int command_changes = 0;
+    f32 total_command_change = 0.0f;
+    f32 total_actuator_travel = 0.0f;
+    int command_reversals = 0;
+    int large_command_reversals = 0;
+    f32 total_extension_time = 0.0f;
 };
 
 
@@ -33,7 +42,7 @@ inline EkfSimulationResult run_ekf_simulation(
     const EkfSimulationConfig& config
 ) {
     // Illustrative parameters, not flight-validated.
-    const physics::RocketParameters rocket{0.5f, 0.1f};
+    const physics::RocketParameters rocket{config.rocket_mass_slug, 0.1f};
     const aero::AeroParameters aero{0.4f, 0.8f};
     const actuator::ActuatorParameters actuator{0.5f};
     const MpcParameters mpc{8500.0f, 0.05f, 0.1f};
@@ -62,6 +71,15 @@ inline EkfSimulationResult run_ekf_simulation(
     f32 extension = 0.0f;
     f32 maximum_extension = 0.0f;
     f32 elapsed = 0.0f;
+
+    f32 previous_command = 0.0f;
+    int command_changes = 0;
+    f32 total_command_change = 0.0f;
+    f32 total_actuator_travel = 0.0f;
+    int command_reversals = 0;
+    int large_command_reversals = 0;
+    int previous_direction = 0;
+    f32 total_extension_time = 0.0f;
 
     std::ofstream csv;
     if (config.csv_filename != nullptr) {
@@ -94,9 +112,37 @@ inline EkfSimulationResult run_ekf_simulation(
             estimated, rocket, aero, mpc, extension, actuator
         );
 
+
         assert(std::isfinite(command.extension));
         assert(command.extension >= 0.0f);
         assert(command.extension <= 1.0f);
+
+        const f32 signed_command_change =
+            command.extension - previous_command;
+        const f32 command_change =
+            std::fabs(signed_command_change);
+
+        if (command_change > 0.0001f) {
+            ++command_changes;
+
+            const int direction =
+                signed_command_change > 0.0f ? 1 : -1;
+
+            if (previous_direction != 0 &&
+                direction != previous_direction) {
+                ++command_reversals;
+
+                if (command_change >= 0.30f) {
+                    ++large_command_reversals;
+                }
+            }
+
+            previous_direction = direction;
+        }
+
+        total_command_change += command_change;
+        previous_command = command.extension;
+
 
         if (csv.is_open()) {
             csv << elapsed << ","
@@ -112,8 +158,13 @@ inline EkfSimulationResult run_ekf_simulation(
             extension, command.extension, dt, actuator
         );
 
+        total_actuator_travel +=
+            std::fabs(next_extension - extension);
+
         const f32 average_extension =
             0.5f * (extension + next_extension);
+
+        total_extension_time += average_extension * dt;
 
         const f32 cd = aero::drag_coefficient(
             aero, average_extension
@@ -187,7 +238,14 @@ inline EkfSimulationResult run_ekf_simulation(
         truth,
         maximum_extension,
         elapsed,
-        std::fabs(truth.altitude_ft - mpc.target_apogee_ft)
+        std::fabs(truth.altitude_ft - mpc.target_apogee_ft),
+        truth.altitude_ft - mpc.target_apogee_ft,
+        command_changes,
+        total_command_change,
+        total_actuator_travel,
+        command_reversals,
+        large_command_reversals,
+        total_extension_time
     };
 }
 
