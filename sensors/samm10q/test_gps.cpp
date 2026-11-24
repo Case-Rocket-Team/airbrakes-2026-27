@@ -15,8 +15,7 @@ void loop() {
             const NavPvt* p = gps_latest();
             Serial.printf("lat %ld  lon %ld  alt %ld mm  sats %u\n",
                           p->lat_deg_e7, p->lon_deg_e7, p->h_msl_mm, p->num_sv);
-        } else {
-            Serial.println("no fix");
+            Serial.print(p->h_msl_mm / 1000.0f );
         }
     }
 }
