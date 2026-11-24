@@ -58,14 +58,8 @@ int ubx_check_ack(const UbxFrame* f, uint8_t cls, uint8_t id) {
 
 }
 
-/*
- * CFG-VALSET (3.10.5.1) sets configuration values on the receiver.
- * Payload: version (0), layers (which memory to write, bit 0 = RAM),
- * 2 reserved bytes, then key/value pairs packed back to back. Each key is
- * 4 bytes, little-endian, and encodes the size of the value that follows it.
- * The module replies ACK if all values were applied, or NAK and applies none.
- */
 
+// CFG-VALSET (3.10.5.1) sets configuration values on the receiver.
 void ubx_valset_begin(UbxFrame* f, uint8_t layers) {
     f->cls = UBX_CLASS_CFG;
     f->id = UBX_ID_CFG_VALSET;

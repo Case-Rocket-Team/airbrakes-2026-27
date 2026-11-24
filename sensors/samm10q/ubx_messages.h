@@ -56,7 +56,7 @@ struct NavPvt {
 
     int32_t  lon_deg_e7 = 0;        // longitude, degrees * 1e7
     int32_t  lat_deg_e7 = 0;        // latitude, degrees * 1e7
-    int32_t  h_msl_mm = 0;          // height above mean sea level
+    int32_t  h_msl_mm = 0;          // height above mean sea level (MSL)
 
     int32_t  vel_n_mm_s = 0;        // north velocity
     int32_t  vel_e_mm_s = 0;        // east velocity
@@ -65,5 +65,5 @@ struct NavPvt {
     uint32_t h_acc_mm = 0;          // horizontal accuracy estimate
     uint32_t v_acc_mm = 0;          // vertical accuracy estimate
 };
-// Returns a zeroed NavPvt with valid = false if `f` is not a well-formed NAV-PVT frame.
+// Returns a zeroed NavPvt with valid = false if f is not a well-formed NAV-PVT frame.
 NavPvt ubx_decode_nav_pvt(const UbxFrame* f);
