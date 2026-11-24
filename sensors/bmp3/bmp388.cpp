@@ -55,8 +55,8 @@ static void load_calibration(void);
 
 static void read_reg(uint8_t reg, uint8_t *buf, int len);
 
-static uint8_t        isr_sample[6] = {0};
-static uint32_t       isr_sample_time_us = 0;
+static volatile uint8_t isr_sample[6] = {0};
+static volatile uint32_t isr_sample_time_us = 0;
 static volatile bool  drdy = false;
 
 static void bmp388_isr(void) {
