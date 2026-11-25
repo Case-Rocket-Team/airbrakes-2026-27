@@ -36,7 +36,7 @@
 #define DYNMODEL_AIR4                 8           // airborne, <4g acceleration
 
 // Builders
-UbxFrame ubx_build_poll(UbxFrame* f, uint8_t cls, uint8_t id);
+UbxFrame ubx_build_poll(uint8_t cls, uint8_t id);
 
 void ubx_valset_begin(UbxFrame* f, uint8_t layers);
 bool ubx_valset_add_u8(UbxFrame* f, uint32_t key, uint8_t value);

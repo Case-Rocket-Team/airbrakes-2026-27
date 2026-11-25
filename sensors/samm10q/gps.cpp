@@ -60,8 +60,7 @@ static bool send_and_ack(const UbxFrame* f)	{
 // Polls the module for its firmware version (UBX-MON-VER) and waits for the
 // reply. 
 static bool poll_mon_ver(uint32_t timeout_ms) {
-    UbxFrame tx;
-    ubx_build_poll(&tx, UBX_CLASS_MON, UBX_ID_MON_VER);
+    UbxFrame tx = ubx_build_poll(UBX_CLASS_MON, UBX_ID_MON_VER);
     if (!send_frame(&tx)) { // couldn't send
         return false;
     }
@@ -112,7 +111,12 @@ bool gps_init() {
     delay(500); // let the module boot
 
     if (!poll_mon_ver(1000)) {
-        return false; // module not responding
+        // Baud setting survives an MCU reset while the module stays powered,
+        // so it may already be at GPS_BAUD from a previous run.
+        GPS_SERIAL.begin(GPS_BAUD);
+        if (!poll_mon_ver(1000)) {
+            return false; // module not responding
+        }
     }
 
     // Switch the module to GPS_BAUD, then follow it.
