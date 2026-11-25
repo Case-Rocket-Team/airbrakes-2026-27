@@ -5,3 +5,4 @@ kf_results.csv
 ekf_results.csv
 /.vscode
 sensors/bmp3/build/
+sensors/samm10q/build/
