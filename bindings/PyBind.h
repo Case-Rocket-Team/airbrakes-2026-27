@@ -8,15 +8,16 @@
 
 #include "kalman_filter/extended_kalman_filter.h"
 
-class EKF {
+class ExtendedKalmanFilter {
 private:
-        extended_kalman_filter* ekf;
+        extended_kalman_filter* EKF;
 public:
-    EKF(
+    ExtendedKalmanFilter(
         const ekf_settings* settings,
         vec3f local_down,
         vec3f local_magn_gauss,
         u32 timestamp_us);
+    ~ExtendedKalmanFilter();
 
     // Call with IMU data
     void inject_imu(
@@ -38,7 +39,10 @@ public:
     void inject_gnss(
         vec3f pos_ft,
         u32 timestamp_us);
-    ekf_nominal_state getNominalState();
+    ekf_nominal_state get_nominal_state();
+
+    f32* get_state_covar();
+
 };
 
 #endif //BINDINGS_TEST_H

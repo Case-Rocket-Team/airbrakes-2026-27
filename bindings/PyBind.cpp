@@ -8,33 +8,41 @@
 
 namespace py = pybind11;
 
-EKF::EKF(const ekf_settings* settings,
+ExtendedKalmanFilter::ExtendedKalmanFilter(const ekf_settings* settings,
         vec3f local_down,
         vec3f local_magn_gauss,
         u32 timestamp_us) {
 
-  ekf = new extended_kalman_filter{};
-  ekf_init(ekf, settings, local_down, local_magn_gauss, timestamp_us);
+  EKF = new extended_kalman_filter{};
+  ekf_init(EKF, settings, local_down, local_magn_gauss, timestamp_us);
 
 }
 
-void EKF::inject_imu(vec3f accel_fps2, vec3f gyro_radps, u32 timestamp_us) {
-  ekf_inject_imu(ekf, accel_fps2, gyro_radps, timestamp_us);
+ExtendedKalmanFilter::~ExtendedKalmanFilter() {
+  free(EKF);
 }
 
-void EKF::inject_baro(f32 altitude_ft, u32 timestamp_us) {
-  ekf_inject_baro(ekf, altitude_ft, timestamp_us);
+void ExtendedKalmanFilter::inject_imu(vec3f accel_fps2, vec3f gyro_radps, u32 timestamp_us) {
+  ekf_inject_imu(EKF, accel_fps2, gyro_radps, timestamp_us);
 }
 
-void EKF::inject_magn(vec3f magn_north_gauss, u32 timestamp_us) {
-  ekf_inject_magn(ekf, magn_north_gauss, timestamp_us);
+void ExtendedKalmanFilter::inject_baro(f32 altitude_ft, u32 timestamp_us) {
+  ekf_inject_baro(EKF, altitude_ft, timestamp_us);
 }
 
-void EKF::inject_gnss(vec3f pos_ft, u32 timestamp_us) {
-  ekf_inject_gnss(ekf, pos_ft, timestamp_us);
+void ExtendedKalmanFilter::inject_magn(vec3f magn_north_gauss, u32 timestamp_us) {
+  ekf_inject_magn(EKF, magn_north_gauss, timestamp_us);
 }
 
-ekf_nominal_state EKF::getNominalState() { return ekf->nominal_state; }
+void ExtendedKalmanFilter::inject_gnss(vec3f pos_ft, u32 timestamp_us) {
+  ekf_inject_gnss(EKF, pos_ft, timestamp_us);
+}
+
+ekf_nominal_state ExtendedKalmanFilter::get_nominal_state() { return EKF->nominal_state; }
+
+f32* ExtendedKalmanFilter::get_state_covar() {
+  return EKF->state_covar;
+}
 
 static ekf_settings setSettings(f32 accel_var_f2ps4, f32 accel_bias_var_f2ps4,
                                 f32 gyro_var_rad2ps2, f32 gyro_bias_var_rad2ps2,
@@ -66,7 +74,7 @@ vec3f loadvec3f(float x, float y, float z) { return {x, y, z}; }
 
 quatf loadquatf(float w, float x, float y, float z) { return {w, x, y, z}; }
 
-PYBIND11_MODULE(PyBind, m) {
+PYBIND11_MODULE(PythonBindingEKF, m) {
 
   py::class_<ekf_nominal_state>(m, "ekf_nominal_state")
       .def(py::init<>())
@@ -169,14 +177,15 @@ PYBIND11_MODULE(PyBind, m) {
       .def_readwrite("w", &quatf::w);
   m.def("ekf_init", &ekf_init);
 
-  py::class_<EKF>(m, "EKF")
+  py::class_<ExtendedKalmanFilter>(m, "ExtendedKalmanFilter")
   .def(py::init<const ekf_settings* , vec3f, vec3f, u32>(), py::arg("settings"), py::arg("local_down"),
          py::arg("local_magn_gauss"), py::arg("timestamp_us"))
-      .def("inject_baro", &EKF::inject_baro)
-      .def("inject_gnss", &EKF::inject_gnss)
-      .def("inject_imu", &EKF::inject_imu)
-      .def("inject_magn", &EKF::inject_magn)
-      .def("get_nominal_state", &EKF::getNominalState);
+      .def("inject_baro", &ExtendedKalmanFilter::inject_baro)
+      .def("inject_gnss", &ExtendedKalmanFilter::inject_gnss)
+      .def("inject_imu", &ExtendedKalmanFilter::inject_imu)
+      .def("inject_magn", &ExtendedKalmanFilter::inject_magn)
+      .def("get_nominal_state", &ExtendedKalmanFilter::get_nominal_state)
+      .def("get_state_covar", &ExtendedKalmanFilter::get_state_covar);
 
   m.def("quatf_conj", &quatf_conj);
   m.def("quatf_rot_vec3f", &quatf_rot_vec3f);
