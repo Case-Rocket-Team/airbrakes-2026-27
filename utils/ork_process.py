@@ -156,18 +156,8 @@ def process_6dof(full_data):
         quat = Quaternion(attitudes[i,:]).conjugate
         accelerometer_fps2[i,:] = quat.rotate(world_accel_fps2[i,:] + g)
 
-    with open("ork_processed_6dof.bin", "wb") as f:
-        f.write(nrows.to_bytes(4, byteorder="little", signed=False))
+    return times, attitudes, pos_ft, vel_fps, gyros_radps, accelerometer_fps2
 
-        def insert(arr):
-            arr[:nrows].astype(np.float32).tofile(f)
-
-        insert(times)
-        insert(attitudes)
-        insert(pos_ft)
-        insert(vel_fps)
-        insert(gyros_radps)
-        insert(accelerometer_fps2)
 
 
 def process_1d(full_data):
@@ -188,11 +178,36 @@ def process_1d(full_data):
         vertical_accel_fps2.tofile(f)
 
 
+def process_6dof_to_file(full_data):
+    times, attitudes, pos_ft, vel_fps, gyros_radps, accelerometer_fps2 = process_6dof(full_data)
+
+    def col(s):
+        return full_data[s].to_numpy().astype(np.float32)
+    gyros_radps = 2 * math.pi * np.array([
+        col("Pitch rate (r/s)"),
+        col("Yaw rate (r/s)"),
+        col("Roll rate (r/s)")
+    ]).T
+    nrows = int(np.where(np.isnan(gyros_radps))[0][0])
+
+    with open("ork_processed_6dof.bin", "wb") as f:
+        f.write(nrows.to_bytes(4, byteorder="little", signed=False))
+        def insert(arr):
+            arr[:nrows].astype(np.float32).tofile(f)
+
+        insert(times)
+        insert(attitudes)
+        insert(pos_ft)
+        insert(vel_fps)
+        insert(gyros_radps)
+        insert(accelerometer_fps2)
+
 if __name__ == "__main__":
     full_data = pd.read_csv(
         "ork_flight_30k.csv" if len(sys.argv) <= 1 else sys.argv[1],
         comment="#"
     )
 
-    process_6dof(full_data)
+    process_6dof_to_file(full_data)
+
 
